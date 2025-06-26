@@ -23,6 +23,7 @@ import {
   Layers,
   Settings,
   Menu,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -199,6 +200,18 @@ const AppSidebar = () => {
             )}
           </React.Fragment>
         ))}
+        
+        {/* Logout Button at Bottom */}
+        <div className="mt-auto p-2 border-t border-sidebar-border">
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent/50"
+            onClick={() => window.location.href = '/login'}
+          >
+            <LogOut className="h-4 w-4" />
+            {!collapsed && <span className="ml-2">Cerrar Sesión</span>}
+          </Button>
+        </div>
       </SidebarContent>
     </Sidebar>
   );
