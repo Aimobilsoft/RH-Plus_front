@@ -34,6 +34,7 @@ import PerfilCandidato from "./pages/candidatos/PerfilCandidato";
 
 // Admin login
 import LoginAdmin from "./pages/LoginAdmin";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -53,7 +54,7 @@ const App = () => (
           <Route path="/candidato/perfil" element={<PerfilCandidato />} />
           
           {/* Admin Portal Routes - With Layout (Protected) */}
-          <Route element={<SidebarProvider><Layout /></SidebarProvider>}>
+          <Route element={<ProtectedRoute><SidebarProvider><Layout /></SidebarProvider></ProtectedRoute>}>
             {/* Dashboard */}
             <Route path="/dashboard" element={<Index />} />
             

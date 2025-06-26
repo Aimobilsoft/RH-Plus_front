@@ -46,7 +46,8 @@ export default function LoginAdmin() {
 
       if (response.ok) {
         toast.success('Login exitoso');
-        navigate('/dashboard');
+        // Force navigation with replace to avoid back button issues
+        window.location.href = '/dashboard';
       } else {
         toast.error(result.message || 'Credenciales inválidas');
       }

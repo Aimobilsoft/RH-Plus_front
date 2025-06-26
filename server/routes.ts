@@ -48,6 +48,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Check auth status
+  app.get("/api/auth/status", (req, res) => {
+    if (req.session.userId && req.session.userType) {
+      res.json({ 
+        authenticated: true, 
+        userType: req.session.userType,
+        userId: req.session.userId 
+      });
+    } else {
+      res.json({ authenticated: false });
+    }
+  });
+
   // Candidato Login Routes
   app.post("/api/candidato/login", async (req, res) => {
     try {
