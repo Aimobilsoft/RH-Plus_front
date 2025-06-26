@@ -206,7 +206,12 @@ const AppSidebar = () => {
           <Button
             variant="ghost"
             className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent/50"
-            onClick={() => window.location.href = '/login'}
+            onClick={() => {
+              // Clear local storage
+              localStorage.removeItem('admin_authenticated');
+              // Redirect to admin login
+              window.location.href = '/';
+            }}
           >
             <LogOut className="h-4 w-4" />
             {!collapsed && <span className="ml-2">Cerrar Sesión</span>}

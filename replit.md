@@ -105,6 +105,14 @@ This is a full-stack medical practice management application built with modern w
 
 ```
 Changelog:
+- June 26, 2025. UI improvements and bug fixes
+  * Fixed critical blank screen issue by diagnosing React/Vite configuration problems
+  * Successfully changed all blue UI elements to green color scheme
+  * Removed "Create Candidate" button from admin candidates page (edit-only mode)
+  * Removed "¿No tienes cuenta? Regístrate aquí" text from candidate login
+  * Fixed logout button 404 error - now properly redirects to admin login (/)
+  * Enhanced DatosPersonalesForm with organized color-coded sections
+  * Completed modal redesign for candidate registration with professional layout
 - June 26, 2025. Migration from Lovable to Replit completed successfully
   * Dual portal system implemented (admin + candidate self-registration)
   * PostgreSQL database integration configured  
