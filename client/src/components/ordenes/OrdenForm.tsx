@@ -103,7 +103,7 @@ const OrdenForm = ({ orden, onSubmit, onCancel }: OrdenFormProps) => {
   const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null);
   const [selectedCandidato, setSelectedCandidato] = useState<Candidato | null>(null);
   const [servicios, setServicios] = useState<OrdenServicio[]>(orden?.servicios || []);
-  const [signatureData, setSignatureData] = useState<string | undefined>(orden?.firma || undefined);
+  const [signatureData, setSignatureData] = useState<string | null>(orden?.firma || null);
   
   // Initialize form
   const form = useForm<z.infer<typeof formSchema>>({
@@ -175,7 +175,7 @@ const OrdenForm = ({ orden, onSubmit, onCancel }: OrdenFormProps) => {
         setServicios(orden.servicios);
       }
       
-      setSignatureData(orden.firma || undefined);
+      setSignatureData(orden.firma || null);
 
       // Find and set selected empresa
       const empresaId = orden.empresaId;
@@ -233,11 +233,14 @@ const OrdenForm = ({ orden, onSubmit, onCancel }: OrdenFormProps) => {
     }
 
     const ordenData: Orden = {
-      ...orden,
+      id: orden?.id || 0,
       ...values,
       servicios,
       total: calculateTotal(),
-      firma: signatureData
+      firma: signatureData ?? undefined,
+      estado: orden?.estado || 'pendiente',
+      fechaCreacion: orden?.fechaCreacion,
+      fecha: orden?.fecha
     };
 
     onSubmit(ordenData);
