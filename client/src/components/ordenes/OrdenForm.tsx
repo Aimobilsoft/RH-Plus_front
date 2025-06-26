@@ -118,13 +118,13 @@ const OrdenForm = ({ orden, onSubmit, onCancel }: OrdenFormProps) => {
   // Load data on component mount - optimize by loading both at once
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading({ empresas: true, aspirantes: true });
+      setIsLoading({ empresas: true, candidatos: true });
       
       try {
         // Fetch both resources in parallel
-        const [empresasResponse, aspirantesResponse] = await Promise.all([
+        const [empresasResponse, candidatosResponse] = await Promise.all([
           api.post('/empresas'),
-          api.post('/aspirantes')
+          api.post('/candidatos')
         ]);
         
         // Process empresas
@@ -145,17 +145,17 @@ const OrdenForm = ({ orden, onSubmit, onCancel }: OrdenFormProps) => {
           setEmpresas(formattedEmpresas);
         }
         
-        // Process aspirantes
-        if (aspirantesResponse && typeof aspirantesResponse === 'object' && 'filas' in aspirantesResponse) {
+        // Process candidatos
+        if (candidatosResponse && typeof candidatosResponse === 'object' && 'filas' in candidatosResponse) {
           // Fix for the TypeScript error: properly type the response and check it has filas
-          const response = aspirantesResponse as ApiResponse<Aspirante>;
-          setAspirantes(response.filas);
+          const response = candidatosResponse as ApiResponse<Candidato>;
+          setCandidatos(response.filas);
         }
       } catch (error) {
         console.error("Error fetching form data:", error);
         toast.error("Error al cargar los datos del formulario");
       } finally {
-        setIsLoading({ empresas: false, aspirantes: false });
+        setIsLoading({ empresas: false, candidatos: false });
       }
     };
 
@@ -184,14 +184,14 @@ const OrdenForm = ({ orden, onSubmit, onCancel }: OrdenFormProps) => {
         if (empresa) setSelectedEmpresa(empresa);
       }
 
-      // Find and set selected aspirante
-      const aspiranteId = orden.aspiranteId || orden.aspirante_id;
-      if (aspiranteId && aspirantes.length > 0) {
-        const aspirante = aspirantes.find(a => a.id === aspiranteId);
-        if (aspirante) setSelectedAspirante(aspirante);
+      // Find and set selected candidato
+      const candidatoId = orden.aspiranteId || orden.aspirante_id;
+      if (candidatoId && candidatos.length > 0) {
+        const candidato = candidatos.find(c => c.id === candidatoId);
+        if (candidato) setSelectedCandidato(candidato);
       }
     }
-  }, [orden, empresas, aspirantes, form]);
+  }, [orden, empresas, candidatos, form]);
 
   const handleEmpresaChange = (value: string) => {
     const empresaId = parseInt(value);
@@ -200,11 +200,11 @@ const OrdenForm = ({ orden, onSubmit, onCancel }: OrdenFormProps) => {
     setSelectedEmpresa(empresa || null);
   };
 
-  const handleAspiranteChange = (value: string) => {
-    const aspiranteId = parseInt(value);
-    form.setValue('aspiranteId', aspiranteId);
-    const aspirante = aspirantes.find(a => a.id === aspiranteId);
-    setSelectedAspirante(aspirante || null);
+  const handleCandidatoChange = (value: string) => {
+    const candidatoId = parseInt(value);
+    form.setValue('aspiranteId', candidatoId);
+    const candidato = candidatos.find(c => c.id === candidatoId);
+    setSelectedCandidato(candidato || null);
   };
 
   const addServicio = (servicio: OrdenServicio) => {
