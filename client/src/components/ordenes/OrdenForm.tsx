@@ -47,7 +47,7 @@ const formSchema = z.object({
     required_error: "Empresa es requerida",
   }),
   aspiranteId: z.coerce.number({
-    required_error: "Aspirante es requerido",
+    required_error: "Candidato es requerido",
   }),
   tipoOrden: z.enum(['Ingreso', 'Egreso'], {
     required_error: "Tipo de Orden es requerido",
@@ -103,7 +103,7 @@ const OrdenForm = ({ orden, onSubmit, onCancel }: OrdenFormProps) => {
   const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null);
   const [selectedCandidato, setSelectedCandidato] = useState<Candidato | null>(null);
   const [servicios, setServicios] = useState<OrdenServicio[]>(orden?.servicios || []);
-  const [signatureData, setSignatureData] = useState<string | null>(orden?.firma || null);
+  const [signatureData, setSignatureData] = useState<string | undefined>(orden?.firma || undefined);
   
   // Initialize form
   const form = useForm<z.infer<typeof formSchema>>({
@@ -111,7 +111,7 @@ const OrdenForm = ({ orden, onSubmit, onCancel }: OrdenFormProps) => {
     defaultValues: {
       empresaId: orden?.empresaId || 0,
       aspiranteId: orden?.aspiranteId || 0,
-      tipoOrden: orden?.tipoOrden || 'Ingreso',
+      tipoOrden: (orden?.tipoOrden as 'Ingreso' | 'Egreso') || 'Ingreso',
     },
   });
 
@@ -167,25 +167,25 @@ const OrdenForm = ({ orden, onSubmit, onCancel }: OrdenFormProps) => {
     if (orden) {
       console.log("Setting form values from orden:", orden);
       
-      form.setValue('empresaId', orden.empresaId || orden.empresa_id || 0);
-      form.setValue('aspiranteId', orden.aspiranteId || orden.aspirante_id || 0);
-      form.setValue('tipoOrden', orden.tipoOrden || orden.type_order as 'Ingreso' | 'Egreso' || 'Ingreso');
+      form.setValue('empresaId', orden.empresaId || 0);
+      form.setValue('aspiranteId', orden.aspiranteId || 0);
+      form.setValue('tipoOrden', (orden.tipoOrden as 'Ingreso' | 'Egreso') || 'Ingreso');
       
       if (orden.servicios && Array.isArray(orden.servicios)) {
         setServicios(orden.servicios);
       }
       
-      setSignatureData(orden.firma || null);
+      setSignatureData(orden.firma || undefined);
 
       // Find and set selected empresa
-      const empresaId = orden.empresaId || orden.empresa_id;
+      const empresaId = orden.empresaId;
       if (empresaId && empresas.length > 0) {
         const empresa = empresas.find(e => (e.Id === empresaId || e.empresaId === empresaId));
         if (empresa) setSelectedEmpresa(empresa);
       }
 
       // Find and set selected candidato
-      const candidatoId = orden.aspiranteId || orden.aspirante_id;
+      const candidatoId = orden.aspiranteId;
       if (candidatoId && candidatos.length > 0) {
         const candidato = candidatos.find(c => c.id === candidatoId);
         if (candidato) setSelectedCandidato(candidato);
@@ -340,29 +340,29 @@ const OrdenForm = ({ orden, onSubmit, onCancel }: OrdenFormProps) => {
               <CardHeader className="pb-2 pt-3 flex flex-row items-center justify-between">
                 <CardTitle className="text-md flex items-center">
                   <User className="mr-2 h-4 w-4 text-primary" />
-                  Aspirante
+                  Candidato
                 </CardTitle>
                 <FormField
                   control={form.control}
                   name="aspiranteId"
                   render={({ field }) => (
                     <Select 
-                      onValueChange={handleAspiranteChange} 
+                      onValueChange={handleCandidatoChange} 
                       defaultValue={field.value ? field.value.toString() : undefined}
-                      disabled={isLoading.aspirantes}
+                      disabled={isLoading.candidatos}
                     >
                       <FormControl>
                         <SelectTrigger className="w-56 h-8 text-xs bg-white">
-                          <SelectValue placeholder="Seleccione un aspirante" />
+                          <SelectValue placeholder="Seleccione un candidato" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {aspirantes && aspirantes.length > 0 && aspirantes.map((aspirante) => (
+                        {candidatos && candidatos.length > 0 && candidatos.map((candidato) => (
                           <SelectItem 
-                            key={aspirante.id} 
-                            value={aspirante.id.toString()}
+                            key={candidato.id} 
+                            value={candidato.id.toString()}
                           >
-                            {aspirante.nombres} {aspirante.apellidos}
+                            {candidato.nombres} {candidato.apellidos}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -371,32 +371,32 @@ const OrdenForm = ({ orden, onSubmit, onCancel }: OrdenFormProps) => {
                 />
               </CardHeader>
               <CardContent className="pt-0 pb-3">
-                {selectedAspirante ? (
+                {selectedCandidato ? (
                   <div className="bg-primary/5 p-3 rounded-md text-sm border border-primary/10">
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                       <div className="flex justify-between items-center">
                         <span className="font-medium">Nombre:</span>
-                        <span className="text-right">{selectedAspirante.nombres} {selectedAspirante.apellidos}</span>
+                        <span className="text-right">{selectedCandidato.nombres} {selectedCandidato.apellidos}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="font-medium">Documento:</span>
                         <span className="text-right">
-                          {selectedAspirante.tipo_documento || 'CC'}: {selectedAspirante.numero_documento || 'No registrado'}
+                          {selectedCandidato.tipoDocumento || 'CC'}: {selectedCandidato.numeroDocumento || 'No registrado'}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="font-medium">Email:</span>
-                        <span className="text-right">{selectedAspirante.correo_electronico || 'No registrado'}</span>
+                        <span className="text-right">{selectedCandidato.correoElectronico || 'No registrado'}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="font-medium">Dirección:</span>
-                        <span className="text-right">{selectedAspirante.direccion || 'No registrada'}</span>
+                        <span className="text-right">{selectedCandidato.direccion || 'No registrada'}</span>
                       </div>
                     </div>
                   </div>
                 ) : (
                   <div className="text-center p-2 text-xs text-muted-foreground">
-                    Seleccione un aspirante para ver sus detalles
+                    Seleccione un candidato para ver sus detalles
                   </div>
                 )}
               </CardContent>
