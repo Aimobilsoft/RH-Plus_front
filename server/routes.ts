@@ -15,6 +15,21 @@ declare module 'express-session' {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
+  // Test route to diagnose the problem
+  app.get("/api/test", (req, res) => {
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+      <head><title>Test</title></head>
+      <body style="background: yellow; padding: 20px;">
+        <h1 style="color: red; font-size: 48px;">SERVER TEST WORKING</h1>
+        <p>Express server is responding correctly at ${new Date().toLocaleString()}</p>
+        <script>console.log("Test page loaded successfully");</script>
+      </body>
+      </html>
+    `);
+  });
+  
   // Admin Login Routes
   app.post("/api/login", async (req, res) => {
     try {
