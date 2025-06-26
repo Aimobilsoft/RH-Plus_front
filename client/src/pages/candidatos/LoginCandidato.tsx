@@ -143,17 +143,7 @@ export default function LoginCandidato() {
               </form>
             </Form>
 
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
-                ¿No tienes cuenta?{' '}
-                <Link
-                  to="/candidato/registro"
-                  className="text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  Regístrate aquí
-                </Link>
-              </p>
-            </div>
+
 
             <div className="mt-4 text-center">
               <Link

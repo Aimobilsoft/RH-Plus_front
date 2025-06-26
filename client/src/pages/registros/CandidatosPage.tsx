@@ -433,28 +433,6 @@ const CandidatosPage = () => {
             <h1 className="text-2xl font-bold">Candidatos</h1>
           </div>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button onClick={() => {
-                setFormData({
-                  identificacion: '',
-                  tipoDocumento: '',
-                  nombre: '',
-                  apellido: '',
-                  telefono: '',
-                  correo: '',
-                  empresa: '',
-                  ciudad: '',
-                  direccion: '',
-                  educacion: [],
-                  experienciaLaboral: []
-                });
-                setEditingId(null);
-                setActiveTab('datos-personales');
-              }}>
-                <Plus className="h-4 w-4 mr-2" />
-                Crear Candidato
-              </Button>
-            </DialogTrigger>
             <DialogContent className="sm:max-w-4xl max-h-[90vh]">
               <DialogHeader>
                 <DialogTitle>
