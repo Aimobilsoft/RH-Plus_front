@@ -12,7 +12,7 @@ import NotFound from "./pages/NotFound";
 
 // Páginas para cada sección
 import EmpresasPage from "./pages/registros/EmpresasPage";
-import AspirantesPage from "./pages/registros/AspirantesPage";
+import CandidatosPage from "./pages/registros/CandidatosPage";
 import PrestadoresPage from "./pages/registros/PrestadoresPage";
 import ExpedicionOrdenPage from "./pages/ordenes/ExpedicionOrdenPage";
 import AgendaMedicaPage from "./pages/clinica/AgendaMedicaPage";
@@ -43,7 +43,7 @@ const App = () => (
               
               {/* Registros */}
               <Route path="/registros/empresas" element={<EmpresasPage />} />
-              <Route path="/registros/aspirantes" element={<AspirantesPage />} />
+              <Route path="/registros/candidatos" element={<CandidatosPage />} />
               <Route path="/registros/prestadores" element={<PrestadoresPage />} />
               
               {/* Ordenes */}
