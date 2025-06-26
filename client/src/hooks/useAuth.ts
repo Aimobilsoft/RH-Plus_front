@@ -19,8 +19,23 @@ export function useAuth(): AuthState {
 
   const checkAuthStatus = async () => {
     try {
+      // Check localStorage first for immediate access
+      const localAuth = localStorage.getItem('admin_authenticated');
+      if (localAuth === 'true') {
+        setAuthState({
+          isAuthenticated: true,
+          isLoading: false,
+          userType: 'admin',
+        });
+        return;
+      }
+
       const response = await fetch('/api/auth/status');
       const data = await response.json();
+      
+      if (data.authenticated) {
+        localStorage.setItem('admin_authenticated', 'true');
+      }
       
       setAuthState({
         isAuthenticated: data.authenticated || false,

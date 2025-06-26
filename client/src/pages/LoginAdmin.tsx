@@ -46,8 +46,12 @@ export default function LoginAdmin() {
 
       if (response.ok) {
         toast.success('Login exitoso');
-        // Force navigation with replace to avoid back button issues
-        window.location.href = '/dashboard';
+        // Store auth in localStorage for immediate access
+        localStorage.setItem('admin_authenticated', 'true');
+        // Force navigation
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 100);
       } else {
         toast.error(result.message || 'Credenciales inválidas');
       }
