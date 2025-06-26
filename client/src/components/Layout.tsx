@@ -90,17 +90,7 @@ const Header = () => {
         <h1 className="text-lg font-semibold">Sistema de Recursos Humanos</h1>
       </div>
       <div className="ml-auto flex items-center space-x-4">
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={() => {
-            localStorage.removeItem('admin_authenticated');
-            fetch('/api/logout', { method: 'POST' });
-            window.location.href = '/';
-          }}
-        >
-          Cerrar Sesión
-        </Button>
+        {/* Header actions can be added here if needed */}
       </div>
     </header>
   );
