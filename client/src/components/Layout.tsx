@@ -39,7 +39,7 @@ const menuItems = [
     icon: <Users className="h-5 w-5" />,
     subItems: [
       { title: "Empresas Afiliadas", path: "/registros/empresas", icon: <Building className="h-4 w-4" /> },
-      { title: "Aspirantes", path: "/registros/aspirantes", icon: <User className="h-4 w-4" /> },
+      { title: "Candidatos", path: "/registros/candidatos", icon: <User className="h-4 w-4" /> },
       { title: "Prestadores", path: "/registros/prestadores", icon: <Briefcase className="h-4 w-4" /> },
     ],
   },

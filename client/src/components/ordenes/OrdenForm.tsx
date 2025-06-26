@@ -60,7 +60,7 @@ interface OrdenFormProps {
   onCancel: () => void;
 }
 
-interface Aspirante {
+interface Candidato {
   id: number;
   nombres: string;
   apellidos: string;
@@ -94,14 +94,14 @@ interface ApiResponse<T> {
 
 const OrdenForm = ({ orden, onSubmit, onCancel }: OrdenFormProps) => {
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
-  const [aspirantes, setAspirantes] = useState<Aspirante[]>([]);
+  const [candidatos, setCandidatos] = useState<Candidato[]>([]);
   const [isLoading, setIsLoading] = useState({
     empresas: false,
-    aspirantes: false
+    candidatos: false
   });
   
   const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null);
-  const [selectedAspirante, setSelectedAspirante] = useState<Aspirante | null>(null);
+  const [selectedCandidato, setSelectedCandidato] = useState<Candidato | null>(null);
   const [servicios, setServicios] = useState<OrdenServicio[]>(orden?.servicios || []);
   const [signatureData, setSignatureData] = useState<string | null>(orden?.firma || null);
   
