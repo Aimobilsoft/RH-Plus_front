@@ -5,14 +5,12 @@ import { insertCandidatoSchema } from "@shared/schema";
 import { z } from "zod";
 
 // Session middleware for simple login
-interface Session {
-  userId?: number;
-  candidatoId?: number;
-  userType?: 'admin' | 'candidato';
-}
-
 declare module 'express-session' {
-  interface SessionData extends Session {}
+  interface SessionData {
+    userId?: number;
+    candidatoId?: number;
+    userType?: 'admin' | 'candidato';
+  }
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
