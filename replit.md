@@ -105,6 +105,12 @@ This is a full-stack medical practice management application built with modern w
 
 ```
 Changelog:
+- June 26, 2025. Migration from Lovable to Replit completed successfully
+  * Dual portal system implemented (admin + candidate self-registration)
+  * PostgreSQL database integration configured  
+  * Session-based authentication system added
+  * Admin login as first view with protected routes
+  * Candidate registration, login, and profile management created
 - June 25, 2025. Initial setup
 ```
 
