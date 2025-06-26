@@ -32,7 +32,7 @@ const menuItems = [
   {
     title: "Dashboard",
     icon: <Layers className="h-5 w-5" />,
-    path: "/",
+    path: "/dashboard",
     subItems: [],
   },
   {
@@ -144,7 +144,7 @@ const AppSidebar = () => {
             {item.subItems.length === 0 ? (
               // Elemento sin subítems
               <Link
-                to={item.path}
+                to={item.path || "/"}
                 className={`flex items-center space-x-2 rounded-md px-3 py-2 mb-1 ${
                   currentPath === item.path
                     ? "bg-sidebar-accent text-sidebar-accent-foreground"
