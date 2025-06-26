@@ -111,6 +111,8 @@ Changelog:
   * Session-based authentication system added
   * Admin login as first view with protected routes
   * Candidate registration, login, and profile management created
+  * Dashboard UI cleaned: removed logout button and candidate portal card
+  * Simplified authentication with immediate credential validation (admin/admin123)
 - June 25, 2025. Initial setup
 ```
 

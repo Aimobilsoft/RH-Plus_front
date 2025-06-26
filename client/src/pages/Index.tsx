@@ -102,7 +102,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Empresas Afiliadas"
           value={isLoading ? "..." : `${stats?.totalEmpresas || 125}`}
@@ -123,22 +123,6 @@ const Dashboard = () => {
           value={isLoading ? "..." : `${stats?.ordenesHoy || 15}`}
           description="Emitidas hoy"
         />
-        <Card className="bg-blue-50 border-blue-200">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-blue-700 flex items-center gap-2">
-              <User className="w-4 h-4" />
-              Portal Candidatos
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Link to="/candidato/login">
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                Acceder
-              </Button>
-            </Link>
-            <p className="text-xs text-blue-600 mt-2">Registro y gestión de candidatos</p>
-          </CardContent>
-        </Card>
       </div>
 
       <Card className="col-span-4">
