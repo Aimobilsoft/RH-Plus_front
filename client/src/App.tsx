@@ -44,15 +44,18 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          {/* Admin Login - First View */}
+          <Route path="/" element={<LoginAdmin />} />
+          
           {/* Candidate Portal Routes - No Layout */}
           <Route path="/candidato/login" element={<LoginCandidato />} />
           <Route path="/candidato/registro" element={<RegistroCandidato />} />
           <Route path="/candidato/perfil" element={<PerfilCandidato />} />
           
-          {/* Admin Portal Routes - With Layout */}
+          {/* Admin Portal Routes - With Layout (Protected) */}
           <Route element={<SidebarProvider><Layout /></SidebarProvider>}>
             {/* Dashboard */}
-            <Route path="/" element={<Index />} />
+            <Route path="/dashboard" element={<Index />} />
             
             {/* Registros */}
             <Route path="/registros/empresas" element={<EmpresasPage />} />
