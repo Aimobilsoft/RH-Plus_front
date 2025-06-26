@@ -36,6 +36,7 @@ export const candidatos = pgTable("candidatos", {
   // Información de salud
   eps: varchar("eps", { length: 100 }),
   arl: varchar("arl", { length: 100 }),
+  fondoPension: varchar("fondo_pension", { length: 100 }),
   grupoSanguineo: varchar("grupo_sanguineo", { length: 5 }),
   
   // Educación

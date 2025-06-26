@@ -27,6 +27,11 @@ import UsuariosPage from "./pages/seguridad/UsuariosPage";
 import PerfilesPage from "./pages/seguridad/PerfilesPage";
 import MenuPage from "./pages/seguridad/MenuPage";
 
+// Candidate portal pages
+import LoginCandidato from "./pages/candidatos/LoginCandidato";
+import RegistroCandidato from "./pages/candidatos/RegistroCandidato";
+import PerfilCandidato from "./pages/candidatos/PerfilCandidato";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -35,42 +40,46 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <SidebarProvider>
-          <Routes>
-            <Route element={<Layout />}>
-              {/* Dashboard */}
-              <Route path="/" element={<Index />} />
-              
-              {/* Registros */}
-              <Route path="/registros/empresas" element={<EmpresasPage />} />
-              <Route path="/registros/candidatos" element={<CandidatosPage />} />
-              <Route path="/registros/prestadores" element={<PrestadoresPage />} />
-              
-              {/* Ordenes */}
-              <Route path="/ordenes/expedicion" element={<ExpedicionOrdenPage />} />
-              
-              {/* Clinica */}
-              <Route path="/clinica/agenda" element={<AgendaMedicaPage />} />
-              <Route path="/clinica/historia-medica" element={<HistoriaMedicaPage />} />
-              <Route path="/clinica/historia-laboral" element={<HistoriaLaboralPage />} />
-              <Route path="/clinica/consultorios" element={<ConsultoriosPage />} />
-              <Route path="/clinica/especialidades" element={<EspecialidadesPage />} />
-              <Route path="/clinica/especialistas" element={<EspecialistasPage />} />
-              <Route path="/clinica/citas" element={<CitasProgramadasPage />} />
-              
-              {/* Certificados */}
-              <Route path="/certificados/expedicion" element={<ExpedicionCertificadosPage />} />
-              
-              {/* Seguridad */}
-              <Route path="/seguridad/usuarios" element={<UsuariosPage />} />
-              <Route path="/seguridad/perfiles" element={<PerfilesPage />} />
-              <Route path="/seguridad/menu" element={<MenuPage />} />
-            </Route>
+        <Routes>
+          {/* Candidate Portal Routes - No Layout */}
+          <Route path="/candidato/login" element={<LoginCandidato />} />
+          <Route path="/candidato/registro" element={<RegistroCandidato />} />
+          <Route path="/candidato/perfil" element={<PerfilCandidato />} />
+          
+          {/* Admin Portal Routes - With Layout */}
+          <Route element={<SidebarProvider><Layout /></SidebarProvider>}>
+            {/* Dashboard */}
+            <Route path="/" element={<Index />} />
             
-            {/* Ruta 404 */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </SidebarProvider>
+            {/* Registros */}
+            <Route path="/registros/empresas" element={<EmpresasPage />} />
+            <Route path="/registros/candidatos" element={<CandidatosPage />} />
+            <Route path="/registros/prestadores" element={<PrestadoresPage />} />
+            
+            {/* Ordenes */}
+            <Route path="/ordenes/expedicion" element={<ExpedicionOrdenPage />} />
+            
+            {/* Clinica */}
+            <Route path="/clinica/agenda" element={<AgendaMedicaPage />} />
+            <Route path="/clinica/historia-medica" element={<HistoriaMedicaPage />} />
+            <Route path="/clinica/historia-laboral" element={<HistoriaLaboralPage />} />
+            <Route path="/clinica/consultorios" element={<ConsultoriosPage />} />
+            <Route path="/clinica/especialidades" element={<EspecialidadesPage />} />
+            <Route path="/clinica/especialistas" element={<EspecialistasPage />} />
+            <Route path="/clinica/citas" element={<CitasProgramadasPage />} />
+            
+            {/* Certificados */}
+            <Route path="/certificados/expedicion" element={<ExpedicionCertificadosPage />} />
+            
+            {/* Seguridad */}
+            <Route path="/seguridad/usuarios" element={<UsuariosPage />} />
+            <Route path="/seguridad/perfiles" element={<PerfilesPage />} />
+            <Route path="/seguridad/menu" element={<MenuPage />} />
+          </Route>
+          
+          {/* Ruta 404 */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
