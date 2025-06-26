@@ -217,14 +217,14 @@ const MedicalSchedule = ({ view }: MedicalScheduleProps) => {
                     key={dayIndex}
                     onClick={() => handleCellClick(day, hour)}
                     className={`border-r border-b last:border-r-0 min-h-[60px] p-1 cursor-pointer relative
-                      ${appointment ? "bg-blue-50" : isHighlighted ? "bg-green-50/30" : ""}`}
+                      ${appointment ? "bg-green-50" : isHighlighted ? "bg-green-50/30" : ""}`}
                     style={{ gridColumn: `span ${colSpan}` }}
                   >
                     {appointment && (
-                      <div className="absolute inset-1 bg-blue-100 rounded p-1 text-xs overflow-hidden text-blue-800 shadow-sm">
+                      <div className="absolute inset-1 bg-green-100 rounded p-1 text-xs overflow-hidden text-green-800 shadow-sm">
                         <div className="font-bold">{appointment.aspiranteNombre}</div>
                         <div className="truncate">{appointment.observacion}</div>
-                        <div className="mt-1 text-[10px] text-blue-600">{appointment.especialista}</div>
+                        <div className="mt-1 text-[10px] text-green-600">{appointment.especialista}</div>
                       </div>
                     )}
                   </div>
