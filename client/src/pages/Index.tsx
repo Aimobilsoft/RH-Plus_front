@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/services/api";
+import { User, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
 
 // Datos de ejemplo para el gráfico
 const mockData = [
@@ -66,32 +68,41 @@ const Dashboard = () => {
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <div className="flex items-center gap-2">
-          <Button 
-            size="sm" 
-            variant={chartPeriod === "day" ? "default" : "outline"}
-            onClick={() => setChartPeriod("day")}
-          >
-            Día
-          </Button>
-          <Button 
-            size="sm" 
-            variant={chartPeriod === "month" ? "default" : "outline"}
-            onClick={() => setChartPeriod("month")}
-          >
-            Mes
-          </Button>
-          <Button 
-            size="sm" 
-            variant={chartPeriod === "year" ? "default" : "outline"}
-            onClick={() => setChartPeriod("year")}
-          >
-            Año
-          </Button>
+        <div className="flex items-center gap-4">
+          <Link to="/candidato/login">
+            <Button variant="outline" size="sm" className="flex items-center gap-2">
+              <User className="w-4 h-4" />
+              Portal Candidatos
+              <ExternalLink className="w-3 h-3" />
+            </Button>
+          </Link>
+          <div className="flex items-center gap-2">
+            <Button 
+              size="sm" 
+              variant={chartPeriod === "day" ? "default" : "outline"}
+              onClick={() => setChartPeriod("day")}
+            >
+              Día
+            </Button>
+            <Button 
+              size="sm" 
+              variant={chartPeriod === "month" ? "default" : "outline"}
+              onClick={() => setChartPeriod("month")}
+            >
+              Mes
+            </Button>
+            <Button 
+              size="sm" 
+              variant={chartPeriod === "year" ? "default" : "outline"}
+              onClick={() => setChartPeriod("year")}
+            >
+              Año
+            </Button>
+          </div>
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <StatCard
           title="Empresas Afiliadas"
           value={isLoading ? "..." : `${stats?.totalEmpresas || 125}`}
@@ -112,6 +123,22 @@ const Dashboard = () => {
           value={isLoading ? "..." : `${stats?.ordenesHoy || 15}`}
           description="Emitidas hoy"
         />
+        <Card className="bg-blue-50 border-blue-200">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-blue-700 flex items-center gap-2">
+              <User className="w-4 h-4" />
+              Portal Candidatos
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Link to="/candidato/login">
+              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                Acceder
+              </Button>
+            </Link>
+            <p className="text-xs text-blue-600 mt-2">Registro y gestión de candidatos</p>
+          </CardContent>
+        </Card>
       </div>
 
       <Card className="col-span-4">

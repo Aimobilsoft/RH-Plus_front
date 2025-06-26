@@ -32,6 +32,9 @@ import LoginCandidato from "./pages/candidatos/LoginCandidato";
 import RegistroCandidato from "./pages/candidatos/RegistroCandidato";
 import PerfilCandidato from "./pages/candidatos/PerfilCandidato";
 
+// Admin login
+import LoginAdmin from "./pages/LoginAdmin";
+
 const queryClient = new QueryClient();
 
 const App = () => (
