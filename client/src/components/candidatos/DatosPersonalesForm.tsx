@@ -75,7 +75,7 @@ export const DatosPersonalesForm: React.FC<DatosPersonalesFormProps> = ({ formDa
       </div>
 
       {/* Personal Information Section */}
-      <div className="bg-blue-50 p-4 rounded-lg">
+      <div className="bg-green-50 p-4 rounded-lg">
         <h4 className="font-medium text-gray-900 mb-3">Datos Personales</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">

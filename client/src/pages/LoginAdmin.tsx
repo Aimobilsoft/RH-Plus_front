@@ -77,7 +77,7 @@ export default function LoginAdmin() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="mx-auto w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mb-6">
+          <div className="mx-auto w-20 h-20 bg-green-600 rounded-full flex items-center justify-center mb-6">
             <Shield className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900">Sistema Médico</h1>

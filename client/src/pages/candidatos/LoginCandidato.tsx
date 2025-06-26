@@ -61,7 +61,7 @@ export default function LoginCandidato() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-4">
+          <div className="mx-auto w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
             <User className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900">Portal Candidatos</h1>
@@ -155,9 +155,9 @@ export default function LoginCandidato() {
               </Link>
             </div>
 
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-800 font-medium mb-2">Credenciales de prueba:</p>
-              <p className="text-sm text-blue-700">
+            <div className="mt-6 p-4 bg-green-50 rounded-lg">
+              <p className="text-sm text-green-800 font-medium mb-2">Credenciales de prueba:</p>
+              <p className="text-sm text-green-700">
                 Email: candidato1@ejemplo.com<br />
                 Contraseña: 123456
               </p>

@@ -130,7 +130,7 @@ const OrdenesList = ({ ordenes, onEdit, onDelete, onView, onApprove }: OrdenesLi
                       size="sm"
                       onClick={() => onView(orden)}
                       title="Ver PDF"
-                      className="h-8 w-8 p-0 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 transition-colors"
+                      className="h-8 w-8 p-0 rounded-full bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 transition-colors"
                     >
                       <FileText className="h-4 w-4" />
                     </Button>
