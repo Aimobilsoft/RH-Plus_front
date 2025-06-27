@@ -2,13 +2,25 @@ import {
   users, 
   candidatos,
   perfiles,
+  tiposCandidatos,
+  documentosTipo,
+  tiposCandidatosDocumentos,
+  candidatosDocumentos,
   type User, 
   type InsertUser,
   type Candidato,
   type InsertCandidato,
   type Perfil,
   type InsertPerfil,
-  type CreateCandidatoFromPerfil 
+  type CreateCandidatoFromPerfil,
+  type TipoCandidato,
+  type InsertTipoCandidato,
+  type DocumentoTipo,
+  type InsertDocumentoTipo,
+  type TipoCandidatoDocumento,
+  type InsertTipoCandidatoDocumento,
+  type CandidatoDocumento,
+  type InsertCandidatoDocumento
 } from "@shared/schema";
 
 export interface IStorage {
@@ -34,23 +46,63 @@ export interface IStorage {
   
   // Operaciones especiales para crear candidatos desde perfiles
   createCandidatoFromPerfil(data: CreateCandidatoFromPerfil): Promise<Candidato>;
+  
+  // Maestro operations - Tipos de Candidatos
+  getAllTiposCandidatos(): Promise<TipoCandidato[]>;
+  getTipoCandidatoById(id: number): Promise<TipoCandidato | undefined>;
+  createTipoCandidato(tipoCandidato: InsertTipoCandidato): Promise<TipoCandidato>;
+  updateTipoCandidato(id: number, tipoCandidato: Partial<InsertTipoCandidato>): Promise<TipoCandidato>;
+  deleteTipoCandidato(id: number): Promise<void>;
+  
+  // Maestro operations - Documentos Tipo
+  getAllDocumentosTipo(): Promise<DocumentoTipo[]>;
+  getDocumentoTipoById(id: number): Promise<DocumentoTipo | undefined>;
+  createDocumentoTipo(documentoTipo: InsertDocumentoTipo): Promise<DocumentoTipo>;
+  updateDocumentoTipo(id: number, documentoTipo: Partial<InsertDocumentoTipo>): Promise<DocumentoTipo>;
+  deleteDocumentoTipo(id: number): Promise<void>;
+  
+  // Maestro operations - Relación Tipos-Documentos
+  getDocumentosByTipoCandidato(tipoCandidatoId: number): Promise<TipoCandidatoDocumento[]>;
+  updateDocumentosByTipoCandidato(tipoCandidatoId: number, documentos: InsertTipoCandidatoDocumento[]): Promise<void>;
+  
+  // Candidatos Documentos
+  getDocumentosByCandidato(candidatoId: number): Promise<CandidatoDocumento[]>;
+  createCandidatoDocumento(candidatoDocumento: InsertCandidatoDocumento): Promise<CandidatoDocumento>;
+  updateCandidatoDocumento(id: number, candidatoDocumento: Partial<InsertCandidatoDocumento>): Promise<CandidatoDocumento>;
+  deleteCandidatoDocumento(id: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private candidatos: Map<number, Candidato>;
   private perfiles: Map<number, Perfil>;
+  private tiposCandidatos: Map<number, TipoCandidato>;
+  private documentosTipo: Map<number, DocumentoTipo>;
+  private tiposCandidatosDocumentos: Map<number, TipoCandidatoDocumento>;
+  private candidatosDocumentos: Map<number, CandidatoDocumento>;
   currentUserId: number;
   currentCandidatoId: number;
   currentPerfilId: number;
+  currentTipoCandidatoId: number;
+  currentDocumentoTipoId: number;
+  currentTipoCandidatoDocumentoId: number;
+  currentCandidatoDocumentoId: number;
 
   constructor() {
     this.users = new Map();
     this.candidatos = new Map();
     this.perfiles = new Map();
+    this.tiposCandidatos = new Map();
+    this.documentosTipo = new Map();
+    this.tiposCandidatosDocumentos = new Map();
+    this.candidatosDocumentos = new Map();
     this.currentUserId = 1;
     this.currentCandidatoId = 1;
     this.currentPerfilId = 1;
+    this.currentTipoCandidatoId = 1;
+    this.currentDocumentoTipoId = 1;
+    this.currentTipoCandidatoDocumentoId = 1;
+    this.currentCandidatoDocumentoId = 1;
 
     // Create default profiles
     this.perfiles.set(1, {
@@ -139,6 +191,160 @@ export class MemStorage implements IStorage {
       completado: true,
     });
     this.currentCandidatoId = 2;
+
+    // Create default tipos de candidatos
+    this.tiposCandidatos.set(1, {
+      id: 1,
+      nombre: "Ingeniero de Sistemas",
+      descripcion: "Profesional en desarrollo de software y sistemas",
+      activo: true,
+      fechaCreacion: new Date(),
+    });
+
+    this.tiposCandidatos.set(2, {
+      id: 2,
+      nombre: "Diseñador Gráfico",
+      descripcion: "Profesional en diseño visual y multimedia",
+      activo: true,
+      fechaCreacion: new Date(),
+    });
+
+    this.tiposCandidatos.set(3, {
+      id: 3,
+      nombre: "Contador",
+      descripcion: "Profesional en contabilidad y finanzas",
+      activo: true,
+      fechaCreacion: new Date(),
+    });
+
+    this.currentTipoCandidatoId = 4;
+
+    // Create default documentos tipo
+    this.documentosTipo.set(1, {
+      id: 1,
+      nombre: "Hoja de Vida",
+      descripcion: "Curriculum vitae actualizado",
+      requerido: true,
+      activo: true,
+      fechaCreacion: new Date(),
+    });
+
+    this.documentosTipo.set(2, {
+      id: 2,
+      nombre: "Diploma Universitario",
+      descripcion: "Titulo profesional universitario",
+      requerido: false,
+      activo: true,
+      fechaCreacion: new Date(),
+    });
+
+    this.documentosTipo.set(3, {
+      id: 3,
+      nombre: "Certificaciones Técnicas",
+      descripcion: "Certificados de cursos técnicos relevantes",
+      requerido: false,
+      activo: true,
+      fechaCreacion: new Date(),
+    });
+
+    this.documentosTipo.set(4, {
+      id: 4,
+      nombre: "Portafolio",
+      descripcion: "Muestra de trabajos realizados",
+      requerido: false,
+      activo: true,
+      fechaCreacion: new Date(),
+    });
+
+    this.documentosTipo.set(5, {
+      id: 5,
+      nombre: "Certificado Laboral",
+      descripcion: "Cartas de recomendación laboral",
+      requerido: false,
+      activo: true,
+      fechaCreacion: new Date(),
+    });
+
+    this.currentDocumentoTipoId = 6;
+
+    // Create default tipo-documento relationships
+    // Ingeniero de Sistemas
+    this.tiposCandidatosDocumentos.set(1, {
+      id: 1,
+      tipoCandidatoId: 1,
+      documentoTipoId: 1, // Hoja de Vida
+      obligatorio: true,
+      orden: 1,
+      fechaCreacion: new Date(),
+    });
+
+    this.tiposCandidatosDocumentos.set(2, {
+      id: 2,
+      tipoCandidatoId: 1,
+      documentoTipoId: 2, // Diploma Universitario
+      obligatorio: true,
+      orden: 2,
+      fechaCreacion: new Date(),
+    });
+
+    this.tiposCandidatosDocumentos.set(3, {
+      id: 3,
+      tipoCandidatoId: 1,
+      documentoTipoId: 3, // Certificaciones Técnicas
+      obligatorio: false,
+      orden: 3,
+      fechaCreacion: new Date(),
+    });
+
+    // Diseñador Gráfico
+    this.tiposCandidatosDocumentos.set(4, {
+      id: 4,
+      tipoCandidatoId: 2,
+      documentoTipoId: 1, // Hoja de Vida
+      obligatorio: true,
+      orden: 1,
+      fechaCreacion: new Date(),
+    });
+
+    this.tiposCandidatosDocumentos.set(5, {
+      id: 5,
+      tipoCandidatoId: 2,
+      documentoTipoId: 4, // Portafolio
+      obligatorio: true,
+      orden: 2,
+      fechaCreacion: new Date(),
+    });
+
+    // Contador
+    this.tiposCandidatosDocumentos.set(6, {
+      id: 6,
+      tipoCandidatoId: 3,
+      documentoTipoId: 1, // Hoja de Vida
+      obligatorio: true,
+      orden: 1,
+      fechaCreacion: new Date(),
+    });
+
+    this.tiposCandidatosDocumentos.set(7, {
+      id: 7,
+      tipoCandidatoId: 3,
+      documentoTipoId: 2, // Diploma Universitario
+      obligatorio: true,
+      orden: 2,
+      fechaCreacion: new Date(),
+    });
+
+    this.tiposCandidatosDocumentos.set(8, {
+      id: 8,
+      tipoCandidatoId: 3,
+      documentoTipoId: 5, // Certificado Laboral
+      obligatorio: true,
+      orden: 3,
+      fechaCreacion: new Date(),
+    });
+
+    this.currentTipoCandidatoDocumentoId = 9;
+    this.currentCandidatoDocumentoId = 1;
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -325,6 +531,158 @@ export class MemStorage implements IStorage {
     };
 
     return this.createCandidato(candidatoData);
+  }
+
+  // Maestro operations - Tipos de Candidatos
+  async getAllTiposCandidatos(): Promise<TipoCandidato[]> {
+    return Array.from(this.tiposCandidatos.values()).filter(tc => tc.activo);
+  }
+
+  async getTipoCandidatoById(id: number): Promise<TipoCandidato | undefined> {
+    return this.tiposCandidatos.get(id);
+  }
+
+  async createTipoCandidato(tipoCandidato: InsertTipoCandidato): Promise<TipoCandidato> {
+    const id = this.currentTipoCandidatoId++;
+    const nuevo: TipoCandidato = {
+      id,
+      nombre: tipoCandidato.nombre,
+      descripcion: tipoCandidato.descripcion || null,
+      activo: tipoCandidato.activo ?? true,
+      fechaCreacion: new Date(),
+    };
+    this.tiposCandidatos.set(id, nuevo);
+    return nuevo;
+  }
+
+  async updateTipoCandidato(id: number, tipoCandidato: Partial<InsertTipoCandidato>): Promise<TipoCandidato> {
+    const existing = this.tiposCandidatos.get(id);
+    if (!existing) {
+      throw new Error("Tipo de candidato no encontrado");
+    }
+    const updated = { ...existing, ...tipoCandidato };
+    this.tiposCandidatos.set(id, updated);
+    return updated;
+  }
+
+  async deleteTipoCandidato(id: number): Promise<void> {
+    const existing = this.tiposCandidatos.get(id);
+    if (!existing) {
+      throw new Error("Tipo de candidato no encontrado");
+    }
+    // Soft delete
+    existing.activo = false;
+    this.tiposCandidatos.set(id, existing);
+  }
+
+  // Maestro operations - Documentos Tipo
+  async getAllDocumentosTipo(): Promise<DocumentoTipo[]> {
+    return Array.from(this.documentosTipo.values()).filter(dt => dt.activo);
+  }
+
+  async getDocumentoTipoById(id: number): Promise<DocumentoTipo | undefined> {
+    return this.documentosTipo.get(id);
+  }
+
+  async createDocumentoTipo(documentoTipo: InsertDocumentoTipo): Promise<DocumentoTipo> {
+    const id = this.currentDocumentoTipoId++;
+    const nuevo: DocumentoTipo = {
+      id,
+      nombre: documentoTipo.nombre,
+      descripcion: documentoTipo.descripcion || null,
+      requerido: documentoTipo.requerido ?? false,
+      activo: documentoTipo.activo ?? true,
+      fechaCreacion: new Date(),
+    };
+    this.documentosTipo.set(id, nuevo);
+    return nuevo;
+  }
+
+  async updateDocumentoTipo(id: number, documentoTipo: Partial<InsertDocumentoTipo>): Promise<DocumentoTipo> {
+    const existing = this.documentosTipo.get(id);
+    if (!existing) {
+      throw new Error("Tipo de documento no encontrado");
+    }
+    const updated = { ...existing, ...documentoTipo };
+    this.documentosTipo.set(id, updated);
+    return updated;
+  }
+
+  async deleteDocumentoTipo(id: number): Promise<void> {
+    const existing = this.documentosTipo.get(id);
+    if (!existing) {
+      throw new Error("Tipo de documento no encontrado");
+    }
+    // Soft delete
+    existing.activo = false;
+    this.documentosTipo.set(id, existing);
+  }
+
+  // Maestro operations - Relación Tipos-Documentos
+  async getDocumentosByTipoCandidato(tipoCandidatoId: number): Promise<TipoCandidatoDocumento[]> {
+    return Array.from(this.tiposCandidatosDocumentos.values())
+      .filter(tcd => tcd.tipoCandidatoId === tipoCandidatoId)
+      .sort((a, b) => a.orden - b.orden);
+  }
+
+  async updateDocumentosByTipoCandidato(tipoCandidatoId: number, documentos: InsertTipoCandidatoDocumento[]): Promise<void> {
+    // Eliminar relaciones existentes para este tipo de candidato
+    const idsToDelete: number[] = [];
+    for (const [id, tcd] of this.tiposCandidatosDocumentos.entries()) {
+      if (tcd.tipoCandidatoId === tipoCandidatoId) {
+        idsToDelete.push(id);
+      }
+    }
+    idsToDelete.forEach(id => this.tiposCandidatosDocumentos.delete(id));
+
+    // Agregar las nuevas relaciones
+    documentos.forEach(doc => {
+      const id = this.currentTipoCandidatoDocumentoId++;
+      const nuevo: TipoCandidatoDocumento = {
+        id,
+        tipoCandidatoId: doc.tipoCandidatoId,
+        documentoTipoId: doc.documentoTipoId,
+        obligatorio: doc.obligatorio ?? true,
+        orden: doc.orden ?? 0,
+        fechaCreacion: new Date(),
+      };
+      this.tiposCandidatosDocumentos.set(id, nuevo);
+    });
+  }
+
+  // Candidatos Documentos
+  async getDocumentosByCandidato(candidatoId: number): Promise<CandidatoDocumento[]> {
+    return Array.from(this.candidatosDocumentos.values())
+      .filter(cd => cd.candidatoId === candidatoId);
+  }
+
+  async createCandidatoDocumento(candidatoDocumento: InsertCandidatoDocumento): Promise<CandidatoDocumento> {
+    const id = this.currentCandidatoDocumentoId++;
+    const nuevo: CandidatoDocumento = {
+      id,
+      candidatoId: candidatoDocumento.candidatoId,
+      documentoTipoId: candidatoDocumento.documentoTipoId,
+      archivo: candidatoDocumento.archivo || null,
+      nombreArchivo: candidatoDocumento.nombreArchivo || null,
+      fechaSubida: new Date(),
+      estado: candidatoDocumento.estado ?? "pendiente",
+    };
+    this.candidatosDocumentos.set(id, nuevo);
+    return nuevo;
+  }
+
+  async updateCandidatoDocumento(id: number, candidatoDocumento: Partial<InsertCandidatoDocumento>): Promise<CandidatoDocumento> {
+    const existing = this.candidatosDocumentos.get(id);
+    if (!existing) {
+      throw new Error("Documento de candidato no encontrado");
+    }
+    const updated = { ...existing, ...candidatoDocumento };
+    this.candidatosDocumentos.set(id, updated);
+    return updated;
+  }
+
+  async deleteCandidatoDocumento(id: number): Promise<void> {
+    this.candidatosDocumentos.delete(id);
   }
 }
 
