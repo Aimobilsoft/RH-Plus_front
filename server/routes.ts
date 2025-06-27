@@ -420,6 +420,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Rutas del Maestro - Tipos de Candidatos
+  app.get("/api/maestro/tipos-candidatos", async (req, res) => {
+    try {
+      const tiposCandidatos = await storage.getAllTiposCandidatos();
+      res.json(tiposCandidatos);
+    } catch (error) {
+      console.error("Error obteniendo tipos de candidatos:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  app.post("/api/maestro/tipos-candidatos", async (req, res) => {
+    try {
+      const tipoCandidato = await storage.createTipoCandidato(req.body);
+      res.status(201).json(tipoCandidato);
+    } catch (error) {
+      console.error("Error creando tipo de candidato:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Rutas del Maestro - Documentos Tipo
+  app.get("/api/maestro/documentos-tipo", async (req, res) => {
+    try {
+      const documentosTipo = await storage.getAllDocumentosTipo();
+      res.json(documentosTipo);
+    } catch (error) {
+      console.error("Error obteniendo tipos de documentos:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  app.post("/api/maestro/documentos-tipo", async (req, res) => {
+    try {
+      const documentoTipo = await storage.createDocumentoTipo(req.body);
+      res.status(201).json(documentoTipo);
+    } catch (error) {
+      console.error("Error creando tipo de documento:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Rutas del Maestro - Relación Tipos-Documentos
+  app.get("/api/maestro/tipos-candidatos-documentos/:tipoCandidatoId", async (req, res) => {
+    try {
+      const tipoCandidatoId = parseInt(req.params.tipoCandidatoId);
+      const documentos = await storage.getDocumentosByTipoCandidato(tipoCandidatoId);
+      res.json(documentos);
+    } catch (error) {
+      console.error("Error obteniendo documentos por tipo de candidato:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  app.put("/api/maestro/tipos-candidatos-documentos/:tipoCandidatoId", async (req, res) => {
+    try {
+      const tipoCandidatoId = parseInt(req.params.tipoCandidatoId);
+      const { documentos } = req.body;
+      await storage.updateDocumentosByTipoCandidato(tipoCandidatoId, documentos);
+      res.json({ message: "Configuración actualizada exitosamente" });
+    } catch (error) {
+      console.error("Error actualizando documentos por tipo de candidato:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

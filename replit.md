@@ -105,6 +105,15 @@ This is a full-stack medical practice management application built with modern w
 
 ```
 Changelog:
+- June 27, 2025. Maestro-detalle system implementation for dynamic candidate document requirements
+  * Implemented complete maestro-detalle system allowing companies to configure document requirements by candidate type
+  * Added new sidebar section "Maestro" with comprehensive management interface for candidate types and document types
+  * Restructured navigation: "Ordenes" simplified to "Expedicion de Orden" as single menu item instead of dropdown
+  * Created TiposCandidatosPage with dual-panel interface for managing candidate types (Ingeniero, Diseñador, Contador) and document types (CV, Diploma, Certificaciones, Portafolio)
+  * Implemented configuration system allowing administrators to define which documents are required for each candidate type
+  * Added complete backend support with new database schemas, storage methods, and API endpoints
+  * System now supports flexible document requirements: engineers need CV+Diploma+Certifications, designers need CV+Portfolio, accountants need CV+Diploma+Work Certificate
+  * Foundation laid for candidate portal integration where candidates will see different document upload requirements based on their selected type
 - June 27, 2025. UI modernization and minimalist design improvements  
   * Updated login page to be more minimalist: removed green logo/shield, changed "Sistema Médico" to "Recursos humanos", "Acceso Administrativo" to "control de seguridad"
   * Eliminated "Portal Candidatos" button from dashboard header for cleaner interface
