@@ -105,6 +105,14 @@ This is a full-stack medical practice management application built with modern w
 
 ```
 Changelog:
+- June 27, 2025. User interface improvements and page-based forms implementation
+  * Removed redundant buttons from profiles page header to eliminate duplication
+  * Converted modal-based forms to page-based forms following "empresa afiliadas" style
+  * Created separate pages for each user type creation: CrearCandidatoPage, CrearAdministradorPage, CrearCoordinadorPage, CrearAdminGeneralPage
+  * Implemented color-coded interface: green for candidatos, red for administradores, blue for coordinadores, purple for administradores generales
+  * Added proper navigation with "Volver" buttons and breadcrumb-style headers
+  * Fixed authentication issues that were causing slow page loads - temporarily disabled auth checks for development
+  * All form pages now use full-page layouts instead of modal dialogs for better user experience
 - June 27, 2025. Complete user profiles and security management system implemented
   * Full profiles management system with 4 user types: administrador, candidato, coordinador, administrador_general
   * Candidate creation workflow from profiles: admin creates candidate with cedula/name/email, generates account with email as username and cedula as initial password
