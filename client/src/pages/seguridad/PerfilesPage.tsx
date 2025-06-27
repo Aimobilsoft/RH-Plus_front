@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Settings, Users, Plus, Edit, Trash2, UserPlus } from "lucide-react";
 import { Button } from '@/components/ui/button';
@@ -190,130 +189,244 @@ const PerfilesPage = () => {
             <h1 className="text-2xl font-bold">Gestión de Perfiles</h1>
           </div>
           
-          <Dialog open={createCandidatoOpen} onOpenChange={setCreateCandidatoOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-green-600 hover:bg-green-700">
-                <UserPlus className="h-4 w-4 mr-2" />
-                Crear Candidato
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>Crear Nuevo Candidato</DialogTitle>
-                <p className="text-sm text-gray-600">
-                  Ingrese los datos básicos para crear una cuenta de candidato
-                </p>
-              </DialogHeader>
-              
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmitCandidato)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="tipoDocumento"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tipo de Documento</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="CC">Cédula de Ciudadanía</SelectItem>
-                            <SelectItem value="CE">Cédula de Extranjería</SelectItem>
-                            <SelectItem value="TI">Tarjeta de Identidad</SelectItem>
-                            <SelectItem value="PP">Pasaporte</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="cedula"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Número de Documento</FormLabel>
-                        <FormControl>
-                          <Input placeholder="1234567890" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="nombres"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nombres</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Juan Carlos" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="apellidos"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Apellidos</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Pérez González" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Correo Electrónico</FormLabel>
-                        <FormControl>
-                          <Input type="email" placeholder="juan@ejemplo.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="bg-green-50 p-3 rounded-lg">
-                    <p className="text-sm text-green-800 font-medium">Información importante:</p>
-                    <ul className="text-sm text-green-700 mt-1 space-y-1">
-                      <li>• Usuario: El correo electrónico será el usuario</li>
-                      <li>• Contraseña inicial: El número de documento</li>
-                      <li>• Se requerirá cambio de contraseña en el primer acceso</li>
-                    </ul>
-                  </div>
-
-                  <div className="flex justify-end space-x-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setCreateCandidatoOpen(false)}
-                    >
-                      Cancelar
-                    </Button>
-                    <Button type="submit" disabled={isLoading} className="bg-green-600 hover:bg-green-700">
-                      {isLoading ? 'Creando...' : 'Crear Candidato'}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
+          <div className="flex gap-2">
+            <Dialog open={createCandidatoOpen} onOpenChange={setCreateCandidatoOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-green-600 hover:bg-green-700">
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Crear Candidato
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+            
+            <Dialog open={createAdminOpen} onOpenChange={setCreateAdminOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Crear Usuario Admin
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+          </div>
         </div>
       </div>
+
+      {/* Dialog para crear candidato */}
+      <Dialog open={createCandidatoOpen} onOpenChange={setCreateCandidatoOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Crear Nuevo Candidato</DialogTitle>
+            <p className="text-sm text-gray-600">
+              Ingrese los datos básicos para crear una cuenta de candidato
+            </p>
+          </DialogHeader>
+          
+          <Form {...candidatoForm}>
+            <form onSubmit={candidatoForm.handleSubmit(onSubmitCandidato)} className="space-y-4">
+              <FormField
+                control={candidatoForm.control}
+                name="tipoDocumento"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo de Documento</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="CC">Cédula de Ciudadanía</SelectItem>
+                        <SelectItem value="CE">Cédula de Extranjería</SelectItem>
+                        <SelectItem value="TI">Tarjeta de Identidad</SelectItem>
+                        <SelectItem value="PP">Pasaporte</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={candidatoForm.control}
+                name="cedula"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Número de Documento</FormLabel>
+                    <FormControl>
+                      <Input placeholder="1234567890" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={candidatoForm.control}
+                name="nombres"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombres</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Juan Carlos" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={candidatoForm.control}
+                name="apellidos"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Apellidos</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Pérez González" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={candidatoForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Correo Electrónico</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="usuario@ejemplo.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="bg-green-50 p-3 rounded-lg">
+                <p className="text-sm text-green-800 font-medium mb-1">Información importante:</p>
+                <p className="text-sm text-green-700">
+                  El candidato recibirá credenciales de acceso con:
+                  <br />• Usuario: El correo electrónico ingresado
+                  <br />• Contraseña inicial: El número de documento
+                </p>
+              </div>
+
+              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isLoading}>
+                {isLoading ? 'Creando candidato...' : 'Crear Candidato'}
+              </Button>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog para crear usuario administrativo */}
+      <Dialog open={createAdminOpen} onOpenChange={setCreateAdminOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Crear Usuario Administrativo</DialogTitle>
+            <p className="text-sm text-gray-600">
+              Ingrese los datos para crear un usuario administrativo
+            </p>
+          </DialogHeader>
+          
+          <Form {...adminForm}>
+            <form onSubmit={adminForm.handleSubmit(onSubmitAdmin)} className="space-y-4">
+              <FormField
+                control={adminForm.control}
+                name="tipoUsuario"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo de Usuario</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="administrador">👑 Administrador</SelectItem>
+                        <SelectItem value="coordinador">📋 Coordinador</SelectItem>
+                        <SelectItem value="administrador_general">🔧 Administrador General</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={adminForm.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre de Usuario</FormLabel>
+                    <FormControl>
+                      <Input placeholder="nombreusuario" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={adminForm.control}
+                name="nombres"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombres</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ana María" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={adminForm.control}
+                name="apellidos"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Apellidos</FormLabel>
+                    <FormControl>
+                      <Input placeholder="García López" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={adminForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Correo Electrónico</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="admin@empresa.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="bg-blue-50 p-3 rounded-lg">
+                <p className="text-sm text-blue-800 font-medium mb-1">Información importante:</p>
+                <p className="text-sm text-blue-700">
+                  El usuario recibirá credenciales de acceso con:
+                  <br />• Usuario: El nombre de usuario ingresado
+                  <br />• Contraseña inicial: 12345678
+                </p>
+              </div>
+
+              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+                {isLoading ? 'Creando usuario...' : 'Crear Usuario'}
+              </Button>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Lista de Perfiles Disponibles */}
@@ -321,10 +434,10 @@ const PerfilesPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Users className="h-5 w-5" />
-              <span>Tipos de Perfiles</span>
+              <span>Perfiles del Sistema</span>
             </CardTitle>
             <CardDescription>
-              Perfiles disponibles en el sistema
+              Tipos de usuario disponibles en el sistema
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -335,9 +448,7 @@ const PerfilesPage = () => {
                     <span className="text-2xl">{getPerfilIcon(perfil.nombre)}</span>
                     <div>
                       <div className="flex items-center space-x-2">
-                        <h4 className="font-medium capitalize">
-                          {perfil.nombre.replace('_', ' ')}
-                        </h4>
+                        <h3 className="font-medium">{perfil.nombre.replace('_', ' ')}</h3>
                         <Badge variant={getPerfilBadgeVariant(perfil.nombre)}>
                           {perfil.activo ? 'Activo' : 'Inactivo'}
                         </Badge>
@@ -349,6 +460,9 @@ const PerfilesPage = () => {
                     <Button variant="ghost" size="sm">
                       <Edit className="h-4 w-4" />
                     </Button>
+                    <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-800">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -356,54 +470,44 @@ const PerfilesPage = () => {
           </CardContent>
         </Card>
 
-        {/* Información del Flujo */}
+        {/* Resumen de Acciones Disponibles */}
         <Card>
           <CardHeader>
-            <CardTitle>Flujo de Creación de Candidatos</CardTitle>
+            <CardTitle>Acciones Disponibles</CardTitle>
             <CardDescription>
-              Proceso para generar cuentas de candidatos
+              Operaciones que puedes realizar con los perfiles
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-medium">
-                  1
-                </div>
-                <div>
-                  <h4 className="font-medium">Recopilación de Datos</h4>
-                  <p className="text-sm text-gray-600">Se solicita cédula, nombres, apellidos y correo electrónico</p>
-                </div>
+              <div className="p-4 border rounded-lg">
+                <h3 className="font-medium text-green-800 mb-2">👤 Crear Candidato</h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  Crea una cuenta de candidato con acceso al portal de autogestión.
+                  El usuario será el correo electrónico y la contraseña inicial será el número de documento.
+                </p>
+                <Button
+                  className="bg-green-600 hover:bg-green-700"
+                  onClick={() => setCreateCandidatoOpen(true)}
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Crear Candidato
+                </Button>
               </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-medium">
-                  2
-                </div>
-                <div>
-                  <h4 className="font-medium">Generación de Credenciales</h4>
-                  <p className="text-sm text-gray-600">Usuario: correo electrónico, Contraseña: número de documento</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-medium">
-                  3
-                </div>
-                <div>
-                  <h4 className="font-medium">Primer Acceso</h4>
-                  <p className="text-sm text-gray-600">El candidato debe cambiar la contraseña en su primer inicio de sesión</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-sm font-medium">
-                  4
-                </div>
-                <div>
-                  <h4 className="font-medium">Acceso al Portal</h4>
-                  <p className="text-sm text-gray-600">Una vez actualizada la contraseña, tiene acceso completo al portal</p>
-                </div>
+
+              <div className="p-4 border rounded-lg">
+                <h3 className="font-medium text-blue-800 mb-2">⚙️ Crear Usuario Administrativo</h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  Crea cuentas para administradores, coordinadores o administradores generales.
+                  Se asignará username personalizado y contraseña temporal.
+                </p>
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700"
+                  onClick={() => setCreateAdminOpen(true)}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Crear Usuario Admin
+                </Button>
               </div>
             </div>
           </CardContent>
