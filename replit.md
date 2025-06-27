@@ -108,7 +108,7 @@ Changelog:
 - June 27, 2025. Maestro-detalle system implementation for dynamic candidate document requirements
   * Implemented complete maestro-detalle system allowing companies to configure document requirements by candidate type
   * Added new sidebar section "Maestro" with comprehensive management interface for candidate types and document types
-  * Restructured navigation: "Ordenes" simplified to "Expedicion de Orden" as single menu item instead of dropdown
+  * Restructured navigation: "Ordenes" simplified to "Expedicion de Orden" and "Certificados" to "Expedicion de Certificados" as single menu items instead of dropdowns
   * Created TiposCandidatosPage with dual-panel interface for managing candidate types (Ingeniero, Diseñador, Contador) and document types (CV, Diploma, Certificaciones, Portafolio)
   * Implemented configuration system allowing administrators to define which documents are required for each candidate type
   * Added complete backend support with new database schemas, storage methods, and API endpoints

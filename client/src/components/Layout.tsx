@@ -52,11 +52,10 @@ const menuItems = [
   },
 
   {
-    title: "Certificados",
+    title: "Expedicion de Certificados",
     icon: <FileText className="h-5 w-5" />,
-    subItems: [
-      { title: "Expedicion de Certificados", path: "/certificados/expedicion", icon: <FileText className="h-4 w-4" /> },
-    ],
+    path: "/certificados/expedicion",
+    subItems: [],
   },
   {
     title: "Maestro",
