@@ -25,6 +25,8 @@ const PerfilesPage = () => {
   const [perfiles, setPerfiles] = useState<Perfil[]>([]);
   const [createCandidatoOpen, setCreateCandidatoOpen] = useState(false);
   const [createAdminOpen, setCreateAdminOpen] = useState(false);
+  const [createCoordinadorOpen, setCreateCoordinadorOpen] = useState(false);
+  const [createAdminGeneralOpen, setCreateAdminGeneralOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const candidatoForm = useForm<CreateCandidatoFromPerfil>({
@@ -46,6 +48,28 @@ const PerfilesPage = () => {
       email: '',
       username: '',
       tipoUsuario: 'administrador',
+    },
+  });
+
+  const coordinadorForm = useForm<CreateAdminUser>({
+    resolver: zodResolver(createAdminUserSchema),
+    defaultValues: {
+      nombres: '',
+      apellidos: '',
+      email: '',
+      username: '',
+      tipoUsuario: 'coordinador',
+    },
+  });
+
+  const adminGeneralForm = useForm<CreateAdminUser>({
+    resolver: zodResolver(createAdminUserSchema),
+    defaultValues: {
+      nombres: '',
+      apellidos: '',
+      email: '',
+      username: '',
+      tipoUsuario: 'administrador_general',
     },
   });
 
@@ -129,8 +153,8 @@ const PerfilesPage = () => {
 
       if (response.ok) {
         toast({
-          title: "Usuario administrativo creado exitosamente",
-          description: `Se ha creado el usuario ${data.tipoUsuario} con username: ${data.username} y contraseña temporal: 12345678`,
+          title: "Administrador creado exitosamente",
+          description: `Se ha creado el administrador con username: ${data.username} y contraseña temporal: 12345678`,
         });
         setCreateAdminOpen(false);
         adminForm.reset();
@@ -138,7 +162,81 @@ const PerfilesPage = () => {
         const errorData = await response.json();
         toast({
           title: "Error",
-          description: errorData.message || "No se pudo crear el usuario",
+          description: errorData.message || "No se pudo crear el administrador",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error de conexión",
+        description: "No se pudo conectar con el servidor",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onSubmitCoordinador = async (data: CreateAdminUser) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/perfiles/create-admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Coordinador creado exitosamente",
+          description: `Se ha creado el coordinador con username: ${data.username} y contraseña temporal: 12345678`,
+        });
+        setCreateCoordinadorOpen(false);
+        coordinadorForm.reset();
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: "Error",
+          description: errorData.message || "No se pudo crear el coordinador",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error de conexión",
+        description: "No se pudo conectar con el servidor",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onSubmitAdminGeneral = async (data: CreateAdminUser) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/perfiles/create-admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Administrador General creado exitosamente",
+          description: `Se ha creado el administrador general con username: ${data.username} y contraseña temporal: 12345678`,
+        });
+        setCreateAdminGeneralOpen(false);
+        adminGeneralForm.reset();
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: "Error",
+          description: errorData.message || "No se pudo crear el administrador general",
           variant: "destructive",
         });
       }
@@ -423,6 +521,176 @@ const PerfilesPage = () => {
         </div>
       </div>
 
+      {/* Dialog para crear coordinador */}
+      <Dialog open={createCoordinadorOpen} onOpenChange={setCreateCoordinadorOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Crear Coordinador</DialogTitle>
+            <p className="text-sm text-gray-600">
+              Ingrese los datos para crear un coordinador
+            </p>
+          </DialogHeader>
+          
+          <Form {...coordinadorForm}>
+            <form onSubmit={coordinadorForm.handleSubmit(onSubmitCoordinador)} className="space-y-4">
+              <FormField
+                control={coordinadorForm.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre de Usuario</FormLabel>
+                    <FormControl>
+                      <Input placeholder="nombreusuario" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={coordinadorForm.control}
+                name="nombres"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombres</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ana María" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={coordinadorForm.control}
+                name="apellidos"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Apellidos</FormLabel>
+                    <FormControl>
+                      <Input placeholder="García López" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={coordinadorForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Correo Electrónico</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="coordinador@empresa.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="bg-blue-50 p-3 rounded-lg">
+                <p className="text-sm text-blue-800 font-medium mb-1">Información importante:</p>
+                <p className="text-sm text-blue-700">
+                  El coordinador recibirá credenciales de acceso con:
+                  <br />• Usuario: El nombre de usuario ingresado
+                  <br />• Contraseña inicial: 12345678
+                </p>
+              </div>
+
+              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+                {isLoading ? 'Creando coordinador...' : 'Crear Coordinador'}
+              </Button>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog para crear administrador general */}
+      <Dialog open={createAdminGeneralOpen} onOpenChange={setCreateAdminGeneralOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Crear Administrador General</DialogTitle>
+            <p className="text-sm text-gray-600">
+              Ingrese los datos para crear un administrador general
+            </p>
+          </DialogHeader>
+          
+          <Form {...adminGeneralForm}>
+            <form onSubmit={adminGeneralForm.handleSubmit(onSubmitAdminGeneral)} className="space-y-4">
+              <FormField
+                control={adminGeneralForm.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre de Usuario</FormLabel>
+                    <FormControl>
+                      <Input placeholder="nombreusuario" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={adminGeneralForm.control}
+                name="nombres"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombres</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Carlos Eduardo" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={adminGeneralForm.control}
+                name="apellidos"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Apellidos</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Rodríguez Martínez" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={adminGeneralForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Correo Electrónico</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="admin.general@empresa.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="bg-purple-50 p-3 rounded-lg">
+                <p className="text-sm text-purple-800 font-medium mb-1">Información importante:</p>
+                <p className="text-sm text-purple-700">
+                  El administrador general recibirá credenciales con:
+                  <br />• Usuario: El nombre de usuario ingresado
+                  <br />• Contraseña inicial: 12345678
+                </p>
+              </div>
+
+              <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700" disabled={isLoading}>
+                {isLoading ? 'Creando admin general...' : 'Crear Administrador General'}
+              </Button>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -489,17 +757,47 @@ const PerfilesPage = () => {
               </div>
 
               <div className="p-4 border rounded-lg">
-                <h3 className="font-medium text-blue-800 mb-2">⚙️ Crear Usuario Administrativo</h3>
+                <h3 className="font-medium text-red-800 mb-2">👑 Crear Administrador</h3>
                 <p className="text-sm text-gray-600 mb-3">
-                  Crea cuentas para administradores, coordinadores o administradores generales.
+                  Crea una cuenta de administrador con permisos completos del sistema.
+                  Se asignará username personalizado y contraseña temporal.
+                </p>
+                <Button
+                  className="bg-red-600 hover:bg-red-700"
+                  onClick={() => setCreateAdminOpen(true)}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Crear Administrador
+                </Button>
+              </div>
+
+              <div className="p-4 border rounded-lg">
+                <h3 className="font-medium text-blue-800 mb-2">📋 Crear Coordinador</h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  Crea una cuenta de coordinador con permisos de gestión intermedia.
                   Se asignará username personalizado y contraseña temporal.
                 </p>
                 <Button
                   className="bg-blue-600 hover:bg-blue-700"
-                  onClick={() => setCreateAdminOpen(true)}
+                  onClick={() => setCreateCoordinadorOpen(true)}
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  Crear Usuario Admin
+                  Crear Coordinador
+                </Button>
+              </div>
+
+              <div className="p-4 border rounded-lg">
+                <h3 className="font-medium text-purple-800 mb-2">🔧 Crear Administrador General</h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  Crea una cuenta de administrador general con permisos completos.
+                  Se asignará username personalizado y contraseña temporal.
+                </p>
+                <Button
+                  className="bg-purple-600 hover:bg-purple-700"
+                  onClick={() => setCreateAdminGeneralOpen(true)}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Crear Admin General
                 </Button>
               </div>
             </div>
