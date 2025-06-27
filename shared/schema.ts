@@ -94,6 +94,14 @@ export const createCandidatoFromPerfilSchema = z.object({
   tipoDocumento: z.string().default("CC"),
 });
 
+export const createAdminUserSchema = z.object({
+  nombres: z.string().min(2, "Nombres requeridos"),
+  apellidos: z.string().min(2, "Apellidos requeridos"),
+  email: z.string().email("Email inválido"),
+  username: z.string().min(3, "Username debe tener al menos 3 caracteres"),
+  tipoUsuario: z.enum(["administrador", "coordinador", "administrador_general"]),
+});
+
 // Tipos TypeScript
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -102,3 +110,4 @@ export type Perfil = typeof perfiles.$inferSelect;
 export type InsertCandidato = z.infer<typeof insertCandidatoSchema>;
 export type Candidato = typeof candidatos.$inferSelect;
 export type CreateCandidatoFromPerfil = z.infer<typeof createCandidatoFromPerfilSchema>;
+export type CreateAdminUser = z.infer<typeof createAdminUserSchema>;

@@ -12,7 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { createCandidatoFromPerfilSchema, type CreateCandidatoFromPerfil } from '@shared/schema';
+import { createCandidatoFromPerfilSchema, createAdminUserSchema, type CreateCandidatoFromPerfil, type CreateAdminUser } from '@shared/schema';
 
 interface Perfil {
   id: number;
@@ -26,9 +26,10 @@ const PerfilesPage = () => {
   const { toast } = useToast();
   const [perfiles, setPerfiles] = useState<Perfil[]>([]);
   const [createCandidatoOpen, setCreateCandidatoOpen] = useState(false);
+  const [createAdminOpen, setCreateAdminOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<CreateCandidatoFromPerfil>({
+  const candidatoForm = useForm<CreateCandidatoFromPerfil>({
     resolver: zodResolver(createCandidatoFromPerfilSchema),
     defaultValues: {
       cedula: '',
@@ -36,6 +37,17 @@ const PerfilesPage = () => {
       apellidos: '',
       email: '',
       tipoDocumento: 'CC',
+    },
+  });
+
+  const adminForm = useForm<CreateAdminUser>({
+    resolver: zodResolver(createAdminUserSchema),
+    defaultValues: {
+      nombres: '',
+      apellidos: '',
+      email: '',
+      username: '',
+      tipoUsuario: 'administrador',
     },
   });
 
@@ -81,12 +93,50 @@ const PerfilesPage = () => {
           description: `Se ha creado la cuenta para ${data.nombres} ${data.apellidos}. Usuario: ${data.email}, Contraseña inicial: ${data.cedula}`,
         });
         setCreateCandidatoOpen(false);
-        form.reset();
+        candidatoForm.reset();
       } else {
         const errorData = await response.json();
         toast({
           title: "Error",
           description: errorData.message || "No se pudo crear el candidato",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error de conexión",
+        description: "No se pudo conectar con el servidor",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onSubmitAdmin = async (data: CreateAdminUser) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/perfiles/create-admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        toast({
+          title: "Usuario administrativo creado exitosamente",
+          description: `Se ha creado el usuario ${data.tipoUsuario} con username: ${data.username} y contraseña temporal: 12345678`,
+        });
+        setCreateAdminOpen(false);
+        adminForm.reset();
+      } else {
+        const errorData = await response.json();
+        toast({
+          title: "Error",
+          description: errorData.message || "No se pudo crear el usuario",
           variant: "destructive",
         });
       }
