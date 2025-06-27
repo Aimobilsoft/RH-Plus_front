@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, User, Lock, Shield, Building2 } from 'lucide-react';
+import { Eye, EyeOff, User, Lock } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -77,11 +77,8 @@ export default function LoginAdmin() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="mx-auto w-20 h-20 bg-green-600 rounded-full flex items-center justify-center mb-6">
-            <Shield className="w-10 h-10 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900">Sistema Médico</h1>
-          <p className="text-gray-600 mt-2">Acceso Administrativo</p>
+          <h1 className="text-3xl font-bold text-gray-900">Recursos humanos</h1>
+          <p className="text-gray-600 mt-2">control de seguridad</p>
         </div>
 
         <Card className="shadow-xl">

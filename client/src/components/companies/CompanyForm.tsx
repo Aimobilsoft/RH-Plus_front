@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CompanyBasicInfo } from "./form/CompanyBasicInfo";
 import { CompanyContactInfo } from "./form/CompanyContactInfo";
 import { CompanyBusinessInfo } from "./form/CompanyBusinessInfo";
+import { CompanyVisibleFields } from "./form/CompanyVisibleFields";
 import { Company } from "@/types/company";
 import { CreateEmpresaDTO, createEmpresaSchema } from "@/types/empresa";
 import { useEffect, useState } from "react";
@@ -39,6 +40,15 @@ export function CompanyForm({ initialData, onSaved, entityType = 'afiliada' }: C
       numero_empleados: 1,
       activo: true,
       tipo_empresa: entityType,
+      campos_visibles: {
+        cargo: true,
+        salario: true,
+        celular: true,
+        correo: true,
+        fecha_ingreso: true,
+        direccion: true,
+        jornada_laboral: true
+      },
       documentos: []
     },
   });
@@ -85,6 +95,15 @@ export function CompanyForm({ initialData, onSaved, entityType = 'afiliada' }: C
         actividad_economica: initialData.sector,
         numero_empleados: initialData.employeeCount,
         activo: initialData.active,
+        campos_visibles: {
+          cargo: true,
+          salario: true,
+          celular: true,
+          correo: true,
+          fecha_ingreso: true,
+          direccion: true,
+          jornada_laboral: true
+        }
       });
     }
   }, [initialData, form]);
@@ -108,7 +127,8 @@ export function CompanyForm({ initialData, onSaved, entityType = 'afiliada' }: C
         actividad_economica: data.actividad_economica,
         numero_empleados: data.numero_empleados,
         activo: data.activo,
-        tipo_empresa: entityType
+        tipo_empresa: entityType,
+        campos_visibles: data.campos_visibles
       };
       
       if (initialData?.id) {
@@ -217,6 +237,7 @@ export function CompanyForm({ initialData, onSaved, entityType = 'afiliada' }: C
               <CompanyBasicInfo form={form} />
               <CompanyContactInfo form={form} />
               <CompanyBusinessInfo form={form} existingDocuments={existingDocuments} />
+              {entityType === 'afiliada' && <CompanyVisibleFields form={form} />}
               <div className="flex justify-end">
                 <Button type="submit">
                   {initialData ? "Actualizar Empresa" : "Registrar Empresa"}

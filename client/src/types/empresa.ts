@@ -19,6 +19,15 @@ export const createEmpresaSchema = z.object({
   numero_empleados: z.number().min(1, "Debe tener al menos 1 empleado"),
   activo: z.boolean().default(true),
   tipo_empresa: z.string().default("prestador"),
+  campos_visibles: z.object({
+    cargo: z.boolean().default(true),
+    salario: z.boolean().default(true),
+    celular: z.boolean().default(true),
+    correo: z.boolean().default(true),
+    fecha_ingreso: z.boolean().default(true),
+    direccion: z.boolean().default(true),
+    jornada_laboral: z.boolean().default(true)
+  }).optional(),
   documentos: z.array(z.object({
     tipo: z.string(),
     archivo: z.any(),
