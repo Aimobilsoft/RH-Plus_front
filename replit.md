@@ -105,6 +105,14 @@ This is a full-stack medical practice management application built with modern w
 
 ```
 Changelog:
+- June 27, 2025. Complete user profiles and security management system implemented
+  * Full profiles management system with 4 user types: administrador, candidato, coordinador, administrador_general
+  * Candidate creation workflow from profiles: admin creates candidate with cedula/name/email, generates account with email as username and cedula as initial password
+  * Administrative user creation system for coordinador and administrador_general types with custom username and temporary password (12345678)
+  * Forced password change system for first-time candidate login with security validations and requirements
+  * Comprehensive password change page with validation (min 8 chars, uppercase, lowercase, number)
+  * Backend routes for creating both candidate and administrative users with proper validation
+  * Updated database schema with extended user fields for administrative roles
 - June 26, 2025. UI improvements and bug fixes
   * Fixed critical blank screen issue by diagnosing React/Vite configuration problems
   * Successfully changed all blue UI elements to green color scheme
