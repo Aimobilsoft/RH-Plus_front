@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertCandidatoSchema, createCandidatoFromPerfilSchema } from "@shared/schema";
+import { insertCandidatoSchema, createCandidatoFromPerfilSchema, createAdminUserSchema } from "@shared/schema";
 import { z } from "zod";
 
 // Session middleware for simple login
@@ -335,6 +335,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Datos inválidos", errors: error.errors });
       }
       console.error("Error creando candidato desde perfil:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  app.post("/api/perfiles/create-admin", async (req, res) => {
+    try {
+      if (!req.session.userId || req.session.userType !== 'admin') {
+        return res.status(401).json({ message: "No autorizado" });
+      }
+      
+      const validatedData = createAdminUserSchema.parse(req.body);
+      
+      // Check if username already exists
+      const existingUser = await storage.getUserByUsername(validatedData.username);
+      if (existingUser) {
+        return res.status(400).json({ message: "El nombre de usuario ya está registrado" });
+      }
+      
+      // Create user with default password
+      const userData = {
+        username: validatedData.username,
+        password: "12345678", // Default password
+        nombres: validatedData.nombres,
+        apellidos: validatedData.apellidos,
+        email: validatedData.email,
+        tipoUsuario: validatedData.tipoUsuario,
+      };
+      
+      const user = await storage.createUser(userData);
+      
+      res.status(201).json({ 
+        message: "Usuario administrativo creado exitosamente",
+        user: {
+          id: user.id,
+          username: user.username,
+          nombres: user.nombres,
+          apellidos: user.apellidos,
+          email: user.email,
+          tipoUsuario: user.tipoUsuario
+        }
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Datos inválidos", errors: error.errors });
+      }
+      console.error("Error creando usuario administrativo:", error);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   });

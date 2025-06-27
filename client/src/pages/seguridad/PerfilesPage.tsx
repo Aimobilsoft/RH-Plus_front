@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -50,7 +49,6 @@ const PerfilesPage = () => {
     },
   });
 
-  // Cargar perfiles al montar el componente
   useEffect(() => {
     loadPerfiles();
   }, []);
@@ -64,7 +62,6 @@ const PerfilesPage = () => {
       }
     } catch (error) {
       console.error('Error loading perfiles:', error);
-      // Datos de prueba para desarrollo
       setPerfiles([
         { id: 1, nombre: 'administrador', descripcion: 'Administrador del sistema con todos los permisos', activo: true, fechaCreacion: '2025-06-27' },
         { id: 2, nombre: 'candidato', descripcion: 'Candidato con acceso al portal de autogestión', activo: true, fechaCreacion: '2025-06-27' },
@@ -86,7 +83,6 @@ const PerfilesPage = () => {
       });
 
       if (response.ok) {
-        const result = await response.json();
         toast({
           title: "Candidato creado exitosamente",
           description: `Se ha creado la cuenta para ${data.nombres} ${data.apellidos}. Usuario: ${data.email}, Contraseña inicial: ${data.cedula}`,
@@ -124,7 +120,6 @@ const PerfilesPage = () => {
       });
 
       if (response.ok) {
-        const result = await response.json();
         toast({
           title: "Usuario administrativo creado exitosamente",
           description: `Se ha creado el usuario ${data.tipoUsuario} con username: ${data.username} y contraseña temporal: 12345678`,
@@ -197,6 +192,111 @@ const PerfilesPage = () => {
                   Crear Candidato
                 </Button>
               </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Crear Nuevo Candidato</DialogTitle>
+                  <p className="text-sm text-gray-600">
+                    Ingrese los datos básicos para crear una cuenta de candidato
+                  </p>
+                </DialogHeader>
+                
+                <Form {...candidatoForm}>
+                  <form onSubmit={candidatoForm.handleSubmit(onSubmitCandidato)} className="space-y-4">
+                    <FormField
+                      control={candidatoForm.control}
+                      name="tipoDocumento"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tipo de Documento</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="CC">Cédula de Ciudadanía</SelectItem>
+                              <SelectItem value="CE">Cédula de Extranjería</SelectItem>
+                              <SelectItem value="TI">Tarjeta de Identidad</SelectItem>
+                              <SelectItem value="PP">Pasaporte</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={candidatoForm.control}
+                      name="cedula"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Número de Documento</FormLabel>
+                          <FormControl>
+                            <Input placeholder="1234567890" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={candidatoForm.control}
+                      name="nombres"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nombres</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Juan Carlos" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={candidatoForm.control}
+                      name="apellidos"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Apellidos</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Pérez González" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={candidatoForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Correo Electrónico</FormLabel>
+                          <FormControl>
+                            <Input type="email" placeholder="usuario@ejemplo.com" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="bg-green-50 p-3 rounded-lg">
+                      <p className="text-sm text-green-800 font-medium mb-1">Información importante:</p>
+                      <p className="text-sm text-green-700">
+                        El candidato recibirá credenciales de acceso con:
+                        <br />• Usuario: El correo electrónico ingresado
+                        <br />• Contraseña inicial: El número de documento
+                      </p>
+                    </div>
+
+                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isLoading}>
+                      {isLoading ? 'Creando candidato...' : 'Crear Candidato'}
+                    </Button>
+                  </form>
+                </Form>
+              </DialogContent>
             </Dialog>
             
             <Dialog open={createAdminOpen} onOpenChange={setCreateAdminOpen}>
@@ -206,230 +306,116 @@ const PerfilesPage = () => {
                   Crear Usuario Admin
                 </Button>
               </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Crear Usuario Administrativo</DialogTitle>
+                  <p className="text-sm text-gray-600">
+                    Ingrese los datos para crear un usuario administrativo
+                  </p>
+                </DialogHeader>
+                
+                <Form {...adminForm}>
+                  <form onSubmit={adminForm.handleSubmit(onSubmitAdmin)} className="space-y-4">
+                    <FormField
+                      control={adminForm.control}
+                      name="tipoUsuario"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tipo de Usuario</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="administrador">👑 Administrador</SelectItem>
+                              <SelectItem value="coordinador">📋 Coordinador</SelectItem>
+                              <SelectItem value="administrador_general">🔧 Administrador General</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={adminForm.control}
+                      name="username"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nombre de Usuario</FormLabel>
+                          <FormControl>
+                            <Input placeholder="nombreusuario" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={adminForm.control}
+                      name="nombres"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nombres</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Ana María" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={adminForm.control}
+                      name="apellidos"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Apellidos</FormLabel>
+                          <FormControl>
+                            <Input placeholder="García López" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={adminForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Correo Electrónico</FormLabel>
+                          <FormControl>
+                            <Input type="email" placeholder="admin@empresa.com" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="bg-blue-50 p-3 rounded-lg">
+                      <p className="text-sm text-blue-800 font-medium mb-1">Información importante:</p>
+                      <p className="text-sm text-blue-700">
+                        El usuario recibirá credenciales de acceso con:
+                        <br />• Usuario: El nombre de usuario ingresado
+                        <br />• Contraseña inicial: 12345678
+                      </p>
+                    </div>
+
+                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+                      {isLoading ? 'Creando usuario...' : 'Crear Usuario'}
+                    </Button>
+                  </form>
+                </Form>
+              </DialogContent>
             </Dialog>
           </div>
         </div>
       </div>
 
-      {/* Dialog para crear candidato */}
-      <Dialog open={createCandidatoOpen} onOpenChange={setCreateCandidatoOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Crear Nuevo Candidato</DialogTitle>
-            <p className="text-sm text-gray-600">
-              Ingrese los datos básicos para crear una cuenta de candidato
-            </p>
-          </DialogHeader>
-          
-          <Form {...candidatoForm}>
-            <form onSubmit={candidatoForm.handleSubmit(onSubmitCandidato)} className="space-y-4">
-              <FormField
-                control={candidatoForm.control}
-                name="tipoDocumento"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tipo de Documento</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="CC">Cédula de Ciudadanía</SelectItem>
-                        <SelectItem value="CE">Cédula de Extranjería</SelectItem>
-                        <SelectItem value="TI">Tarjeta de Identidad</SelectItem>
-                        <SelectItem value="PP">Pasaporte</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={candidatoForm.control}
-                name="cedula"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Número de Documento</FormLabel>
-                    <FormControl>
-                      <Input placeholder="1234567890" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={candidatoForm.control}
-                name="nombres"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nombres</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Juan Carlos" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={candidatoForm.control}
-                name="apellidos"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Apellidos</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Pérez González" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={candidatoForm.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Correo Electrónico</FormLabel>
-                    <FormControl>
-                      <Input type="email" placeholder="usuario@ejemplo.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="bg-green-50 p-3 rounded-lg">
-                <p className="text-sm text-green-800 font-medium mb-1">Información importante:</p>
-                <p className="text-sm text-green-700">
-                  El candidato recibirá credenciales de acceso con:
-                  <br />• Usuario: El correo electrónico ingresado
-                  <br />• Contraseña inicial: El número de documento
-                </p>
-              </div>
-
-              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={isLoading}>
-                {isLoading ? 'Creando candidato...' : 'Crear Candidato'}
-              </Button>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Dialog para crear usuario administrativo */}
-      <Dialog open={createAdminOpen} onOpenChange={setCreateAdminOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Crear Usuario Administrativo</DialogTitle>
-            <p className="text-sm text-gray-600">
-              Ingrese los datos para crear un usuario administrativo
-            </p>
-          </DialogHeader>
-          
-          <Form {...adminForm}>
-            <form onSubmit={adminForm.handleSubmit(onSubmitAdmin)} className="space-y-4">
-              <FormField
-                control={adminForm.control}
-                name="tipoUsuario"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tipo de Usuario</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="administrador">👑 Administrador</SelectItem>
-                        <SelectItem value="coordinador">📋 Coordinador</SelectItem>
-                        <SelectItem value="administrador_general">🔧 Administrador General</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={adminForm.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nombre de Usuario</FormLabel>
-                    <FormControl>
-                      <Input placeholder="nombreusuario" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={adminForm.control}
-                name="nombres"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nombres</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Ana María" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={adminForm.control}
-                name="apellidos"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Apellidos</FormLabel>
-                    <FormControl>
-                      <Input placeholder="García López" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={adminForm.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Correo Electrónico</FormLabel>
-                    <FormControl>
-                      <Input type="email" placeholder="admin@empresa.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="bg-blue-50 p-3 rounded-lg">
-                <p className="text-sm text-blue-800 font-medium mb-1">Información importante:</p>
-                <p className="text-sm text-blue-700">
-                  El usuario recibirá credenciales de acceso con:
-                  <br />• Usuario: El nombre de usuario ingresado
-                  <br />• Contraseña inicial: 12345678
-                </p>
-              </div>
-
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
-                {isLoading ? 'Creando usuario...' : 'Crear Usuario'}
-              </Button>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Lista de Perfiles Disponibles */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
@@ -449,7 +435,7 @@ const PerfilesPage = () => {
                     <div>
                       <div className="flex items-center space-x-2">
                         <h3 className="font-medium">{perfil.nombre.replace('_', ' ')}</h3>
-                        <Badge variant={getPerfilBadgeVariant(perfil.nombre)}>
+                        <Badge variant={getPerfilBadgeVariant(perfil.nombre) as any}>
                           {perfil.activo ? 'Activo' : 'Inactivo'}
                         </Badge>
                       </div>
@@ -470,7 +456,6 @@ const PerfilesPage = () => {
           </CardContent>
         </Card>
 
-        {/* Resumen de Acciones Disponibles */}
         <Card>
           <CardHeader>
             <CardTitle>Acciones Disponibles</CardTitle>

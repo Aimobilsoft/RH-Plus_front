@@ -7,6 +7,10 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  nombres: varchar("nombres", { length: 100 }),
+  apellidos: varchar("apellidos", { length: 100 }),
+  email: varchar("email", { length: 255 }),
+  tipoUsuario: varchar("tipo_usuario", { length: 50 }), // administrador, coordinador, administrador_general
 });
 
 // Tabla de tipos de perfiles/roles
@@ -74,6 +78,10 @@ export const candidatos = pgTable("candidatos", {
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
+  nombres: true,
+  apellidos: true,
+  email: true,
+  tipoUsuario: true,
 });
 
 export const insertPerfilSchema = createInsertSchema(perfiles).omit({

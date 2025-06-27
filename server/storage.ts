@@ -95,7 +95,11 @@ export class MemStorage implements IStorage {
     this.users.set(1, {
       id: 1,
       username: "admin",
-      password: "admin123"
+      password: "admin123",
+      nombres: "Administrador",
+      apellidos: "Principal",
+      email: "admin@sistema.com",
+      tipoUsuario: "administrador"
     });
     this.currentUserId = 2;
 
