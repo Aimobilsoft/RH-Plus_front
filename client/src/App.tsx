@@ -25,6 +25,10 @@ import CitasProgramadasPage from "./pages/clinica/CitasProgramadasPage";
 import ExpedicionCertificadosPage from "./pages/certificados/ExpedicionCertificadosPage";
 import UsuariosPage from "./pages/seguridad/UsuariosPage";
 import PerfilesPage from "./pages/seguridad/PerfilesPage";
+import CrearCandidatoPage from "./pages/seguridad/CrearCandidatoPage";
+import CrearAdministradorPage from "./pages/seguridad/CrearAdministradorPage";
+import CrearCoordinadorPage from "./pages/seguridad/CrearCoordinadorPage";
+import CrearAdminGeneralPage from "./pages/seguridad/CrearAdminGeneralPage";
 import MenuPage from "./pages/seguridad/MenuPage";
 
 // Candidate portal pages
@@ -83,6 +87,10 @@ const App = () => (
             {/* Seguridad */}
             <Route path="/seguridad/usuarios" element={<UsuariosPage />} />
             <Route path="/seguridad/perfiles" element={<PerfilesPage />} />
+            <Route path="/seguridad/perfiles/crear-candidato" element={<CrearCandidatoPage />} />
+            <Route path="/seguridad/perfiles/crear-administrador" element={<CrearAdministradorPage />} />
+            <Route path="/seguridad/perfiles/crear-coordinador" element={<CrearCoordinadorPage />} />
+            <Route path="/seguridad/perfiles/crear-admin-general" element={<CrearAdminGeneralPage />} />
             <Route path="/seguridad/menu" element={<MenuPage />} />
           </Route>
           
