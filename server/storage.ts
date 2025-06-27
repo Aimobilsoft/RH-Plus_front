@@ -1,10 +1,14 @@
 import { 
   users, 
   candidatos,
+  perfiles,
   type User, 
   type InsertUser,
   type Candidato,
-  type InsertCandidato 
+  type InsertCandidato,
+  type Perfil,
+  type InsertPerfil,
+  type CreateCandidatoFromPerfil 
 } from "@shared/schema";
 
 export interface IStorage {
@@ -13,12 +17,23 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   
+  // Perfil operations
+  getAllPerfiles(): Promise<Perfil[]>;
+  getPerfilById(id: number): Promise<Perfil | undefined>;
+  getPerfilByNombre(nombre: string): Promise<Perfil | undefined>;
+  createPerfil(perfil: InsertPerfil): Promise<Perfil>;
+  updatePerfil(id: number, perfil: Partial<InsertPerfil>): Promise<Perfil>;
+  deletePerfil(id: number): Promise<void>;
+  
   // Candidato operations
   getCandidato(id: number): Promise<Candidato | undefined>;
   getCandidatoByEmail(email: string): Promise<Candidato | undefined>;
   getAllCandidatos(): Promise<Candidato[]>;
   createCandidato(candidato: InsertCandidato): Promise<Candidato>;
   updateCandidato(id: number, candidato: Partial<InsertCandidato>): Promise<Candidato>;
+  
+  // Operaciones especiales para crear candidatos desde perfiles
+  createCandidatoFromPerfil(data: CreateCandidatoFromPerfil): Promise<Candidato>;
 }
 
 export class MemStorage implements IStorage {
@@ -46,6 +61,8 @@ export class MemStorage implements IStorage {
       id: 1,
       email: "candidato1@ejemplo.com",
       password: "123456",
+      deberCambiarPassword: false, // Ya cambió la contraseña
+      perfilId: 2, // Perfil de candidato
       nombres: "Juan Carlos",
       apellidos: "Pérez González",
       tipoDocumento: "CC",
@@ -58,13 +75,18 @@ export class MemStorage implements IStorage {
       direccion: "Calle 123 #45-67",
       ciudad: "Bogotá",
       cargoAspirado: "Desarrollador Full Stack",
+      experienciaLaboral: null,
       eps: "Sanitas",
       arl: "SURA",
+      fondoPension: "Porvenir",
       grupoSanguineo: "O+",
       nivelEducativo: "Universitario",
+      educacion: null,
       contactoEmergenciaNombre: "María Pérez",
       contactoEmergenciaTelefono: "3109876543",
       contactoEmergenciaRelacion: "Madre",
+      hojaDeVida: null,
+      fotografia: null,
       fechaRegistro: new Date(),
       estado: "pendiente",
       completado: true,
