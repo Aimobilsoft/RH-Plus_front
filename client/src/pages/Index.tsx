@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/services/api";
-import { User, ExternalLink } from "lucide-react";
-import { Link } from "react-router-dom";
+
+
 
 // Datos de ejemplo para el gráfico
 const mockData = [
@@ -69,13 +69,6 @@ const Dashboard = () => {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <div className="flex items-center gap-4">
-          <Link to="/candidato/login">
-            <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <User className="w-4 h-4" />
-              Portal Candidatos
-              <ExternalLink className="w-3 h-3" />
-            </Button>
-          </Link>
           <div className="flex items-center gap-2">
             <Button 
               size="sm" 
