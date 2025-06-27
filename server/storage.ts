@@ -39,14 +39,57 @@ export interface IStorage {
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private candidatos: Map<number, Candidato>;
+  private perfiles: Map<number, Perfil>;
   currentUserId: number;
   currentCandidatoId: number;
+  currentPerfilId: number;
 
   constructor() {
     this.users = new Map();
     this.candidatos = new Map();
+    this.perfiles = new Map();
     this.currentUserId = 1;
     this.currentCandidatoId = 1;
+    this.currentPerfilId = 1;
+
+    // Create default profiles
+    this.perfiles.set(1, {
+      id: 1,
+      nombre: "administrador",
+      descripcion: "Administrador del sistema con todos los permisos",
+      permisos: { all: true },
+      fechaCreacion: new Date(),
+      activo: true,
+    });
+
+    this.perfiles.set(2, {
+      id: 2,
+      nombre: "candidato",
+      descripcion: "Candidato con acceso al portal de autogestión",
+      permisos: { profile: true, documents: true },
+      fechaCreacion: new Date(),
+      activo: true,
+    });
+
+    this.perfiles.set(3, {
+      id: 3,
+      nombre: "coordinador",
+      descripcion: "Coordinador con permisos de gestión intermedia",
+      permisos: { manage_candidates: true, view_reports: true },
+      fechaCreacion: new Date(),
+      activo: true,
+    });
+
+    this.perfiles.set(4, {
+      id: 4,
+      nombre: "administrador_general",
+      descripcion: "Administrador general con permisos completos",
+      permisos: { all: true, manage_users: true },
+      fechaCreacion: new Date(),
+      activo: true,
+    });
+
+    this.currentPerfilId = 5;
 
     // Create default admin user
     this.users.set(1, {
@@ -90,10 +133,6 @@ export class MemStorage implements IStorage {
       fechaRegistro: new Date(),
       estado: "pendiente",
       completado: true,
-      experienciaLaboral: null,
-      educacion: null,
-      hojaDeVida: null,
-      fotografia: null
     });
     this.currentCandidatoId = 2;
   }
@@ -158,10 +197,12 @@ export class MemStorage implements IStorage {
       contactoEmergenciaNombre: insertCandidato.contactoEmergenciaNombre || null,
       contactoEmergenciaTelefono: insertCandidato.contactoEmergenciaTelefono || null,
       contactoEmergenciaRelacion: insertCandidato.contactoEmergenciaRelacion || null,
-      hojaDeVida: insertCandidato.hojaDeVida || null,
-      fotografia: insertCandidato.fotografia || null,
+      deberCambiarPassword: insertCandidato.deberCambiarPassword ?? true,
+      perfilId: insertCandidato.perfilId || 2, // Default candidato profile
       experienciaLaboral: insertCandidato.experienciaLaboral || null,
       educacion: insertCandidato.educacion || null,
+      hojaDeVida: insertCandidato.hojaDeVida || null,
+      fotografia: insertCandidato.fotografia || null,
       fechaRegistro: new Date(),
       estado: "pendiente",
       completado: false,
@@ -179,6 +220,96 @@ export class MemStorage implements IStorage {
     const updatedCandidato = { ...candidato, ...updateData };
     this.candidatos.set(id, updatedCandidato);
     return updatedCandidato;
+  }
+
+  // Perfil operations
+  async getAllPerfiles(): Promise<Perfil[]> {
+    return Array.from(this.perfiles.values());
+  }
+
+  async getPerfilById(id: number): Promise<Perfil | undefined> {
+    return this.perfiles.get(id);
+  }
+
+  async getPerfilByNombre(nombre: string): Promise<Perfil | undefined> {
+    return Array.from(this.perfiles.values()).find(
+      (perfil) => perfil.nombre === nombre,
+    );
+  }
+
+  async createPerfil(insertPerfil: InsertPerfil): Promise<Perfil> {
+    const id = this.currentPerfilId++;
+    const perfil: Perfil = {
+      ...insertPerfil,
+      id,
+      fechaCreacion: new Date(),
+    };
+    this.perfiles.set(id, perfil);
+    return perfil;
+  }
+
+  async updatePerfil(id: number, updateData: Partial<InsertPerfil>): Promise<Perfil> {
+    const perfil = this.perfiles.get(id);
+    if (!perfil) {
+      throw new Error(`Perfil with id ${id} not found`);
+    }
+    
+    const updatedPerfil = { ...perfil, ...updateData };
+    this.perfiles.set(id, updatedPerfil);
+    return updatedPerfil;
+  }
+
+  async deletePerfil(id: number): Promise<void> {
+    if (!this.perfiles.has(id)) {
+      throw new Error(`Perfil with id ${id} not found`);
+    }
+    this.perfiles.delete(id);
+  }
+
+  // Operación especial para crear candidatos desde perfiles
+  async createCandidatoFromPerfil(data: CreateCandidatoFromPerfil): Promise<Candidato> {
+    // Buscar el perfil de candidato
+    const perfilCandidato = await this.getPerfilByNombre("candidato");
+    if (!perfilCandidato) {
+      throw new Error("Perfil de candidato no encontrado");
+    }
+
+    // Crear candidato con contraseña inicial = cédula
+    const candidatoData: InsertCandidato = {
+      email: data.email,
+      password: data.cedula, // Contraseña inicial es la cédula
+      deberCambiarPassword: true, // Debe cambiar contraseña en primer login
+      perfilId: perfilCandidato.id,
+      nombres: data.nombres,
+      apellidos: data.apellidos,
+      tipoDocumento: data.tipoDocumento,
+      numeroDocumento: data.cedula,
+      // Campos opcionales con valores por defecto
+      fechaNacimiento: null,
+      edad: null,
+      sexo: null,
+      estadoCivil: null,
+      telefono: null,
+      direccion: null,
+      ciudad: null,
+      cargoAspirado: null,
+      experienciaLaboral: null,
+      eps: null,
+      arl: null,
+      fondoPension: null,
+      grupoSanguineo: null,
+      nivelEducativo: null,
+      educacion: null,
+      contactoEmergenciaNombre: null,
+      contactoEmergenciaTelefono: null,
+      contactoEmergenciaRelacion: null,
+      hojaDeVida: null,
+      fotografia: null,
+      estado: "pendiente",
+      completado: false,
+    };
+
+    return this.createCandidato(candidatoData);
   }
 }
 
