@@ -31,6 +31,9 @@ import CrearCoordinadorPage from "./pages/seguridad/CrearCoordinadorPage";
 import CrearAdminGeneralPage from "./pages/seguridad/CrearAdminGeneralPage";
 import MenuPage from "./pages/seguridad/MenuPage";
 
+// Maestro pages
+import TiposCandidatosPage from "./pages/maestro/TiposCandidatosPage";
+
 // Candidate portal pages
 import LoginCandidato from "./pages/candidatos/LoginCandidato";
 import RegistroCandidato from "./pages/candidatos/RegistroCandidato";
@@ -92,6 +95,9 @@ const App = () => (
             <Route path="/seguridad/perfiles/crear-coordinador" element={<CrearCoordinadorPage />} />
             <Route path="/seguridad/perfiles/crear-admin-general" element={<CrearAdminGeneralPage />} />
             <Route path="/seguridad/menu" element={<MenuPage />} />
+            
+            {/* Maestro */}
+            <Route path="/maestro/tipos-candidatos" element={<TiposCandidatosPage />} />
           </Route>
           
           {/* Ruta 404 */}

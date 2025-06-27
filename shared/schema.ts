@@ -119,3 +119,74 @@ export type InsertCandidato = z.infer<typeof insertCandidatoSchema>;
 export type Candidato = typeof candidatos.$inferSelect;
 export type CreateCandidatoFromPerfil = z.infer<typeof createCandidatoFromPerfilSchema>;
 export type CreateAdminUser = z.infer<typeof createAdminUserSchema>;
+
+// Tabla maestro para tipos de candidatos
+export const tiposCandidatos = pgTable("tipos_candidatos", {
+  id: serial("id").primaryKey(),
+  nombre: varchar("nombre", { length: 100 }).notNull().unique(), // "Ingeniero", "Diseñador", "Contador", etc.
+  descripcion: text("descripcion"),
+  activo: boolean("activo").default(true),
+  fechaCreacion: timestamp("fecha_creacion").defaultNow(),
+});
+
+// Tabla de documentos disponibles en el sistema
+export const documentosTipo = pgTable("documentos_tipo", {
+  id: serial("id").primaryKey(),
+  nombre: varchar("nombre", { length: 100 }).notNull().unique(), // "Hoja de Vida", "Diploma", "Certificaciones", etc.
+  descripcion: text("descripcion"),
+  requerido: boolean("requerido").default(false), // Si es obligatorio por defecto
+  activo: boolean("activo").default(true),
+  fechaCreacion: timestamp("fecha_creacion").defaultNow(),
+});
+
+// Tabla relación: qué documentos requiere cada tipo de candidato
+export const tiposCandidatosDocumentos = pgTable("tipos_candidatos_documentos", {
+  id: serial("id").primaryKey(),
+  tipoCandidatoId: integer("tipo_candidato_id").references(() => tiposCandidatos.id).notNull(),
+  documentoTipoId: integer("documento_tipo_id").references(() => documentosTipo.id).notNull(),
+  obligatorio: boolean("obligatorio").default(true),
+  orden: integer("orden").default(0), // Para ordenar los documentos en el formulario
+  fechaCreacion: timestamp("fecha_creacion").defaultNow(),
+});
+
+// Tabla para almacenar los documentos subidos por candidatos
+export const candidatosDocumentos = pgTable("candidatos_documentos", {
+  id: serial("id").primaryKey(),
+  candidatoId: integer("candidato_id").references(() => candidatos.id).notNull(),
+  documentoTipoId: integer("documento_tipo_id").references(() => documentosTipo.id).notNull(),
+  archivo: text("archivo"), // URL o path del archivo
+  nombreArchivo: varchar("nombre_archivo", { length: 255 }),
+  fechaSubida: timestamp("fecha_subida").defaultNow(),
+  estado: varchar("estado", { length: 20 }).default("pendiente"), // "pendiente", "aprobado", "rechazado"
+});
+
+// Schemas de validación
+export const insertTipoCandidatoSchema = createInsertSchema(tiposCandidatos).omit({
+  id: true,
+  fechaCreacion: true,
+});
+
+export const insertDocumentoTipoSchema = createInsertSchema(documentosTipo).omit({
+  id: true,
+  fechaCreacion: true,
+});
+
+export const insertTipoCandidatoDocumentoSchema = createInsertSchema(tiposCandidatosDocumentos).omit({
+  id: true,
+  fechaCreacion: true,
+});
+
+export const insertCandidatoDocumentoSchema = createInsertSchema(candidatosDocumentos).omit({
+  id: true,
+  fechaSubida: true,
+});
+
+// Tipos TypeScript para las nuevas tablas
+export type InsertTipoCandidato = z.infer<typeof insertTipoCandidatoSchema>;
+export type TipoCandidato = typeof tiposCandidatos.$inferSelect;
+export type InsertDocumentoTipo = z.infer<typeof insertDocumentoTipoSchema>;
+export type DocumentoTipo = typeof documentosTipo.$inferSelect;
+export type InsertTipoCandidatoDocumento = z.infer<typeof insertTipoCandidatoDocumentoSchema>;
+export type TipoCandidatoDocumento = typeof tiposCandidatosDocumentos.$inferSelect;
+export type InsertCandidatoDocumento = z.infer<typeof insertCandidatoDocumentoSchema>;
+export type CandidatoDocumento = typeof candidatosDocumentos.$inferSelect;

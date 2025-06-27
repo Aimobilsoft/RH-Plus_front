@@ -45,11 +45,10 @@ const menuItems = [
     ],
   },
   {
-    title: "Ordenes",
+    title: "Expedicion de Orden",
     icon: <FileText className="h-5 w-5" />,
-    subItems: [
-      { title: "Expedicion de Orden", path: "/ordenes/expedicion", icon: <FileText className="h-4 w-4" /> },
-    ],
+    path: "/ordenes/expedicion",
+    subItems: [],
   },
 
   {
@@ -58,6 +57,12 @@ const menuItems = [
     subItems: [
       { title: "Expedicion de Certificados", path: "/certificados/expedicion", icon: <FileText className="h-4 w-4" /> },
     ],
+  },
+  {
+    title: "Maestro",
+    icon: <Settings className="h-5 w-5" />,
+    path: "/maestro/tipos-candidatos",
+    subItems: [],
   },
   {
     title: "Seguridad",
