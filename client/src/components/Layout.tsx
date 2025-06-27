@@ -132,18 +132,15 @@ const AppSidebar = () => {
     >
       <div className="p-2 flex justify-center items-center h-16">
         {!collapsed && (
-          <div className="text-xl font-bold text-sidebar-foreground">
-            RecursosHumanos
-          </div>
+          <div className="text-xl font-bold text-sidebar-foreground">Recursos Humanos</div>
         )}
       </div>
-
       <SidebarContent className="p-2">
         {menuItems.map((item, index) => (
           <React.Fragment key={item.title}>
             {item.subItems.length === 0 ? (
               // Elemento sin subítems
-              <Link
+              (<Link
                 to={item.path || "/"}
                 className={`flex items-center space-x-2 rounded-md px-3 py-2 mb-1 ${
                   currentPath === item.path
@@ -153,10 +150,10 @@ const AppSidebar = () => {
               >
                 {item.icon}
                 {!collapsed && <span>{item.title}</span>}
-              </Link>
+              </Link>)
             ) : (
               // Grupo con subítems
-              <SidebarGroup>
+              (<SidebarGroup>
                 <SidebarGroupLabel 
                   className="flex items-center space-x-2 cursor-pointer"
                   onClick={() => toggleGroup(index)}
@@ -196,7 +193,7 @@ const AppSidebar = () => {
                     </SidebarMenu>
                   </SidebarGroupContent>
                 )}
-              </SidebarGroup>
+              </SidebarGroup>)
             )}
           </React.Fragment>
         ))}
