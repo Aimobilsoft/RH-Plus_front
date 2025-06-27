@@ -45,8 +45,13 @@ export default function LoginCandidato() {
       const result = await response.json();
 
       if (response.ok) {
-        toast.success('Login exitoso');
-        navigate('/candidato/perfil');
+        if (result.deberCambiarPassword) {
+          toast.success('Debe cambiar su contraseña');
+          navigate('/candidato/cambiar-password');
+        } else {
+          toast.success('Login exitoso');
+          navigate('/candidato/perfil');
+        }
       } else {
         toast.error(result.message || 'Error al iniciar sesión');
       }

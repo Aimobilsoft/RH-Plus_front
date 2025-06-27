@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertCandidatoSchema } from "@shared/schema";
+import { insertCandidatoSchema, createCandidatoFromPerfilSchema } from "@shared/schema";
 import { z } from "zod";
 
 // Session middleware for simple login
@@ -95,6 +95,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ 
         message: "Login exitoso", 
+        deberCambiarPassword: candidato.deberCambiarPassword,
         candidato: { 
           id: candidato.id, 
           email: candidato.email, 
@@ -186,6 +187,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/candidato/cambiar-password", async (req, res) => {
+    try {
+      if (!req.session.candidatoId || req.session.userType !== 'candidato') {
+        return res.status(401).json({ message: "No autorizado" });
+      }
+      
+      const { passwordActual, passwordNueva } = req.body;
+      
+      if (!passwordActual || !passwordNueva) {
+        return res.status(400).json({ message: "Contraseña actual y nueva son requeridas" });
+      }
+      
+      const candidato = await storage.getCandidato(req.session.candidatoId);
+      if (!candidato) {
+        return res.status(404).json({ message: "Candidato no encontrado" });
+      }
+      
+      // Verificar contraseña actual
+      if (candidato.password !== passwordActual) {
+        return res.status(400).json({ message: "Contraseña actual incorrecta" });
+      }
+      
+      // Actualizar contraseña y marcar que ya no debe cambiarla
+      const updatedCandidato = await storage.updateCandidato(req.session.candidatoId, {
+        password: passwordNueva,
+        deberCambiarPassword: false,
+      });
+      
+      res.json({ message: "Contraseña actualizada exitosamente" });
+    } catch (error) {
+      console.error("Error cambiando contraseña:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
   app.put("/api/candidato/profile", async (req, res) => {
     try {
       if (!req.session.candidatoId || req.session.userType !== 'candidato') {
@@ -241,6 +277,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(candidatoData);
     } catch (error) {
       console.error("Error obteniendo candidato:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Rutas de perfiles
+  app.get("/api/perfiles", async (req, res) => {
+    try {
+      if (!req.session.userId || req.session.userType !== 'admin') {
+        return res.status(401).json({ message: "No autorizado" });
+      }
+      
+      const perfiles = await storage.getAllPerfiles();
+      res.json(perfiles);
+    } catch (error) {
+      console.error("Error obteniendo perfiles:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  app.post("/api/perfiles/create-candidato", async (req, res) => {
+    try {
+      if (!req.session.userId || req.session.userType !== 'admin') {
+        return res.status(401).json({ message: "No autorizado" });
+      }
+      
+      const validatedData = createCandidatoFromPerfilSchema.parse(req.body);
+      
+      // Check if email already exists
+      const existingCandidato = await storage.getCandidatoByEmail(validatedData.email);
+      if (existingCandidato) {
+        return res.status(400).json({ message: "El email ya está registrado" });
+      }
+      
+      // Check if document number already exists
+      const allCandidatos = await storage.getAllCandidatos();
+      const existingDocument = allCandidatos.find(c => c.numeroDocumento === validatedData.cedula);
+      if (existingDocument) {
+        return res.status(400).json({ message: "El número de documento ya está registrado" });
+      }
+      
+      const candidato = await storage.createCandidatoFromPerfil(validatedData);
+      
+      res.status(201).json({ 
+        message: "Candidato creado exitosamente",
+        candidato: {
+          id: candidato.id,
+          email: candidato.email,
+          nombres: candidato.nombres,
+          apellidos: candidato.apellidos,
+          numeroDocumento: candidato.numeroDocumento,
+          deberCambiarPassword: candidato.deberCambiarPassword
+        }
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Datos inválidos", errors: error.errors });
+      }
+      console.error("Error creando candidato desde perfil:", error);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   });

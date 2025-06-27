@@ -31,6 +31,7 @@ import MenuPage from "./pages/seguridad/MenuPage";
 import LoginCandidato from "./pages/candidatos/LoginCandidato";
 import RegistroCandidato from "./pages/candidatos/RegistroCandidato";
 import PerfilCandidato from "./pages/candidatos/PerfilCandidato";
+import CambiarPassword from "./pages/candidatos/CambiarPassword";
 
 // Admin login
 import LoginAdmin from "./pages/LoginAdmin";
@@ -51,6 +52,7 @@ const App = () => (
           {/* Candidate Portal Routes - No Layout */}
           <Route path="/candidato/login" element={<LoginCandidato />} />
           <Route path="/candidato/registro" element={<RegistroCandidato />} />
+          <Route path="/candidato/cambiar-password" element={<CambiarPassword />} />
           <Route path="/candidato/perfil" element={<PerfilCandidato />} />
           
           {/* Admin Portal Routes - With Layout (Protected) */}
