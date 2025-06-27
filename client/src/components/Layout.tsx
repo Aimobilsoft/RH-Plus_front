@@ -51,19 +51,7 @@ const menuItems = [
       { title: "Expedicion de Orden", path: "/ordenes/expedicion", icon: <FileText className="h-4 w-4" /> },
     ],
   },
-  {
-    title: "Clinica",
-    icon: <Building className="h-5 w-5" />,
-    subItems: [
-      { title: "Agenda Medica", path: "/clinica/agenda", icon: <Calendar className="h-4 w-4" /> },
-      { title: "Historia Medica", path: "/clinica/historia-medica", icon: <FileText className="h-4 w-4" /> },
-      { title: "Historia Laboral", path: "/clinica/historia-laboral", icon: <FileText className="h-4 w-4" /> },
-      { title: "Consultorios", path: "/clinica/consultorios", icon: <Building className="h-4 w-4" /> },
-      { title: "Especialidades", path: "/clinica/especialidades", icon: <Layers className="h-4 w-4" /> },
-      { title: "Especialistas", path: "/clinica/especialistas", icon: <User className="h-4 w-4" /> },
-      { title: "Citas Programadas", path: "/clinica/citas", icon: <Calendar className="h-4 w-4" /> },
-    ],
-  },
+
   {
     title: "Certificados",
     icon: <FileText className="h-5 w-5" />,
@@ -130,9 +118,9 @@ const AppSidebar = () => {
       className={`border-r h-screen ${collapsed ? "w-14" : "w-64"}`}
       collapsible="icon"
     >
-      <div className="p-2 flex justify-center items-center h-16">
+      <div className="p-4 flex justify-center items-center h-16">
         {!collapsed && (
-          <div className="text-xl font-bold text-sidebar-foreground">Recursos Humanos</div>
+          <div className="text-2xl font-bold text-sidebar-foreground">Recursos Humanos</div>
         )}
       </div>
       <SidebarContent className="p-2">
@@ -149,7 +137,7 @@ const AppSidebar = () => {
                 }`}
               >
                 {item.icon}
-                {!collapsed && <span>{item.title}</span>}
+                {!collapsed && <span className="text-base font-medium">{item.title}</span>}
               </Link>)
             ) : (
               // Grupo con subítems
@@ -161,11 +149,8 @@ const AppSidebar = () => {
                   <span className="flex items-center">
                     {item.icon}
                     {!collapsed && (
-                      <span className="ml-2 flex items-center justify-between w-full">
+                      <span className="ml-2 text-base font-medium">
                         {item.title}
-                        <span className={`transform transition-transform ${openGroups[index] ? 'rotate-180' : ''}`}>
-                          ▼
-                        </span>
                       </span>
                     )}
                   </span>
@@ -185,7 +170,7 @@ const AppSidebar = () => {
                               }`}
                             >
                               {subItem.icon}
-                              {!collapsed && <span className="ml-1">{subItem.title}</span>}
+                              {!collapsed && <span className="ml-1 text-sm font-medium">{subItem.title}</span>}
                             </Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>

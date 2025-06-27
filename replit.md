@@ -105,6 +105,13 @@ This is a full-stack medical practice management application built with modern w
 
 ```
 Changelog:
+- June 27, 2025. UI modernization and minimalist design improvements  
+  * Updated login page to be more minimalist: removed green logo/shield, changed "Sistema Médico" to "Recursos humanos", "Acceso Administrativo" to "control de seguridad"
+  * Eliminated "Portal Candidatos" button from dashboard header for cleaner interface
+  * Removed "Clínica" section entirely from sidebar navigation
+  * Modernized sidebar design: removed dropdown arrows (▼), increased font sizes, improved typography with font-medium classes
+  * Enhanced "Recursos Humanos" title with larger text-2xl font for better hierarchy
+  * Applied consistent text sizing: text-base for main menu items, text-sm for submenu items
 - June 27, 2025. User interface improvements and page-based forms implementation
   * Removed redundant buttons from profiles page header to eliminate duplication
   * Converted modal-based forms to page-based forms following "empresa afiliadas" style
