@@ -6,6 +6,7 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -153,20 +154,22 @@ const AppSidebar = () => {
             ) : (
               // Grupo con subítems
               (<SidebarGroup>
-                <div 
+                <SidebarGroupLabel 
                   className="flex items-center space-x-2 cursor-pointer"
                   onClick={() => toggleGroup(index)}
                 >
-                  {item.icon}
-                  {!collapsed && (
-                    <span className="ml-2 flex items-center justify-between w-full">
-                      {item.title}
-                      <span className={`transform transition-transform ${openGroups[index] ? 'rotate-180' : ''}`}>
-                        ▼
+                  <span className="flex items-center">
+                    {item.icon}
+                    {!collapsed && (
+                      <span className="ml-2 flex items-center justify-between w-full">
+                        {item.title}
+                        <span className={`transform transition-transform ${openGroups[index] ? 'rotate-180' : ''}`}>
+                          ▼
+                        </span>
                       </span>
-                    </span>
-                  )}
-                </div>
+                    )}
+                  </span>
+                </SidebarGroupLabel>
                 {openGroups[index] && (
                   <SidebarGroupContent>
                     <SidebarMenu>
