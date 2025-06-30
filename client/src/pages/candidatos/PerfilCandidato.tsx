@@ -27,6 +27,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { ExperienciaLaboralTab } from '@/components/candidatos/ExperienciaLaboralTab';
 
 const perfilSchema = z.object({
   nombres: z.string().min(2, 'Los nombres son requeridos'),
@@ -79,11 +80,23 @@ interface Candidato {
   fechaRegistro: string;
 }
 
+interface ExperienciaLaboral {
+  id?: number;
+  empresa: string;
+  fechaInicio: string;
+  fechaFin: string;
+  cargo: string;
+  responsabilidades: string;
+  salario: string | number;
+  motivoRetiro?: string;
+}
+
 export default function PerfilCandidato() {
   const [candidato, setCandidato] = useState<Candidato | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
+  const [experienciaLaboral, setExperienciaLaboral] = useState<ExperienciaLaboral[]>([]);
   const navigate = useNavigate();
 
   const form = useForm<PerfilForm>({
@@ -234,7 +247,7 @@ export default function PerfilCandidato() {
                   <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="personal">Personal</TabsTrigger>
                     <TabsTrigger value="contacto">Contacto</TabsTrigger>
-                    <TabsTrigger value="profesional">Profesional</TabsTrigger>
+                    <TabsTrigger value="profesional">Experiencia Laboral</TabsTrigger>
                     <TabsTrigger value="archivos">Archivos</TabsTrigger>
                   </TabsList>
 
@@ -471,80 +484,10 @@ export default function PerfilCandidato() {
                   </TabsContent>
 
                   <TabsContent value="profesional" className="space-y-4">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="cargoAspirado"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Cargo Aspirado</FormLabel>
-                            <FormControl>
-                              <div className="relative">
-                                <Briefcase className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                                <Input {...field} className="pl-10" />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="nivelEducativo"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Nivel Educativo</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Seleccionar" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="Primaria">Primaria</SelectItem>
-                                <SelectItem value="Secundaria">Secundaria</SelectItem>
-                                <SelectItem value="Técnico">Técnico</SelectItem>
-                                <SelectItem value="Tecnológico">Tecnológico</SelectItem>
-                                <SelectItem value="Universitario">Universitario</SelectItem>
-                                <SelectItem value="Especialización">Especialización</SelectItem>
-                                <SelectItem value="Maestría">Maestría</SelectItem>
-                                <SelectItem value="Doctorado">Doctorado</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="eps"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>EPS</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="arl"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>ARL</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                    <ExperienciaLaboralTab 
+                      experienciaLaboral={experienciaLaboral}
+                      onChange={setExperienciaLaboral}
+                    />
                   </TabsContent>
 
                   <TabsContent value="archivos" className="space-y-4">
