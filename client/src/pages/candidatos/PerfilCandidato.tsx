@@ -28,6 +28,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { ExperienciaLaboralTab } from '@/components/candidatos/ExperienciaLaboralTab';
+import { EducacionTab } from '@/components/candidatos/EducacionTab';
 
 const perfilSchema = z.object({
   nombres: z.string().min(2, 'Los nombres son requeridos'),
@@ -91,12 +92,23 @@ interface ExperienciaLaboral {
   motivoRetiro?: string;
 }
 
+interface Educacion {
+  id?: number;
+  titulo: string;
+  institucion: string;
+  fechaInicio: string;
+  fechaFin: string;
+  ciudad: string;
+  nivelEducativo: string;
+}
+
 export default function PerfilCandidato() {
   const [candidato, setCandidato] = useState<Candidato | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
   const [experienciaLaboral, setExperienciaLaboral] = useState<ExperienciaLaboral[]>([]);
+  const [educacion, setEducacion] = useState<Educacion[]>([]);
   const navigate = useNavigate();
 
   const form = useForm<PerfilForm>({
@@ -244,10 +256,11 @@ export default function PerfilCandidato() {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid w-full grid-cols-4">
+                  <TabsList className="grid w-full grid-cols-5">
                     <TabsTrigger value="personal">Personal</TabsTrigger>
                     <TabsTrigger value="contacto">Contacto</TabsTrigger>
                     <TabsTrigger value="profesional">Experiencia Laboral</TabsTrigger>
+                    <TabsTrigger value="educacion">Educacion</TabsTrigger>
                     <TabsTrigger value="archivos">Archivos</TabsTrigger>
                   </TabsList>
 
@@ -487,6 +500,13 @@ export default function PerfilCandidato() {
                     <ExperienciaLaboralTab 
                       experienciaLaboral={experienciaLaboral}
                       onChange={setExperienciaLaboral}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="educacion" className="space-y-4">
+                    <EducacionTab 
+                      educacion={educacion}
+                      onChange={setEducacion}
                     />
                   </TabsContent>
 
