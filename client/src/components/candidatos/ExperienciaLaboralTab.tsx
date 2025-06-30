@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Plus, Edit, Trash2, Briefcase } from 'lucide-react';
 
 interface ExperienciaLaboral {
@@ -13,6 +14,7 @@ interface ExperienciaLaboral {
   cargo: string;
   responsabilidades: string;
   salario: string | number;
+  motivoRetiro?: string;
 }
 
 interface ExperienciaLaboralTabProps {
@@ -30,6 +32,7 @@ export const ExperienciaLaboralTab: React.FC<ExperienciaLaboralTabProps> = ({ ex
     cargo: '',
     responsabilidades: '',
     salario: '',
+    motivoRetiro: '',
   });
 
   const handleAdd = () => {
@@ -40,6 +43,7 @@ export const ExperienciaLaboralTab: React.FC<ExperienciaLaboralTabProps> = ({ ex
       cargo: '',
       responsabilidades: '',
       salario: '',
+      motivoRetiro: '',
     });
     setEditingIndex(null);
     setIsEditing(true);
@@ -85,6 +89,7 @@ export const ExperienciaLaboralTab: React.FC<ExperienciaLaboralTabProps> = ({ ex
       cargo: '',
       responsabilidades: '',
       salario: '',
+      motivoRetiro: '',
     });
   };
 
@@ -168,6 +173,15 @@ export const ExperienciaLaboralTab: React.FC<ExperienciaLaboralTabProps> = ({ ex
                 placeholder="Salario mensual"
               />
             </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Motivo de Retiro</label>
+              <Input
+                value={currentExperiencia.motivoRetiro || ''}
+                onChange={(e) => setCurrentExperiencia(prev => ({ ...prev, motivoRetiro: e.target.value }))}
+                placeholder="Razón del retiro (opcional)"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -219,42 +233,51 @@ export const ExperienciaLaboralTab: React.FC<ExperienciaLaboralTabProps> = ({ ex
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-3">
-          {experienciaLaboral.map((exp, index) => (
-            <Card key={exp.id || index}>
-              <CardContent className="pt-4">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <h4 className="font-medium text-lg">{exp.cargo}</h4>
-                    <p className="text-muted-foreground font-medium">{exp.empresa}</p>
-                    <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
-                      <span>
-                        {new Date(exp.fechaInicio).toLocaleDateString()} - {exp.fechaFin ? new Date(exp.fechaFin).toLocaleDateString() : 'Actual'}
-                      </span>
-                      <span className="bg-primary/10 text-primary px-2 py-1 rounded-full">
+        <Card>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Cargo</TableHead>
+                  <TableHead>Empresa</TableHead>
+                  <TableHead>Periodo</TableHead>
+                  <TableHead>Duración</TableHead>
+                  <TableHead>Motivo Retiro</TableHead>
+                  <TableHead className="text-center">Acciones</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {experienciaLaboral.map((exp, index) => (
+                  <TableRow key={exp.id || index}>
+                    <TableCell className="font-medium">{exp.cargo}</TableCell>
+                    <TableCell>{exp.empresa}</TableCell>
+                    <TableCell className="text-sm">
+                      {new Date(exp.fechaInicio).toLocaleDateString()} - {exp.fechaFin ? new Date(exp.fechaFin).toLocaleDateString() : 'Actual'}
+                    </TableCell>
+                    <TableCell>
+                      <span className="bg-primary/10 text-primary px-2 py-1 rounded-full text-xs">
                         {calcularDuracion(exp.fechaInicio, exp.fechaFin)}
                       </span>
-                      {exp.salario && (
-                        <span>Salario: ${typeof exp.salario === 'number' ? exp.salario.toLocaleString() : exp.salario}</span>
-                      )}
-                    </div>
-                    {exp.responsabilidades && (
-                      <p className="mt-2 text-sm">{exp.responsabilidades}</p>
-                    )}
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button size="sm" variant="ghost" onClick={() => handleEdit(index)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={() => handleDelete(index)}>
-                      <Trash2 className="h-4 w-4 text-red-500" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {exp.motivoRetiro || '-'}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex justify-center space-x-1">
+                        <Button size="sm" variant="ghost" onClick={() => handleEdit(index)} title="Editar">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => handleDelete(index)} title="Eliminar">
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
