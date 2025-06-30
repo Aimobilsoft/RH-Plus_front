@@ -1,19 +1,32 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { toast } from 'sonner';
-import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, User, Building2 } from 'lucide-react';
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
+import { useNavigate, Link } from "react-router-dom";
+import { Eye, EyeOff, Mail, Lock, User, Building2 } from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 const loginSchema = z.object({
-  email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
+  email: z.string().email("Email inválido"),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
@@ -26,18 +39,18 @@ export default function LoginCandidato() {
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
   const onSubmit = async (data: LoginForm) => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/candidato/login', {
-        method: 'POST',
+      const response = await fetch("/api/candidato/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
@@ -46,17 +59,17 @@ export default function LoginCandidato() {
 
       if (response.ok) {
         if (result.deberCambiarPassword) {
-          toast.success('Debe cambiar su contraseña');
-          navigate('/candidato/cambiar-password');
+          toast.success("Debe cambiar su contraseña");
+          navigate("/candidato/cambiar-password");
         } else {
-          toast.success('Login exitoso');
-          navigate('/candidato/perfil');
+          toast.success("Login exitoso");
+          navigate("/candidato/perfil");
         }
       } else {
-        toast.error(result.message || 'Error al iniciar sesión');
+        toast.error(result.message || "Error al iniciar sesión");
       }
     } catch (error) {
-      toast.error('Error de conexión');
+      toast.error("Error de conexión");
     } finally {
       setIsLoading(false);
     }
@@ -66,23 +79,27 @@ export default function LoginCandidato() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-4">
-            <User className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900">Portal Candidatos</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Portal Candidatos
+          </h1>
           <p className="text-gray-600 mt-2">Sistema de Gestión Médica</p>
         </div>
 
         <Card className="shadow-lg">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">Iniciar Sesión</CardTitle>
+            <CardTitle className="text-2xl text-center">
+              Iniciar Sesión
+            </CardTitle>
             <CardDescription className="text-center">
               Ingresa con tu email y contraseña
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
                 <FormField
                   control={form.control}
                   name="email"
@@ -116,7 +133,7 @@ export default function LoginCandidato() {
                           <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                           <Input
                             {...field}
-                            type={showPassword ? 'text' : 'password'}
+                            type={showPassword ? "text" : "password"}
                             placeholder="Tu contraseña"
                             className="pl-10 pr-10"
                           />
@@ -138,17 +155,11 @@ export default function LoginCandidato() {
                   )}
                 />
 
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+                <Button type="submit" className="w-full mt-[30px] mb-[30px]" disabled={isLoading}>
+                  {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
                 </Button>
               </form>
             </Form>
-
-
 
             <div className="mt-4 text-center">
               <Link
@@ -161,9 +172,12 @@ export default function LoginCandidato() {
             </div>
 
             <div className="mt-6 p-4 bg-green-50 rounded-lg">
-              <p className="text-sm text-green-800 font-medium mb-2">Credenciales de prueba:</p>
+              <p className="text-sm text-green-800 font-medium mb-2">
+                Credenciales de prueba:
+              </p>
               <p className="text-sm text-green-700">
-                Email: candidato1@ejemplo.com<br />
+                Email: candidato1@ejemplo.com
+                <br />
                 Contraseña: 123456
               </p>
             </div>
