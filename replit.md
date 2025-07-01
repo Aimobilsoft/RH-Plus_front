@@ -105,6 +105,18 @@ This is a full-stack medical practice management application built with modern w
 
 ```
 Changelog:
+- December 30, 2024. Complete enterprise portal implementation
+  * Built complete portal de empresas with authentication, dashboard, and candidate management
+  * Implemented enterprise-specific candidate creation and isolation (companies only see their own candidates)  
+  * Added database schemas for empresas table with business information and NIT
+  * Created comprehensive dashboard with candidate statistics and management actions
+  * Implemented candidate listing with filtering by status and search functionality
+  * Added detailed candidate view pages showing complete information for enterprise review
+  * Extended session management to support empresa userType alongside admin and candidato
+  * Created API routes for enterprise login, profile management, and candidate operations
+  * Added enterprise login access from main admin portal for easy discovery
+  * Complete candidate isolation: each empresa only sees candidates they created
+  * Portal includes: login, dashboard with stats, create candidates, view candidate list, detailed candidate view
 - June 27, 2025. Maestro-detalle system implementation for dynamic candidate document requirements
   * Implemented complete maestro-detalle system allowing companies to configure document requirements by candidate type
   * Added new sidebar section "Maestro" with comprehensive management interface for candidate types and document types
