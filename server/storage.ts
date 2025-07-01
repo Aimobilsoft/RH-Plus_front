@@ -2,6 +2,7 @@ import {
   users, 
   candidatos,
   perfiles,
+  empresas,
   tiposCandidatos,
   documentosTipo,
   tiposCandidatosDocumentos,
@@ -13,6 +14,9 @@ import {
   type Perfil,
   type InsertPerfil,
   type CreateCandidatoFromPerfil,
+  type Empresa,
+  type InsertEmpresa,
+  type CreateEmpresa,
   type TipoCandidato,
   type InsertTipoCandidato,
   type DocumentoTipo,
@@ -47,6 +51,17 @@ export interface IStorage {
   // Operaciones especiales para crear candidatos desde perfiles
   createCandidatoFromPerfil(data: CreateCandidatoFromPerfil): Promise<Candidato>;
   
+  // Empresa operations
+  getEmpresa(id: number): Promise<Empresa | undefined>;
+  getEmpresaByEmail(email: string): Promise<Empresa | undefined>;
+  getAllEmpresas(): Promise<Empresa[]>;
+  createEmpresa(empresa: InsertEmpresa): Promise<Empresa>;
+  updateEmpresa(id: number, empresa: Partial<InsertEmpresa>): Promise<Empresa>;
+  
+  // Candidatos por empresa (para portal de empresas)
+  getCandidatosByEmpresa(empresaId: number): Promise<Candidato[]>;
+  createCandidatoForEmpresa(candidato: InsertCandidato, empresaId: number): Promise<Candidato>;
+  
   // Maestro operations - Tipos de Candidatos
   getAllTiposCandidatos(): Promise<TipoCandidato[]>;
   getTipoCandidatoById(id: number): Promise<TipoCandidato | undefined>;
@@ -76,6 +91,7 @@ export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private candidatos: Map<number, Candidato>;
   private perfiles: Map<number, Perfil>;
+  private empresas: Map<number, Empresa>;
   private tiposCandidatos: Map<number, TipoCandidato>;
   private documentosTipo: Map<number, DocumentoTipo>;
   private tiposCandidatosDocumentos: Map<number, TipoCandidatoDocumento>;
@@ -83,6 +99,7 @@ export class MemStorage implements IStorage {
   currentUserId: number;
   currentCandidatoId: number;
   currentPerfilId: number;
+  currentEmpresaId: number;
   currentTipoCandidatoId: number;
   currentDocumentoTipoId: number;
   currentTipoCandidatoDocumentoId: number;

@@ -72,6 +72,28 @@ export const candidatos = pgTable("candidatos", {
   fechaRegistro: timestamp("fecha_registro").defaultNow(),
   estado: varchar("estado", { length: 20 }).default("pendiente"), // pendiente, aprobado, rechazado
   completado: boolean("completado").default(false),
+  empresaId: integer("empresa_id").references(() => empresas.id), // Referencia a la empresa que creó el candidato
+});
+
+// Tabla de empresas/usuarios del portal
+export const empresas = pgTable("empresas", {
+  id: serial("id").primaryKey(),
+  // Credenciales de acceso
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  password: text("password").notNull(),
+  
+  // Información de la empresa
+  nombreEmpresa: varchar("nombre_empresa", { length: 200 }).notNull(),
+  nit: varchar("nit", { length: 20 }).notNull().unique(),
+  direccion: text("direccion"),
+  telefono: varchar("telefono", { length: 20 }),
+  ciudad: varchar("ciudad", { length: 100 }),
+  contactoPrincipal: varchar("contacto_principal", { length: 100 }),
+  cargoContacto: varchar("cargo_contacto", { length: 100 }),
+  
+  // Metadatos
+  fechaRegistro: timestamp("fecha_registro").defaultNow(),
+  estado: varchar("estado", { length: 20 }).default("activo"), // activo, inactivo
 });
 
 // Esquemas de inserción
@@ -110,6 +132,23 @@ export const createAdminUserSchema = z.object({
   tipoUsuario: z.enum(["administrador", "coordinador", "administrador_general"]),
 });
 
+export const insertEmpresaSchema = createInsertSchema(empresas).omit({
+  id: true,
+  fechaRegistro: true,
+});
+
+export const createEmpresaSchema = z.object({
+  email: z.string().email("Email inválido"),
+  password: z.string().min(8, "Password debe tener al menos 8 caracteres"),
+  nombreEmpresa: z.string().min(2, "Nombre de empresa requerido"),
+  nit: z.string().min(6, "NIT requerido"),
+  direccion: z.string().optional(),
+  telefono: z.string().optional(),
+  ciudad: z.string().optional(),
+  contactoPrincipal: z.string().min(2, "Contacto principal requerido"),
+  cargoContacto: z.string().optional(),
+});
+
 // Tipos TypeScript
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -119,6 +158,9 @@ export type InsertCandidato = z.infer<typeof insertCandidatoSchema>;
 export type Candidato = typeof candidatos.$inferSelect;
 export type CreateCandidatoFromPerfil = z.infer<typeof createCandidatoFromPerfilSchema>;
 export type CreateAdminUser = z.infer<typeof createAdminUserSchema>;
+export type InsertEmpresa = z.infer<typeof insertEmpresaSchema>;
+export type Empresa = typeof empresas.$inferSelect;
+export type CreateEmpresa = z.infer<typeof createEmpresaSchema>;
 
 // Tabla maestro para tipos de candidatos
 export const tiposCandidatos = pgTable("tipos_candidatos", {
