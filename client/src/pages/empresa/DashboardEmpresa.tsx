@@ -127,7 +127,7 @@ export default function DashboardEmpresa() {
         {/* Welcome section */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Bienvenido, {empresa?.contactoPrincipal || 'Usuario'}
+            Bienvenido/a, {empresa?.contactoPrincipal || 'Usuario'}
           </h2>
           <p className="text-gray-600">
             Gestiona tus candidatos y procesos de selección desde este panel

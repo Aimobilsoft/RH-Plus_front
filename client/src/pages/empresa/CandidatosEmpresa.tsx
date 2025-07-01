@@ -151,13 +151,24 @@ export default function CandidatosEmpresa() {
                 </div>
               </div>
             </div>
-            <Button
-              onClick={() => navigate('/empresa/candidatos/crear')}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Nuevo Candidato
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nuevo Candidato
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => navigate('/empresa/candidatos/crear')}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Registro Rápido
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate('/empresa/candidatos/crear-completo')}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Registro Completo
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>

@@ -49,6 +49,7 @@ import LoginEmpresa from "./pages/empresa/LoginEmpresa";
 import DashboardEmpresa from "./pages/empresa/DashboardEmpresa";
 import CandidatosEmpresa from "./pages/empresa/CandidatosEmpresa";
 import CrearCandidatoEmpresa from "./pages/empresa/CrearCandidatoEmpresa";
+import CrearCandidatoSimple from "./pages/empresa/CrearCandidatoSimple";
 import DetalleCandidatoEmpresa from "./pages/empresa/DetalleCandidatoEmpresa";
 
 const queryClient = new QueryClient();
@@ -73,7 +74,8 @@ const App = () => (
           <Route path="/empresa/login" element={<LoginEmpresa />} />
           <Route path="/empresa/dashboard" element={<DashboardEmpresa />} />
           <Route path="/empresa/candidatos" element={<CandidatosEmpresa />} />
-          <Route path="/empresa/candidatos/crear" element={<CrearCandidatoEmpresa />} />
+          <Route path="/empresa/candidatos/crear" element={<CrearCandidatoSimple />} />
+          <Route path="/empresa/candidatos/crear-completo" element={<CrearCandidatoEmpresa />} />
           <Route path="/empresa/candidatos/:id" element={<DetalleCandidatoEmpresa />} />
           
           {/* Admin Portal Routes - With Layout (Protected) */}
