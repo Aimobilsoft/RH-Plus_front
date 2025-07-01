@@ -15,6 +15,12 @@ import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
 
 interface DashboardStats {
   totalCandidatos: number;
@@ -204,13 +210,24 @@ export default function DashboardEmpresa() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button 
-                className="w-full bg-blue-600 hover:bg-blue-700"
-                onClick={() => navigate('/empresa/candidatos/crear')}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Nuevo Candidato
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Nuevo Candidato
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => navigate('/empresa/candidatos/crear')}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Registro Rápido
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/empresa/candidatos/crear-completo')}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Registro Completo
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </CardContent>
           </Card>
 
