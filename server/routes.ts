@@ -9,7 +9,8 @@ declare module 'express-session' {
   interface SessionData {
     userId?: number;
     candidatoId?: number;
-    userType?: 'admin' | 'candidato';
+    empresaId?: number;
+    userType?: 'admin' | 'candidato' | 'empresa';
   }
 }
 
@@ -484,6 +485,163 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error actualizando documentos por tipo de candidato:", error);
       res.status(500).json({ message: "Error interno del servidor" });
     }
+  });
+
+  // =====================================
+  // RUTAS DEL PORTAL DE EMPRESAS
+  // =====================================
+
+  // Login de empresas
+  app.post("/api/empresa/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email y contraseña requeridos" });
+      }
+      
+      const empresa = await storage.getEmpresaByEmail(email);
+      
+      if (!empresa || empresa.password !== password) {
+        return res.status(401).json({ message: "Credenciales inválidas" });
+      }
+      
+      req.session.empresaId = empresa.id;
+      req.session.userType = 'empresa';
+      
+      res.json({ 
+        message: "Login exitoso",
+        empresa: {
+          id: empresa.id,
+          nombreEmpresa: empresa.nombreEmpresa,
+          email: empresa.email,
+          nit: empresa.nit
+        }
+      });
+    } catch (error) {
+      console.error("Error en login de empresa:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Profile de empresa autenticada
+  app.get("/api/empresa/profile", async (req, res) => {
+    try {
+      if (!req.session.empresaId || req.session.userType !== 'empresa') {
+        return res.status(401).json({ message: "No autorizado" });
+      }
+      
+      const empresa = await storage.getEmpresa(req.session.empresaId);
+      if (!empresa) {
+        return res.status(404).json({ message: "Empresa no encontrada" });
+      }
+      
+      res.json({
+        id: empresa.id,
+        nombreEmpresa: empresa.nombreEmpresa,
+        email: empresa.email,
+        nit: empresa.nit,
+        direccion: empresa.direccion,
+        telefono: empresa.telefono,
+        ciudad: empresa.ciudad,
+        contactoPrincipal: empresa.contactoPrincipal,
+        cargoContacto: empresa.cargoContacto
+      });
+    } catch (error) {
+      console.error("Error obteniendo perfil de empresa:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Dashboard stats para empresa
+  app.get("/api/empresa/dashboard-stats", async (req, res) => {
+    try {
+      if (!req.session.empresaId || req.session.userType !== 'empresa') {
+        return res.status(401).json({ message: "No autorizado" });
+      }
+      
+      const candidatos = await storage.getCandidatosByEmpresa(req.session.empresaId);
+      
+      res.json({
+        totalCandidatos: candidatos.length,
+        candidatosPendientes: candidatos.filter(c => c.estado === 'pendiente').length,
+        candidatosAprobados: candidatos.filter(c => c.estado === 'aprobado').length,
+        candidatosRechazados: candidatos.filter(c => c.estado === 'rechazado').length
+      });
+    } catch (error) {
+      console.error("Error obteniendo estadísticas:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Lista de candidatos de la empresa
+  app.get("/api/empresa/candidatos", async (req, res) => {
+    try {
+      if (!req.session.empresaId || req.session.userType !== 'empresa') {
+        return res.status(401).json({ message: "No autorizado" });
+      }
+      
+      const candidatos = await storage.getCandidatosByEmpresa(req.session.empresaId);
+      res.json(candidatos);
+    } catch (error) {
+      console.error("Error obteniendo candidatos de la empresa:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Crear candidato por empresa
+  app.post("/api/empresa/candidatos", async (req, res) => {
+    try {
+      if (!req.session.empresaId || req.session.userType !== 'empresa') {
+        return res.status(401).json({ message: "No autorizado" });
+      }
+      
+      const validatedData = insertCandidatoSchema.parse(req.body);
+      const candidato = await storage.createCandidatoForEmpresa(validatedData, req.session.empresaId);
+      
+      res.status(201).json({
+        message: "Candidato creado exitosamente",
+        candidato
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Datos inválidos", errors: error.errors });
+      }
+      console.error("Error creando candidato:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Obtener candidato específico de la empresa
+  app.get("/api/empresa/candidatos/:id", async (req, res) => {
+    try {
+      if (!req.session.empresaId || req.session.userType !== 'empresa') {
+        return res.status(401).json({ message: "No autorizado" });
+      }
+      
+      const candidatoId = parseInt(req.params.id);
+      const candidato = await storage.getCandidato(candidatoId);
+      
+      if (!candidato || candidato.empresaId !== req.session.empresaId) {
+        return res.status(404).json({ message: "Candidato no encontrado" });
+      }
+      
+      res.json(candidato);
+    } catch (error) {
+      console.error("Error obteniendo candidato:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Logout de empresa
+  app.post("/api/empresa/logout", (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Error en logout:", err);
+        return res.status(500).json({ message: "Error en logout" });
+      }
+      res.json({ message: "Logout exitoso" });
+    });
   });
 
   const httpServer = createServer(app);
