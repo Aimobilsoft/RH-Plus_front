@@ -44,6 +44,13 @@ import CambiarPassword from "./pages/candidatos/CambiarPassword";
 import LoginAdmin from "./pages/LoginAdmin";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
+// Empresa portal pages
+import LoginEmpresa from "./pages/empresa/LoginEmpresa";
+import DashboardEmpresa from "./pages/empresa/DashboardEmpresa";
+import CandidatosEmpresa from "./pages/empresa/CandidatosEmpresa";
+import CrearCandidatoEmpresa from "./pages/empresa/CrearCandidatoEmpresa";
+import DetalleCandidatoEmpresa from "./pages/empresa/DetalleCandidatoEmpresa";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -61,6 +68,13 @@ const App = () => (
           <Route path="/candidato/registro" element={<RegistroCandidato />} />
           <Route path="/candidato/cambiar-password" element={<CambiarPassword />} />
           <Route path="/candidato/perfil" element={<PerfilCandidato />} />
+          
+          {/* Empresa Portal Routes - No Layout */}
+          <Route path="/empresa/login" element={<LoginEmpresa />} />
+          <Route path="/empresa/dashboard" element={<DashboardEmpresa />} />
+          <Route path="/empresa/candidatos" element={<CandidatosEmpresa />} />
+          <Route path="/empresa/candidatos/crear" element={<CrearCandidatoEmpresa />} />
+          <Route path="/empresa/candidatos/:id" element={<DetalleCandidatoEmpresa />} />
           
           {/* Admin Portal Routes - With Layout (Protected) */}
           <Route element={<ProtectedRoute><SidebarProvider><Layout /></SidebarProvider></ProtectedRoute>}>

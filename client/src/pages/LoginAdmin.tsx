@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, User, Lock } from 'lucide-react';
+import { Eye, EyeOff, User, Lock, Building2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -180,6 +180,15 @@ export default function LoginAdmin() {
                   <Button variant="outline" className="w-full">
                     <User className="w-4 h-4 mr-2" />
                     Portal de Candidatos
+                  </Button>
+                </Link>
+              </div>
+              
+              <div className="mt-4">
+                <Link to="/empresa/login">
+                  <Button variant="outline" className="w-full bg-blue-50 hover:bg-blue-100 border-blue-200">
+                    <Building2 className="w-4 h-4 mr-2" />
+                    Portal de Empresas
                   </Button>
                 </Link>
               </div>
