@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertCandidatoSchema, createCandidatoFromPerfilSchema, createAdminUserSchema } from "@shared/schema";
+import { insertCandidatoSchema, createCandidatoFromPerfilSchema, createAdminUserSchema, createEmpresaSchema } from "@shared/schema";
 import { z } from "zod";
 
 // Session middleware for simple login

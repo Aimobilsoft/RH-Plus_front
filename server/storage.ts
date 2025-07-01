@@ -109,6 +109,7 @@ export class MemStorage implements IStorage {
     this.users = new Map();
     this.candidatos = new Map();
     this.perfiles = new Map();
+    this.empresas = new Map();
     this.tiposCandidatos = new Map();
     this.documentosTipo = new Map();
     this.tiposCandidatosDocumentos = new Map();
@@ -116,6 +117,7 @@ export class MemStorage implements IStorage {
     this.currentUserId = 1;
     this.currentCandidatoId = 1;
     this.currentPerfilId = 1;
+    this.currentEmpresaId = 1;
     this.currentTipoCandidatoId = 1;
     this.currentDocumentoTipoId = 1;
     this.currentTipoCandidatoDocumentoId = 1;
@@ -206,8 +208,41 @@ export class MemStorage implements IStorage {
       fechaRegistro: new Date(),
       estado: "pendiente",
       completado: true,
+      empresaId: null, // Candidato creado por admin, no por empresa
     });
     this.currentCandidatoId = 2;
+
+    // Create example empresas
+    this.empresas.set(1, {
+      id: 1,
+      email: "empresa1@ejemplo.com",
+      password: "empresa123",
+      nombreEmpresa: "TechCorp Solutions",
+      nit: "9001234567",
+      direccion: "Calle 100 #15-23, Piso 5",
+      telefono: "6012345678",
+      ciudad: "Bogotá",
+      contactoPrincipal: "María González",
+      cargoContacto: "Directora de Recursos Humanos",
+      fechaRegistro: new Date(),
+      estado: "activo",
+    });
+
+    this.empresas.set(2, {
+      id: 2,
+      email: "empresa2@ejemplo.com", 
+      password: "empresa456",
+      nombreEmpresa: "Innovación Digital S.A.S",
+      nit: "9007654321",
+      direccion: "Carrera 50 #80-15",
+      telefono: "6019876543",
+      ciudad: "Medellín",
+      contactoPrincipal: "Carlos Ramírez",
+      cargoContacto: "Gerente General",
+      fechaRegistro: new Date(),
+      estado: "activo",
+    });
+    this.currentEmpresaId = 3;
 
     // Create default tipos de candidatos
     this.tiposCandidatos.set(1, {
@@ -441,6 +476,7 @@ export class MemStorage implements IStorage {
       fechaRegistro: new Date(),
       estado: "pendiente",
       completado: false,
+      empresaId: insertCandidato.empresaId || null,
     };
     this.candidatos.set(id, candidato);
     return candidato;
@@ -700,6 +736,68 @@ export class MemStorage implements IStorage {
 
   async deleteCandidatoDocumento(id: number): Promise<void> {
     this.candidatosDocumentos.delete(id);
+  }
+
+  // Empresa operations
+  async getEmpresa(id: number): Promise<Empresa | undefined> {
+    return this.empresas.get(id);
+  }
+
+  async getEmpresaByEmail(email: string): Promise<Empresa | undefined> {
+    for (const empresa of this.empresas.values()) {
+      if (empresa.email === email) {
+        return empresa;
+      }
+    }
+    return undefined;
+  }
+
+  async getAllEmpresas(): Promise<Empresa[]> {
+    return Array.from(this.empresas.values());
+  }
+
+  async createEmpresa(insertEmpresa: InsertEmpresa): Promise<Empresa> {
+    const id = this.currentEmpresaId++;
+    const empresa: Empresa = {
+      id,
+      email: insertEmpresa.email,
+      password: insertEmpresa.password,
+      nombreEmpresa: insertEmpresa.nombreEmpresa,
+      nit: insertEmpresa.nit,
+      direccion: insertEmpresa.direccion || null,
+      telefono: insertEmpresa.telefono || null,
+      ciudad: insertEmpresa.ciudad || null,
+      contactoPrincipal: insertEmpresa.contactoPrincipal || null,
+      cargoContacto: insertEmpresa.cargoContacto || null,
+      fechaRegistro: new Date(),
+      estado: "activo",
+    };
+    this.empresas.set(id, empresa);
+    return empresa;
+  }
+
+  async updateEmpresa(id: number, updateData: Partial<InsertEmpresa>): Promise<Empresa> {
+    const existing = this.empresas.get(id);
+    if (!existing) {
+      throw new Error(`Empresa with id ${id} not found`);
+    }
+    const updated = { ...existing, ...updateData };
+    this.empresas.set(id, updated);
+    return updated;
+  }
+
+  // Candidatos por empresa (para portal de empresas)
+  async getCandidatosByEmpresa(empresaId: number): Promise<Candidato[]> {
+    return Array.from(this.candidatos.values())
+      .filter(candidato => candidato.empresaId === empresaId);
+  }
+
+  async createCandidatoForEmpresa(candidato: InsertCandidato, empresaId: number): Promise<Candidato> {
+    const candidatoData = {
+      ...candidato,
+      empresaId: empresaId
+    };
+    return this.createCandidato(candidatoData);
   }
 }
 
