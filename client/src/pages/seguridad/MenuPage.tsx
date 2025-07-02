@@ -129,7 +129,11 @@ const MenuPage = () => {
       if (!response.ok) throw new Error('Failed to create node');
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (newNode, variables) => {
+      // Si se creó como hijo de un nodo padre, expandir automáticamente el padre
+      if (variables.parentId) {
+        setExpandedNodes(prev => new Set([...prev, variables.parentId!]));
+      }
       queryClient.invalidateQueries({ queryKey: ['menu-nodes'] });
       setIsAddNodeModalOpen(false);
       addNodeForm.reset();
@@ -593,8 +597,45 @@ const MenuPage = () => {
             <DialogHeader>
               <DialogTitle>Crear Gestión de Permisos</DialogTitle>
             </DialogHeader>
-            <div className="text-center text-gray-500 py-8">
-              Selecciona un formulario del árbol de menús para gestionar sus permisos
+            {/* Mostrar lista de nodos de tipo "file" disponibles */}
+            <div className="space-y-4">
+              <div className="text-sm text-gray-600 mb-4">
+                Selecciona un formulario para configurar sus permisos:
+              </div>
+              <div className="max-h-64 overflow-y-auto border rounded-md">
+                {nodes.filter((node: any) => node.tipo === 'file').length === 0 ? (
+                  <div className="p-4 text-center text-gray-500">
+                    No hay formularios disponibles. Crea primero un nodo de tipo "Formulario".
+                  </div>
+                ) : (
+                  nodes.filter((node: any) => node.tipo === 'file').map((node: any) => (
+                    <div 
+                      key={node.id}
+                      className={`flex items-center p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0 ${
+                        selectedNode === node.id ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+                      }`}
+                      onClick={() => {
+                        selectNode(node.id, node.tipo, node.name);
+                        setIsCreatePermissionModalOpen(false);
+                      }}
+                    >
+                      <FileText size={16} className="mr-2 text-gray-500" />
+                      <span className="text-sm">{node.name}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+              {selectedNode && selectedNodeType === 'file' && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="flex items-center text-green-800 text-sm">
+                    <FileText size={16} className="mr-2" />
+                    Formulario seleccionado: {nodes.find((n: any) => n.id === selectedNode)?.name}
+                  </div>
+                  <div className="text-xs text-green-600 mt-1">
+                    Puedes configurar los permisos en el panel derecho
+                  </div>
+                </div>
+              )}
             </div>
           </DialogContent>
         </Dialog>
