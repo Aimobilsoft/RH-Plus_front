@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Users, UserPlus, Plus } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Settings, Users, UserPlus, Crown, Briefcase, Building, UserCheck, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 import type { Perfil } from "@shared/schema";
 
 const PerfilesPage = () => {
@@ -36,6 +38,8 @@ const PerfilesPage = () => {
         return 'outline';
       case 'administrador_general':
         return 'default';
+      case 'cliente':
+        return 'secondary';
       default:
         return 'secondary';
     }
@@ -44,17 +48,82 @@ const PerfilesPage = () => {
   const getPerfilIcon = (nombre: string) => {
     switch (nombre) {
       case 'administrador':
-        return '👑';
+        return <Crown className="h-5 w-5 text-red-600" />;
       case 'candidato':
-        return '👤';
+        return <User className="h-5 w-5 text-green-600" />;
       case 'coordinador':
-        return '📋';
+        return <Briefcase className="h-5 w-5 text-blue-600" />;
       case 'administrador_general':
-        return '🔧';
+        return <Settings className="h-5 w-5 text-purple-600" />;
+      case 'cliente':
+        return <Building className="h-5 w-5 text-yellow-600" />;
       default:
-        return '👤';
+        return <User className="h-5 w-5 text-gray-600" />;
     }
   };
+
+  const userTypes = [
+    {
+      id: 'administrador',
+      name: 'Administrador',
+      description: 'Usuario con permisos para gestionar candidatos y coordinadores dentro de su ámbito',
+      color: 'red',
+      bgColor: 'bg-red-50 hover:bg-red-100',
+      borderColor: 'border-red-200',
+      textColor: 'text-red-800',
+      icon: <Crown className="h-6 w-6 text-red-600" />,
+      route: '/seguridad/perfiles/crear-administrador',
+      buttonText: 'Crear Administrador'
+    },
+    {
+      id: 'coordinador',
+      name: 'Coordinador',
+      description: 'Usuario especializado en coordinar procesos y gestionar equipos de trabajo',
+      color: 'blue',
+      bgColor: 'bg-blue-50 hover:bg-blue-100',
+      borderColor: 'border-blue-200',
+      textColor: 'text-blue-800',
+      icon: <Briefcase className="h-6 w-6 text-blue-600" />,
+      route: '/seguridad/perfiles/crear-coordinador',
+      buttonText: 'Crear Coordinador'
+    },
+    {
+      id: 'administrador_general',
+      name: 'Administrador General',
+      description: 'Usuario con permisos completos para gestionar todo el sistema y configuraciones globales',
+      color: 'purple',
+      bgColor: 'bg-purple-50 hover:bg-purple-100',
+      borderColor: 'border-purple-200',
+      textColor: 'text-purple-800',
+      icon: <Settings className="h-6 w-6 text-purple-600" />,
+      route: '/seguridad/perfiles/crear-admin-general',
+      buttonText: 'Crear Admin General'
+    },
+    {
+      id: 'candidato',
+      name: 'Candidato',
+      description: 'Usuario perteneciente a candidatos que pueden acceder a su perfil y gestionar documentos',
+      color: 'green',
+      bgColor: 'bg-green-50 hover:bg-green-100',
+      borderColor: 'border-green-200',
+      textColor: 'text-green-800',
+      icon: <User className="h-6 w-6 text-green-600" />,
+      route: '/seguridad/perfiles/crear-candidato',
+      buttonText: 'Crear Candidato'
+    },
+    {
+      id: 'cliente',
+      name: 'Cliente',
+      description: 'Usuario perteneciente a una empresa externa (cliente) que puede crear solicitudes de ingreso, consultar su estado y ver sus candidatos',
+      color: 'yellow',
+      bgColor: 'bg-yellow-50 hover:bg-yellow-100',
+      borderColor: 'border-yellow-200',
+      textColor: 'text-yellow-800',
+      icon: <Building className="h-6 w-6 text-yellow-600" />,
+      route: '/seguridad/perfiles/crear-cliente',
+      buttonText: 'Crear Cliente'
+    }
+  ];
 
   return (
     <div className="page-container p-6">
@@ -86,7 +155,7 @@ const PerfilesPage = () => {
               {perfiles.map((perfil) => (
                 <div key={perfil.id} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center space-x-3">
-                    <span className="text-2xl">{getPerfilIcon(perfil.nombre)}</span>
+                    {getPerfilIcon(perfil.nombre)}
                     <div>
                       <h3 className="font-medium">{perfil.nombre}</h3>
                       <p className="text-sm text-gray-600">{perfil.descripcion}</p>
@@ -105,7 +174,7 @@ const PerfilesPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <UserPlus className="h-5 w-5" />
-              <span>Acciones Disponibles</span>
+              <span>Crear Usuarios</span>
             </CardTitle>
             <CardDescription>
               Crear nuevos usuarios según el tipo de perfil
@@ -113,65 +182,42 @@ const PerfilesPage = () => {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 gap-4">
-              <div className="p-4 border rounded-lg">
-                <h3 className="font-medium text-green-800 mb-2">👤 Crear Candidato</h3>
-                <p className="text-sm text-gray-600 mb-3">
-                  Crea una cuenta de candidato con información básica (cédula, nombre, email).
-                  El usuario será el correo electrónico y la contraseña inicial será el número de documento.
-                </p>
-                <Button
-                  className="bg-green-600 hover:bg-green-700"
-                  onClick={() => window.location.href = '/seguridad/perfiles/crear-candidato'}
-                >
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Crear Candidato
-                </Button>
-              </div>
-
-              <div className="p-4 border rounded-lg">
-                <h3 className="font-medium text-red-800 mb-2">👑 Crear Administrador</h3>
-                <p className="text-sm text-gray-600 mb-3">
-                  Crea una cuenta de administrador con permisos completos del sistema.
-                  Se asignará username personalizado y contraseña temporal.
-                </p>
-                <Button
-                  className="bg-red-600 hover:bg-red-700"
-                  onClick={() => window.location.href = '/seguridad/perfiles/crear-administrador'}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Crear Administrador
-                </Button>
-              </div>
-
-              <div className="p-4 border rounded-lg">
-                <h3 className="font-medium text-blue-800 mb-2">📋 Crear Coordinador</h3>
-                <p className="text-sm text-gray-600 mb-3">
-                  Crea una cuenta de coordinador con permisos de gestión intermedia.
-                  Se asignará username personalizado y contraseña temporal.
-                </p>
-                <Button
-                  className="bg-blue-600 hover:bg-blue-700"
-                  onClick={() => window.location.href = '/seguridad/perfiles/crear-coordinador'}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Crear Coordinador
-                </Button>
-              </div>
-
-              <div className="p-4 border rounded-lg">
-                <h3 className="font-medium text-purple-800 mb-2">🔧 Crear Administrador General</h3>
-                <p className="text-sm text-gray-600 mb-3">
-                  Crea una cuenta de administrador general con permisos completos.
-                  Se asignará username personalizado y contraseña temporal.
-                </p>
-                <Button
-                  className="bg-purple-600 hover:bg-purple-700"
-                  onClick={() => window.location.href = '/seguridad/perfiles/crear-admin-general'}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Crear Admin General
-                </Button>
-              </div>
+              {userTypes.map((userType) => (
+                <Tooltip key={userType.id}>
+                  <TooltipTrigger asChild>
+                    <div 
+                      className={`p-4 border rounded-lg transition-colors ${userType.bgColor} ${userType.borderColor}`}
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center space-x-3">
+                          {userType.icon}
+                          <h3 className={`font-medium ${userType.textColor}`}>
+                            {userType.name}
+                          </h3>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-3">
+                        {userType.description}
+                      </p>
+                      <Link to={userType.route}>
+                        <Button 
+                          size="sm" 
+                          className={`w-full`}
+                          variant={userType.color === 'red' ? 'destructive' : 
+                                  userType.color === 'blue' ? 'default' :
+                                  userType.color === 'purple' ? 'secondary' :
+                                  userType.color === 'green' ? 'outline' : 'outline'}
+                        >
+                          {userType.buttonText}
+                        </Button>
+                      </Link>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{userType.description}</p>
+                  </TooltipContent>
+                </Tooltip>
+              ))}
             </div>
           </CardContent>
         </Card>

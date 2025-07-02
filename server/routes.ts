@@ -736,6 +736,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===== RUTAS DE CLIENTES =====
+  
+  // Obtener todos los clientes
+  app.get("/api/clientes", async (req, res) => {
+    try {
+      const clientes = await storage.getAllClientes();
+      res.json(clientes);
+    } catch (error) {
+      console.error("Error obteniendo clientes:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Crear nuevo cliente
+  app.post("/api/clientes", async (req, res) => {
+    try {
+      const clienteData = req.body;
+      
+      // Generar contraseña temporal si no se proporciona
+      if (!clienteData.password) {
+        clienteData.password = "TempPass123!";
+      }
+
+      const cliente = await storage.createCliente(clienteData);
+      res.status(201).json(cliente);
+    } catch (error) {
+      console.error("Error creando cliente:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Obtener cliente por ID
+  app.get("/api/clientes/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const cliente = await storage.getClienteById(id);
+      
+      if (!cliente) {
+        return res.status(404).json({ message: "Cliente no encontrado" });
+      }
+      
+      res.json(cliente);
+    } catch (error) {
+      console.error("Error obteniendo cliente:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Actualizar cliente
+  app.put("/api/clientes/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const clienteData = req.body;
+      
+      const cliente = await storage.updateCliente(id, clienteData);
+      res.json(cliente);
+    } catch (error) {
+      console.error("Error actualizando cliente:", error);
+      if (error.message === "Cliente no encontrado") {
+        return res.status(404).json({ message: error.message });
+      }
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Eliminar cliente
+  app.delete("/api/clientes/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteCliente(id);
+      res.json({ message: "Cliente eliminado exitosamente" });
+    } catch (error) {
+      console.error("Error eliminando cliente:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -137,6 +137,7 @@ export class MemStorage implements IStorage {
     this.candidatos = new Map();
     this.perfiles = new Map();
     this.empresas = new Map();
+    this.clientes = new Map();
     this.tiposCandidatos = new Map();
     this.documentosTipo = new Map();
     this.tiposCandidatosDocumentos = new Map();
@@ -146,6 +147,7 @@ export class MemStorage implements IStorage {
     this.currentCandidatoId = 1;
     this.currentPerfilId = 1;
     this.currentEmpresaId = 1;
+    this.currentClienteId = 1;
     this.currentTipoCandidatoId = 1;
     this.currentDocumentoTipoId = 1;
     this.currentTipoCandidatoDocumentoId = 1;
@@ -489,6 +491,33 @@ export class MemStorage implements IStorage {
     });
 
     this.currentAnalistaId = 5;
+
+    // Crear clientes de ejemplo
+    this.clientes.set(1, {
+      id: 1,
+      email: "maria.torres@techcorp.com",
+      password: "12345678",
+      nombreCompleto: "María Torres",
+      empresa: "TechCorp",
+      regional: "Bogotá",
+      sucursal: "Centro",
+      fechaRegistro: new Date('2023-02-10'),
+      estado: "activo",
+    });
+
+    this.clientes.set(2, {
+      id: 2,
+      email: "carlos.herrera@innovate.com",
+      password: "12345678",
+      nombreCompleto: "Carlos Herrera",
+      empresa: "InnovateCorp",
+      regional: "Medellín",
+      sucursal: "Norte",
+      fechaRegistro: new Date('2023-04-15'),
+      estado: "activo",
+    });
+
+    this.currentClienteId = 3;
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -946,6 +975,56 @@ export class MemStorage implements IStorage {
       throw new Error("Analista no encontrado");
     }
     this.analistas.delete(id);
+  }
+
+  // Clientes operations
+  async getAllClientes(): Promise<Cliente[]> {
+    return Array.from(this.clientes.values());
+  }
+
+  async getClienteById(id: number): Promise<Cliente | undefined> {
+    return this.clientes.get(id);
+  }
+
+  async getClienteByEmail(email: string): Promise<Cliente | undefined> {
+    return Array.from(this.clientes.values()).find(
+      (cliente) => cliente.email === email,
+    );
+  }
+
+  async createCliente(insertCliente: InsertCliente): Promise<Cliente> {
+    const id = this.currentClienteId++;
+    const cliente: Cliente = {
+      id,
+      email: insertCliente.email,
+      password: insertCliente.password,
+      nombreCompleto: insertCliente.nombreCompleto,
+      empresa: insertCliente.empresa,
+      regional: insertCliente.regional,
+      sucursal: insertCliente.sucursal,
+      fechaRegistro: new Date(),
+      estado: insertCliente.estado || "activo",
+    };
+    this.clientes.set(id, cliente);
+    return cliente;
+  }
+
+  async updateCliente(id: number, updateData: Partial<InsertCliente>): Promise<Cliente> {
+    const cliente = this.clientes.get(id);
+    if (!cliente) {
+      throw new Error("Cliente no encontrado");
+    }
+
+    const updated: Cliente = {
+      ...cliente,
+      ...updateData,
+    };
+    this.clientes.set(id, updated);
+    return updated;
+  }
+
+  async deleteCliente(id: number): Promise<void> {
+    this.clientes.delete(id);
   }
 }
 
