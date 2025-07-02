@@ -34,6 +34,11 @@ import MenuPage from "./pages/seguridad/MenuPage";
 // Maestro pages
 import TiposCandidatosPage from "./pages/maestro/TiposCandidatosPage";
 
+// Analistas pages
+import AnalistasPage from "./pages/analistas/AnalistasPage";
+import CrearAnalistaPage from "./pages/analistas/CrearAnalistaPage";
+import EditarAnalistaPage from "./pages/analistas/EditarAnalistaPage";
+
 // Candidate portal pages
 import LoginCandidato from "./pages/candidatos/LoginCandidato";
 import RegistroCandidato from "./pages/candidatos/RegistroCandidato";
@@ -114,6 +119,11 @@ const App = () => (
             
             {/* Maestro */}
             <Route path="/maestro/tipos-candidatos" element={<TiposCandidatosPage />} />
+            
+            {/* Analistas */}
+            <Route path="/analistas" element={<AnalistasPage />} />
+            <Route path="/analistas/crear" element={<CrearAnalistaPage />} />
+            <Route path="/analistas/:id/editar" element={<EditarAnalistaPage />} />
           </Route>
           
           {/* Ruta 404 */}

@@ -412,6 +412,69 @@ export class MemStorage implements IStorage {
 
     this.currentTipoCandidatoDocumentoId = 9;
     this.currentCandidatoDocumentoId = 1;
+
+    // Crear analistas de ejemplo
+    this.analistas.set(1, {
+      id: 1,
+      nombre: "Ana María",
+      apellido: "González",
+      email: "ana.gonzalez@empresa.com",
+      telefono: "300-555-0101",
+      regional: "Bogotá",
+      clienteAsignado: "TechCorp",
+      nivelPrioridad: "alto",
+      estado: "activo",
+      fechaIngreso: new Date('2023-01-15'),
+      fechaCreacion: new Date(),
+      fechaActualizacion: new Date(),
+    });
+
+    this.analistas.set(2, {
+      id: 2,
+      nombre: "Carlos",
+      apellido: "Rodríguez",
+      email: "carlos.rodriguez@empresa.com",
+      telefono: "301-555-0102",
+      regional: "Medellín",
+      clienteAsignado: "InnovateCorp",
+      nivelPrioridad: "medio",
+      estado: "activo",
+      fechaIngreso: new Date('2023-03-20'),
+      fechaCreacion: new Date(),
+      fechaActualizacion: new Date(),
+    });
+
+    this.analistas.set(3, {
+      id: 3,
+      nombre: "Laura",
+      apellido: "Martínez",
+      email: "laura.martinez@empresa.com",
+      telefono: "302-555-0103",
+      regional: "Cali",
+      clienteAsignado: null,
+      nivelPrioridad: "bajo",
+      estado: "activo",
+      fechaIngreso: new Date('2023-06-10'),
+      fechaCreacion: new Date(),
+      fechaActualizacion: new Date(),
+    });
+
+    this.analistas.set(4, {
+      id: 4,
+      nombre: "Diego",
+      apellido: "Pérez",
+      email: "diego.perez@empresa.com",
+      telefono: "303-555-0104",
+      regional: "Barranquilla",
+      clienteAsignado: "GlobalSolutions",
+      nivelPrioridad: "alto",
+      estado: "inactivo",
+      fechaIngreso: new Date('2022-11-05'),
+      fechaCreacion: new Date(),
+      fechaActualizacion: new Date(),
+    });
+
+    this.currentAnalistaId = 5;
   }
 
   async getUser(id: number): Promise<User | undefined> {

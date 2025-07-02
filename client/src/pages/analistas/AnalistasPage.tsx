@@ -67,7 +67,7 @@ export default function AnalistasPage() {
   const [filterNivel, setFilterNivel] = useState('todos');
   const [filterEstado, setFilterEstado] = useState('todos');
 
-  const { data: analistas = [], isLoading, refetch } = useApiData<Analista[]>(
+  const { data: analistas = [], isLoading, fetchData } = useApiData<Analista[]>(
     '/api/analistas',
     [],
     { showSuccessToast: false }
@@ -114,7 +114,7 @@ export default function AnalistasPage() {
 
       if (response.ok) {
         toast.success('Analista eliminado exitosamente');
-        refetch();
+        fetchData();
       } else {
         const error = await response.json();
         toast.error(error.message || 'Error al eliminar analista');

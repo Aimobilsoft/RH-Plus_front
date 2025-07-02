@@ -105,6 +105,19 @@ This is a full-stack medical practice management application built with modern w
 
 ```
 Changelog:
+- January 1, 2025. Complete Analistas management module implementation
+  * Added comprehensive Analistas module with full CRUD operations and advanced management features
+  * Implemented new database schema for analistas table with fields: nombre, apellido, email, telefono, regional, clienteAsignado, nivelPrioridad, estado, fechaIngreso
+  * Created three main pages: AnalistasPage (listing with advanced filters), CrearAnalistaPage (form creation), EditarAnalistaPage (edit functionality)
+  * Added new sidebar menu item "Analistas" with UserCheck icon positioned before "Maestro" section
+  * Implemented comprehensive filtering system: search by name/email/regional/client, filter by regional, priority level, and status
+  * Added statistics dashboard showing: total analysts, active analysts, high priority analysts, and number of regionals
+  * Included Excel export functionality for analyst data with CSV format download
+  * Created complete backend API with routes: GET /api/analistas, POST /api/analistas, PUT /api/analistas/:id, DELETE /api/analistas/:id
+  * Added validation schema and proper error handling for all analyst operations
+  * Implemented sample data with 4 example analysts from different regionals (Bogotá, Medellín, Cali, Barranquilla)
+  * Features include: email uniqueness validation, priority levels (alto/medio/bajo), status management (activo/inactivo), regional assignments
+  * Full integration with existing authentication and navigation system
 - December 30, 2024. Complete enterprise portal implementation
   * Built complete portal de empresas with authentication, dashboard, and candidate management
   * Implemented enterprise-specific candidate creation and isolation (companies only see their own candidates)  
