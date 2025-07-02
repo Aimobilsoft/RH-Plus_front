@@ -74,7 +74,7 @@ export default function CrearAnalistaPage() {
       apellido: '',
       email: '',
       telefono: '',
-      clienteAsignado: '',
+      clienteAsignado: 'sin_asignacion',
       nivelPrioridad: 3,
       estado: 'activo',
       fechaIngreso: new Date().toISOString().split('T')[0],
@@ -271,7 +271,7 @@ export default function CrearAnalistaPage() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="">Sin asignación específica</SelectItem>
+                            <SelectItem value="sin_asignacion">Sin asignación específica</SelectItem>
                             {clientesDisponibles.map(cliente => (
                               <SelectItem key={cliente} value={cliente}>
                                 {cliente}

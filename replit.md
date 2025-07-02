@@ -115,6 +115,16 @@ Changelog:
   * Integrated proper form validation and submission handling for menu permissions
   * Menu system includes drag-and-drop preparation for future organization features
 
+- January 2, 2025. Enhanced analistas module with cascading selects and improved forms
+  * Created CascadingSelects component with Regional → Zona → Sucursal hierarchy using React/TypeScript
+  * Implemented automatic dependency resets when parent level changes (regional change clears zona/sucursal)  
+  * Added mock data structure: 7 regionales, 6 zonas, 6 sucursales with hierarchical relationships
+  * Only displays options where estado === 1 as per business requirements
+  * Updated analista creation form with enhanced fields: cliente asignado, nivel prioridad (1-5 scale), ubicación completa
+  * Added comprehensive form validation and real-time feedback for location selection
+  * Created test page (/test-cascading) for standalone component verification
+  * Fixed SelectItem error by replacing empty string values with meaningful defaults
+  * Integrated component into existing analistas workflow with proper state management
 - January 1, 2025. Complete Analistas management module implementation
   * Added comprehensive Analistas module with full CRUD operations and advanced management features
   * Implemented new database schema for analistas table with fields: nombre, apellido, email, telefono, regional, clienteAsignado, nivelPrioridad, estado, fechaIngreso
