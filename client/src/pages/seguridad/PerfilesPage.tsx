@@ -145,15 +145,40 @@ const PerfilesPage = () => {
     savePerfilMutation.mutate(data);
   };
 
-  const handleEdit = (perfil: any) => {
+  const handleEdit = async (perfil: any) => {
     setEditingPerfil(perfil);
-    form.reset({
-      codigo: perfil.id,
-      nombre: perfil.nombre,
-      descripcion: perfil.descripcion || "",
-      permisos: [] // TODO: Cargar permisos existentes
-    });
-    setIsModalOpen(true);
+    
+    try {
+      // Load existing permissions for this profile
+      const response = await fetch(`/api/perfiles/${perfil.id}/permisos`);
+      if (!response.ok) throw new Error('Failed to load permissions');
+      const existingPermisos = await response.json();
+      
+      form.reset({
+        codigo: perfil.id,
+        nombre: perfil.nombre,
+        descripcion: perfil.descripcion || "",
+        permisos: existingPermisos
+      });
+      
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error('Error loading permissions:', error);
+      toast({
+        title: "Error",
+        description: "No se pudieron cargar los permisos del perfil",
+        variant: "destructive",
+      });
+      
+      // Fallback: open form without permissions
+      form.reset({
+        codigo: perfil.id,
+        nombre: perfil.nombre,
+        descripcion: perfil.descripcion || "",
+        permisos: []
+      });
+      setIsModalOpen(true);
+    }
   };
 
   const handleDelete = (id: number) => {

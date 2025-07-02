@@ -3,6 +3,7 @@ import { Plus, Trash2, ChevronRight, ChevronDown, Folder, FileText, Settings, Ed
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -10,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
 // Schema for the permission form
 const permissionSchema = z.object({
@@ -71,6 +73,7 @@ const MenuPage = () => {
   const [expandedNodes, setExpandedNodes] = useState<Set<number>>(new Set());
   
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   // Fetch menu nodes
   const { data: nodes = [], isLoading } = useQuery({
@@ -140,6 +143,19 @@ const MenuPage = () => {
       queryClient.refetchQueries({ queryKey: ['menu-nodes'] });
       setIsAddNodeModalOpen(false);
       addNodeForm.reset();
+      
+      toast({
+        title: "Éxito",
+        description: `Nodo "${newNode.name}" creado correctamente`,
+        variant: "default",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "No se pudo crear el nodo. Intente nuevamente.",
+        variant: "destructive",
+      });
     }
   });
 
@@ -156,6 +172,19 @@ const MenuPage = () => {
       queryClient.invalidateQueries({ queryKey: ['menu-nodes'] });
       setSelectedNode(null);
       setSelectedNodeType(null);
+      
+      toast({
+        title: "Éxito",
+        description: "Nodo eliminado correctamente",
+        variant: "default",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar el nodo. Intente nuevamente.",
+        variant: "destructive",
+      });
     }
   });
 
@@ -170,8 +199,21 @@ const MenuPage = () => {
       if (!response.ok) throw new Error('Failed to update node');
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (updatedNode) => {
       queryClient.invalidateQueries({ queryKey: ['menu-nodes'] });
+      
+      toast({
+        title: "Éxito",
+        description: `Nodo "${updatedNode.name}" actualizado correctamente`,
+        variant: "default",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar el nodo. Intente nuevamente.",
+        variant: "destructive",
+      });
     }
   });
 
@@ -188,6 +230,19 @@ const MenuPage = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['menu-permissions', selectedNode] });
+      
+      toast({
+        title: "Éxito",
+        description: "Permisos guardados correctamente",
+        variant: "default",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "No se pudieron guardar los permisos. Intente nuevamente.",
+        variant: "destructive",
+      });
     }
   });
 
@@ -428,7 +483,11 @@ const MenuPage = () => {
                             render={({ field }) => (
                               <FormItem>
                                 <FormControl>
-                                  <Input {...field} className="border-0 shadow-none focus:ring-0 p-0" />
+                                  <Input 
+                                    {...field} 
+                                    placeholder="Código"
+                                    className="h-8 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                  />
                                 </FormControl>
                               </FormItem>
                             )}
@@ -441,7 +500,11 @@ const MenuPage = () => {
                             render={({ field }) => (
                               <FormItem>
                                 <FormControl>
-                                  <Input {...field} className="border-0 shadow-none focus:ring-0 p-0" />
+                                  <Input 
+                                    {...field} 
+                                    placeholder="Nombre de la acción"
+                                    className="h-8 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500" 
+                                  />
                                 </FormControl>
                               </FormItem>
                             )}
@@ -455,7 +518,7 @@ const MenuPage = () => {
                               <FormItem>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                   <FormControl>
-                                    <SelectTrigger className="border-0 shadow-none focus:ring-0">
+                                    <SelectTrigger className="h-8 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
                                       <SelectValue placeholder="Tipo" />
                                     </SelectTrigger>
                                   </FormControl>
@@ -630,15 +693,35 @@ const MenuPage = () => {
           </DialogContent>
         </Dialog>
 
-        <Button 
-          size="sm" 
-          variant="destructive"
-          onClick={deleteSelectedNode}
-          disabled={!selectedNode}
-        >
-          <Trash2 size={16} className="mr-1" />
-          Eliminar
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button 
+              size="sm" 
+              variant="destructive"
+              disabled={!selectedNode}
+            >
+              <Trash2 size={16} className="mr-1" />
+              Eliminar
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>¿Eliminar nodo del menú?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Esta acción no se puede deshacer. Se eliminará permanentemente el nodo seleccionado y todos sus permisos y acciones asociadas.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={deleteSelectedNode}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Eliminar
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         <Dialog open={isCreatePermissionModalOpen} onOpenChange={setIsCreatePermissionModalOpen}>
           <DialogTrigger asChild>

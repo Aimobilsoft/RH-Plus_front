@@ -1064,6 +1064,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/perfiles/:id/permisos", async (req, res) => {
+    try {
+      const perfilId = parseInt(req.params.id);
+      
+      // Get all menu permissions for this profile
+      const perfilMenus = await storage.getPerfilMenusByPerfilId(perfilId);
+      
+      const permisos = [];
+      for (const perfilMenu of perfilMenus) {
+        // Get menu node details
+        const menuNodes = await storage.getAllMenuNodes();
+        const menuNode = menuNodes.find(node => node.id === perfilMenu.menuNodeId);
+        
+        // Get actions for this menu
+        const acciones = await storage.getPerfilAccionesByPerfilMenuId(perfilMenu.id);
+        
+        permisos.push({
+          menuNodeId: perfilMenu.menuNodeId,
+          menuNodeName: menuNode ? menuNode.name : `Menu ${perfilMenu.menuNodeId}`,
+          acciones: acciones.map(a => a.menuActionId)
+        });
+      }
+      
+      res.json(permisos);
+    } catch (error) {
+      console.error("Error obteniendo permisos de perfil:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
   app.delete("/api/perfiles/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
