@@ -97,6 +97,7 @@ export default function CrearAnalistaPage() {
       // Combinar datos del formulario con datos de ubicación
       const analistaData = {
         ...data,
+        nivelPrioridad: Number(data.nivelPrioridad), // Convertir a número
         regional: `Regional-${locationData.regionId}`, // Temporal para compatibilidad
         regionId: locationData.regionId,
         zonaId: locationData.zonaId,

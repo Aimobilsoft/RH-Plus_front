@@ -404,6 +404,9 @@ export const insertAnalistaSchema = createInsertSchema(analistas).omit({
   id: true,
   fechaCreacion: true,
   fechaActualizacion: true,
+}).extend({
+  nivelPrioridad: z.number().min(1).max(5).transform(String), // Acepta número pero lo convierte a string
+  fechaIngreso: z.string().transform((str) => new Date(str)), // Acepta string de fecha y lo convierte a Date
 });
 
 // Tipos TypeScript para analistas
