@@ -1,17 +1,22 @@
 import React, { useState } from "react";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 // Schema para el formulario de perfil
 const perfilSchema = z.object({
@@ -32,6 +37,7 @@ const PerfilesPage = () => {
   const [editingPerfil, setEditingPerfil] = useState<any>(null);
   
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   // Fetch perfiles
   const { data: perfiles = [], isLoading } = useQuery({
@@ -85,33 +91,53 @@ const PerfilesPage = () => {
       const url = editingPerfil ? `/api/perfiles/${editingPerfil.id}` : '/api/perfiles';
       const method = editingPerfil ? 'PUT' : 'POST';
       
-      const response = await fetch(url, {
+      return await apiRequest(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      if (!response.ok) throw new Error('Failed to save perfil');
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['perfiles'] });
       setIsModalOpen(false);
       setEditingPerfil(null);
       form.reset();
+      
+      toast({
+        title: "Éxito",
+        description: editingPerfil ? "Perfil actualizado correctamente" : "Perfil creado correctamente",
+        variant: "default",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Error al guardar el perfil",
+        variant: "destructive",
+      });
     }
   });
 
   // Delete perfil mutation
   const deletePerfilMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await fetch(`/api/perfiles/${id}`, {
+      return await apiRequest(`/api/perfiles/${id}`, {
         method: 'DELETE'
       });
-      if (!response.ok) throw new Error('Failed to delete perfil');
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['perfiles'] });
+      toast({
+        title: "Éxito",
+        description: "Perfil eliminado correctamente",
+        variant: "default",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Error al eliminar el perfil",
+        variant: "destructive",
+      });
     }
   });
 
@@ -131,9 +157,7 @@ const PerfilesPage = () => {
   };
 
   const handleDelete = (id: number) => {
-    if (confirm('¿Está seguro de eliminar este perfil?')) {
-      deletePerfilMutation.mutate(id);
-    }
+    deletePerfilMutation.mutate(id);
   };
 
   const addPermiso = async (menuNodeId: number, menuNodeName: string) => {
@@ -347,14 +371,34 @@ const PerfilesPage = () => {
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => handleDelete(perfil.id)}
-                          className="h-8 w-8 p-0 bg-red-500 hover:bg-red-600 text-white border-0 rounded"
-                          disabled={deletePerfilMutation.isPending}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              size="sm"
+                              className="h-8 w-8 p-0 bg-red-500 hover:bg-red-600 text-white border-0 rounded"
+                              disabled={deletePerfilMutation.isPending}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>¿Eliminar perfil?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Esta acción no se puede deshacer. Se eliminará permanentemente el perfil "{perfil.nombre}" y todos sus permisos asociados.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDelete(perfil.id)}
+                                className="bg-red-600 hover:bg-red-700"
+                              >
+                                Eliminar
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </td>
                   </tr>
@@ -370,6 +414,100 @@ const PerfilesPage = () => {
           </div>
         </CardContent>
       </Card>
+    </div>
+  );
+};
+
+// Componente MultiSelect para acciones
+const ActionMultiSelect = ({ actions, selectedActions, onSelectionChange, isLoading }: {
+  actions: any[];
+  selectedActions: number[];
+  onSelectionChange: (actions: number[]) => void;
+  isLoading: boolean;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleAction = (actionId: number) => {
+    if (selectedActions.includes(actionId)) {
+      onSelectionChange(selectedActions.filter(id => id !== actionId));
+    } else {
+      onSelectionChange([...selectedActions, actionId]);
+    }
+  };
+
+  const removeAction = (actionId: number) => {
+    onSelectionChange(selectedActions.filter(id => id !== actionId));
+  };
+
+  const selectedActionsData = actions.filter(action => selectedActions.includes(action.id));
+
+  return (
+    <div className="w-full">
+      {/* Selected Actions Display */}
+      <div className="flex flex-wrap gap-1 mb-2">
+        {selectedActionsData.map((action) => (
+          <Badge
+            key={action.id}
+            variant="secondary"
+            className="flex items-center gap-1 px-2 py-1 text-xs"
+          >
+            {action.nombre}
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-auto p-0 w-3 h-3 hover:bg-transparent"
+              onClick={() => removeAction(action.id)}
+            >
+              <X className="h-2 w-2" />
+            </Button>
+          </Badge>
+        ))}
+      </div>
+
+      {/* Dropdown */}
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            role="combobox"
+            aria-expanded={isOpen}
+            className="w-full justify-between"
+            disabled={isLoading}
+          >
+            {isLoading 
+              ? "Cargando acciones..." 
+              : selectedActions.length > 0 
+                ? `${selectedActions.length} acciones seleccionadas`
+                : "Seleccionar acciones"
+            }
+            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0" align="start">
+          <Command>
+            <CommandInput placeholder="Buscar acciones..." />
+            <CommandEmpty>No se encontraron acciones.</CommandEmpty>
+            <CommandGroup>
+              {actions.map((action) => (
+                <CommandItem
+                  key={action.id}
+                  onSelect={() => toggleAction(action.id)}
+                  className="cursor-pointer"
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span>{action.nombre} ({action.tipo})</span>
+                    {selectedActions.includes(action.id) && (
+                      <span className="ml-2 text-green-600 font-bold">✓</span>
+                    )}
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </Command>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 };
@@ -416,26 +554,14 @@ const PermisoRow = ({ campo, index, form, onRemove, getActionsForNode }: any) =>
         {loadingActions ? (
           <div className="text-sm text-gray-500">Cargando acciones...</div>
         ) : (
-          <div className="space-y-2">
-            {actions.map((action: any) => (
-              <div key={action.id} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`action-${index}-${action.id}`}
-                  checked={form.watch(`permisos.${index}.acciones`)?.includes(action.id)}
-                  onCheckedChange={(checked) => handleActionToggle(action.id, checked as boolean)}
-                />
-                <label 
-                  htmlFor={`action-${index}-${action.id}`}
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  {action.nombre} ({action.tipo})
-                </label>
-              </div>
-            ))}
-            {actions.length === 0 && (
-              <div className="text-sm text-gray-500">No hay acciones configuradas</div>
-            )}
-          </div>
+          <ActionMultiSelect
+            actions={actions}
+            selectedActions={form.watch(`permisos.${index}.acciones`) || []}
+            onSelectionChange={(selectedActionIds) => 
+              form.setValue(`permisos.${index}.acciones`, selectedActionIds)
+            }
+            isLoading={loadingActions}
+          />
         )}
         <Button
           type="button"
