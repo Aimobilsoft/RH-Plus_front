@@ -350,6 +350,7 @@ export const menuActions = pgTable("menu_actions", {
     .notNull(),
   codigo: varchar("codigo", { length: 100 }).notNull(),
   nombre: varchar("nombre", { length: 255 }).notNull(),
+  tipo: varchar("tipo", { length: 50 }).notNull().default("Accion"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

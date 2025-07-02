@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Plus, Trash2, ChevronRight, ChevronDown, Folder, FileText, Settings } from "lucide-react";
+import { Plus, Trash2, ChevronRight, ChevronDown, Folder, FileText, Settings, Edit, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -17,7 +17,8 @@ const permissionSchema = z.object({
   ruta: z.string().min(1, "La ruta es requerida"),
   acciones: z.array(z.object({
     codigo: z.string().min(1, "El código es requerido"),
-    nombre: z.string().min(1, "El nombre es requerido")
+    nombre: z.string().min(1, "El nombre es requerido"),
+    tipo: z.string().min(1, "El tipo es requerido")
   })).default([])
 });
 
@@ -244,7 +245,10 @@ const MenuPage = () => {
       form.reset({
         nombreVista: permissionData.permission.nombreVista,
         ruta: permissionData.permission.ruta,
-        acciones: permissionData.actions || []
+        acciones: (permissionData.actions || []).map((action: any) => ({
+          ...action,
+          tipo: action.tipo || "Accion"
+        }))
       });
     } else if (selectedNodeType === 'file') {
       // Reset form for new permissions
@@ -258,7 +262,7 @@ const MenuPage = () => {
 
   const addAction = () => {
     const currentActions = form.getValues("acciones");
-    form.setValue("acciones", [...currentActions, { codigo: "", nombre: "" }]);
+    form.setValue("acciones", [...currentActions, { codigo: "", nombre: "", tipo: "" }]);
   };
 
   const removeAction = (index: number) => {
@@ -403,67 +407,115 @@ const MenuPage = () => {
                 <h3 className="text-sm font-medium text-center w-full">LISTADO DE ACCIONES RELACIONADAS</h3>
               </div>
               
-              <div className="grid grid-cols-3 gap-2 text-sm font-medium text-center">
-                <div>Código</div>
-                <div>Nombre</div>
-                <div></div>
+              {/* Tabla estilo del diseño */}
+              <div className="border rounded-lg overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-gray-50 border-b">
+                    <tr>
+                      <th className="text-left py-3 px-4 font-medium text-gray-900">Código</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-900">Nombre</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-900">Tipo</th>
+                      <th className="text-right py-3 px-4 font-medium text-gray-900">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {form.watch("acciones").map((_, index) => (
+                      <tr key={index} className="border-b hover:bg-gray-50">
+                        <td className="py-3 px-4">
+                          <FormField
+                            control={form.control}
+                            name={`acciones.${index}.codigo`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Input {...field} className="border-0 shadow-none focus:ring-0 p-0" />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </td>
+                        <td className="py-3 px-4">
+                          <FormField
+                            control={form.control}
+                            name={`acciones.${index}.nombre`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Input {...field} className="border-0 shadow-none focus:ring-0 p-0" />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                        </td>
+                        <td className="py-3 px-4">
+                          <FormField
+                            control={form.control}
+                            name={`acciones.${index}.tipo`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="border-0 shadow-none focus:ring-0">
+                                      <SelectValue placeholder="Tipo" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="Menu">Menu</SelectItem>
+                                    <SelectItem value="Accion">Accion</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </FormItem>
+                            )}
+                          />
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <div className="flex gap-1 justify-end">
+                            <Button
+                              type="button"
+                              size="sm"
+                              className="h-8 w-8 p-0 bg-blue-500 hover:bg-blue-600 text-white border-0 rounded"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              size="sm"
+                              onClick={() => removeAction(index)}
+                              className="h-8 w-8 p-0 bg-red-500 hover:bg-red-600 text-white border-0 rounded"
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-
-              {form.watch("acciones").map((_, index) => (
-                <div key={index} className="grid grid-cols-3 gap-2 items-end">
-                  <FormField
-                    control={form.control}
-                    name={`acciones.${index}.codigo`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={`acciones.${index}.nombre`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => removeAction(index)}
-                  >
-                    <Trash2 size={16} />
-                  </Button>
-                </div>
-              ))}
 
               <Button
                 type="button"
                 size="sm"
                 onClick={addAction}
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-green-500 hover:bg-green-600 text-white border-0 shadow-sm px-4 py-2 rounded text-sm font-medium transition-colors"
               >
-                <Plus size={16} className="mr-1" />
+                <Plus size={16} className="mr-2" />
+                Agregar
               </Button>
             </div>
 
             <div className="flex justify-end space-x-2 pt-4">
-              <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                💾 Guardar
+              <Button 
+                type="submit" 
+                className="bg-green-500 hover:bg-green-600 text-white border-0 shadow-sm px-6 py-2 rounded text-sm font-medium transition-colors"
+              >
+                Guardar
               </Button>
               <Button 
                 type="button" 
-                variant="secondary"
-                className="bg-red-600 hover:bg-red-700 text-white"
+                className="bg-red-500 hover:bg-red-600 text-white border-0 shadow-sm px-6 py-2 rounded text-sm font-medium transition-colors"
               >
-                ⚠️ Inactivar
+                Inactivar
               </Button>
             </div>
           </form>

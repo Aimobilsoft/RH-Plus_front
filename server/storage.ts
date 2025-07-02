@@ -1159,6 +1159,7 @@ export class MemStorage implements IStorage {
     const action: MenuAction = {
       id: this.currentMenuActionId++,
       ...insertAction,
+      tipo: insertAction.tipo || "Accion",
       createdAt: new Date(),
     };
 

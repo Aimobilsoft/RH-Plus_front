@@ -789,6 +789,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             permissionId: permission.id,
             codigo: actionData.codigo,
             nombre: actionData.nombre,
+            tipo: actionData.tipo || "Accion",
           });
         }
       }
