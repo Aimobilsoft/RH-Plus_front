@@ -136,6 +136,7 @@ export class MemStorage implements IStorage {
     this.currentDocumentoTipoId = 1;
     this.currentTipoCandidatoDocumentoId = 1;
     this.currentCandidatoDocumentoId = 1;
+    this.currentAnalistaId = 1;
 
     // Create default profiles
     this.perfiles.set(1, {
@@ -812,6 +813,62 @@ export class MemStorage implements IStorage {
       empresaId: empresaId
     };
     return this.createCandidato(candidatoData);
+  }
+
+  // Implementaciones de Analistas
+  async getAllAnalistas(): Promise<Analista[]> {
+    return Array.from(this.analistas.values());
+  }
+
+  async getAnalistaById(id: number): Promise<Analista | undefined> {
+    return this.analistas.get(id);
+  }
+
+  async getAnalistaByEmail(email: string): Promise<Analista | undefined> {
+    return Array.from(this.analistas.values()).find(analista => analista.email === email);
+  }
+
+  async createAnalista(insertAnalista: InsertAnalista): Promise<Analista> {
+    const analista: Analista = {
+      id: this.currentAnalistaId++,
+      nombre: insertAnalista.nombre,
+      apellido: insertAnalista.apellido,
+      email: insertAnalista.email,
+      telefono: insertAnalista.telefono || null,
+      regional: insertAnalista.regional,
+      clienteAsignado: insertAnalista.clienteAsignado || null,
+      nivelPrioridad: insertAnalista.nivelPrioridad || "medio",
+      estado: insertAnalista.estado || "activo",
+      fechaIngreso: insertAnalista.fechaIngreso || new Date(),
+      fechaCreacion: new Date(),
+      fechaActualizacion: new Date(),
+    };
+    
+    this.analistas.set(analista.id, analista);
+    return analista;
+  }
+
+  async updateAnalista(id: number, updateData: Partial<InsertAnalista>): Promise<Analista> {
+    const existing = this.analistas.get(id);
+    if (!existing) {
+      throw new Error("Analista no encontrado");
+    }
+
+    const updated: Analista = {
+      ...existing,
+      ...updateData,
+      fechaActualizacion: new Date(),
+    };
+
+    this.analistas.set(id, updated);
+    return updated;
+  }
+
+  async deleteAnalista(id: number): Promise<void> {
+    if (!this.analistas.has(id)) {
+      throw new Error("Analista no encontrado");
+    }
+    this.analistas.delete(id);
   }
 }
 

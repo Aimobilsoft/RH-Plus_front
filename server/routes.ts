@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertCandidatoSchema, createCandidatoFromPerfilSchema, createAdminUserSchema, createEmpresaSchema } from "@shared/schema";
+import { insertCandidatoSchema, createCandidatoFromPerfilSchema, createAdminUserSchema, createEmpresaSchema, insertAnalistaSchema } from "@shared/schema";
 import { z } from "zod";
 
 // Session middleware for simple login
@@ -642,6 +642,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json({ message: "Logout exitoso" });
     });
+  });
+
+  // ===== RUTAS DE ANALISTAS =====
+  
+  // Obtener todos los analistas
+  app.get("/api/analistas", async (req, res) => {
+    try {
+      const analistas = await storage.getAllAnalistas();
+      res.json(analistas);
+    } catch (error) {
+      console.error("Error obteniendo analistas:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Obtener analista por ID
+  app.get("/api/analistas/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const analista = await storage.getAnalistaById(id);
+      
+      if (!analista) {
+        return res.status(404).json({ message: "Analista no encontrado" });
+      }
+      
+      res.json(analista);
+    } catch (error) {
+      console.error("Error obteniendo analista:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Crear nuevo analista
+  app.post("/api/analistas", async (req, res) => {
+    try {
+      const validatedData = insertAnalistaSchema.parse(req.body);
+      
+      // Verificar que el email no esté en uso
+      const existingAnalista = await storage.getAnalistaByEmail(validatedData.email);
+      if (existingAnalista) {
+        return res.status(400).json({ message: "El email ya está en uso" });
+      }
+      
+      const analista = await storage.createAnalista(validatedData);
+      res.status(201).json({ message: "Analista creado exitosamente", analista });
+    } catch (error) {
+      console.error("Error creando analista:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Datos inválidos", errors: error.errors });
+      }
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Actualizar analista
+  app.put("/api/analistas/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updateData = req.body;
+      
+      // Si se está actualizando el email, verificar que no esté en uso
+      if (updateData.email) {
+        const existingAnalista = await storage.getAnalistaByEmail(updateData.email);
+        if (existingAnalista && existingAnalista.id !== id) {
+          return res.status(400).json({ message: "El email ya está en uso" });
+        }
+      }
+      
+      const analista = await storage.updateAnalista(id, updateData);
+      res.json({ message: "Analista actualizado exitosamente", analista });
+    } catch (error) {
+      console.error("Error actualizando analista:", error);
+      if (error.message === "Analista no encontrado") {
+        return res.status(404).json({ message: error.message });
+      }
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Eliminar analista
+  app.delete("/api/analistas/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteAnalista(id);
+      res.json({ message: "Analista eliminado exitosamente" });
+    } catch (error) {
+      console.error("Error eliminando analista:", error);
+      if (error.message === "Analista no encontrado") {
+        return res.status(404).json({ message: error.message });
+      }
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
   });
 
   const httpServer = createServer(app);
