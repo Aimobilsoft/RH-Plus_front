@@ -203,7 +203,7 @@ const MenuPage = () => {
     // Build tree structure
     nodes.forEach(node => {
       const nodeData = nodeMap.get(node.id);
-      if (node.parentId === null) {
+      if (node.parentId === null || node.parentId === undefined) {
         roots.push(nodeData);
       } else {
         const parent = nodeMap.get(node.parentId);
@@ -217,10 +217,6 @@ const MenuPage = () => {
   };
 
   const treeData = buildTree(nodes);
-  
-  // Debug: log para verificar que los datos se actualizan
-  console.log('Nodes from API:', nodes);
-  console.log('Tree data built:', treeData);
 
   const toggleExpanded = (nodeId: number) => {
     const newExpanded = new Set(expandedNodes);
