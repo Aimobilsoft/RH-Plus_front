@@ -1,5 +1,5 @@
-import { 
-  users, 
+import {
+  users,
   candidatos,
   perfiles,
   empresas,
@@ -8,8 +8,11 @@ import {
   documentosTipo,
   tiposCandidatosDocumentos,
   candidatosDocumentos,
+  menuNodes,
+  menuPermissions,
+  menuActions,
   analistas,
-  type User, 
+  type User,
   type InsertUser,
   type Candidato,
   type InsertCandidato,
@@ -30,8 +33,14 @@ import {
   type InsertTipoCandidatoDocumento,
   type CandidatoDocumento,
   type InsertCandidatoDocumento,
+  type MenuNode,
+  type InsertMenuNode,
+  type MenuPermission,
+  type InsertMenuPermission,
+  type MenuAction,
+  type InsertMenuAction,
   type Analista,
-  type InsertAnalista
+  type InsertAnalista,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -39,7 +48,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
+
   // Perfil operations
   getAllPerfiles(): Promise<Perfil[]>;
   getPerfilById(id: number): Promise<Perfil | undefined>;
@@ -47,60 +56,117 @@ export interface IStorage {
   createPerfil(perfil: InsertPerfil): Promise<Perfil>;
   updatePerfil(id: number, perfil: Partial<InsertPerfil>): Promise<Perfil>;
   deletePerfil(id: number): Promise<void>;
-  
+
   // Candidato operations
   getCandidato(id: number): Promise<Candidato | undefined>;
   getCandidatoByEmail(email: string): Promise<Candidato | undefined>;
   getAllCandidatos(): Promise<Candidato[]>;
   createCandidato(candidato: InsertCandidato): Promise<Candidato>;
-  updateCandidato(id: number, candidato: Partial<InsertCandidato>): Promise<Candidato>;
-  
+  updateCandidato(
+    id: number,
+    candidato: Partial<InsertCandidato>,
+  ): Promise<Candidato>;
+
   // Operaciones especiales para crear candidatos desde perfiles
-  createCandidatoFromPerfil(data: CreateCandidatoFromPerfil): Promise<Candidato>;
-  
+  createCandidatoFromPerfil(
+    data: CreateCandidatoFromPerfil,
+  ): Promise<Candidato>;
+
   // Empresa operations
   getEmpresa(id: number): Promise<Empresa | undefined>;
   getEmpresaByEmail(email: string): Promise<Empresa | undefined>;
   getAllEmpresas(): Promise<Empresa[]>;
   createEmpresa(empresa: InsertEmpresa): Promise<Empresa>;
   updateEmpresa(id: number, empresa: Partial<InsertEmpresa>): Promise<Empresa>;
-  
+
   // Candidatos por empresa (para portal de empresas)
   getCandidatosByEmpresa(empresaId: number): Promise<Candidato[]>;
-  createCandidatoForEmpresa(candidato: InsertCandidato, empresaId: number): Promise<Candidato>;
-  
+  createCandidatoForEmpresa(
+    candidato: InsertCandidato,
+    empresaId: number,
+  ): Promise<Candidato>;
+
   // Maestro operations - Tipos de Candidatos
   getAllTiposCandidatos(): Promise<TipoCandidato[]>;
   getTipoCandidatoById(id: number): Promise<TipoCandidato | undefined>;
-  createTipoCandidato(tipoCandidato: InsertTipoCandidato): Promise<TipoCandidato>;
-  updateTipoCandidato(id: number, tipoCandidato: Partial<InsertTipoCandidato>): Promise<TipoCandidato>;
+  createTipoCandidato(
+    tipoCandidato: InsertTipoCandidato,
+  ): Promise<TipoCandidato>;
+  updateTipoCandidato(
+    id: number,
+    tipoCandidato: Partial<InsertTipoCandidato>,
+  ): Promise<TipoCandidato>;
   deleteTipoCandidato(id: number): Promise<void>;
-  
+
   // Maestro operations - Documentos Tipo
   getAllDocumentosTipo(): Promise<DocumentoTipo[]>;
   getDocumentoTipoById(id: number): Promise<DocumentoTipo | undefined>;
-  createDocumentoTipo(documentoTipo: InsertDocumentoTipo): Promise<DocumentoTipo>;
-  updateDocumentoTipo(id: number, documentoTipo: Partial<InsertDocumentoTipo>): Promise<DocumentoTipo>;
+  createDocumentoTipo(
+    documentoTipo: InsertDocumentoTipo,
+  ): Promise<DocumentoTipo>;
+  updateDocumentoTipo(
+    id: number,
+    documentoTipo: Partial<InsertDocumentoTipo>,
+  ): Promise<DocumentoTipo>;
   deleteDocumentoTipo(id: number): Promise<void>;
-  
+
   // Maestro operations - Relación Tipos-Documentos
-  getDocumentosByTipoCandidato(tipoCandidatoId: number): Promise<TipoCandidatoDocumento[]>;
-  updateDocumentosByTipoCandidato(tipoCandidatoId: number, documentos: InsertTipoCandidatoDocumento[]): Promise<void>;
-  
+  getDocumentosByTipoCandidato(
+    tipoCandidatoId: number,
+  ): Promise<TipoCandidatoDocumento[]>;
+  updateDocumentosByTipoCandidato(
+    tipoCandidatoId: number,
+    documentos: InsertTipoCandidatoDocumento[],
+  ): Promise<void>;
+
   // Candidatos Documentos
   getDocumentosByCandidato(candidatoId: number): Promise<CandidatoDocumento[]>;
-  createCandidatoDocumento(candidatoDocumento: InsertCandidatoDocumento): Promise<CandidatoDocumento>;
-  updateCandidatoDocumento(id: number, candidatoDocumento: Partial<InsertCandidatoDocumento>): Promise<CandidatoDocumento>;
+  createCandidatoDocumento(
+    candidatoDocumento: InsertCandidatoDocumento,
+  ): Promise<CandidatoDocumento>;
+  updateCandidatoDocumento(
+    id: number,
+    candidatoDocumento: Partial<InsertCandidatoDocumento>,
+  ): Promise<CandidatoDocumento>;
   deleteCandidatoDocumento(id: number): Promise<void>;
-  
+
+  // Menu operations
+  getAllMenuNodes(): Promise<MenuNode[]>;
+  createMenuNode(menuNode: InsertMenuNode): Promise<MenuNode>;
+  updateMenuNode(
+    id: number,
+    menuNode: Partial<InsertMenuNode>,
+  ): Promise<MenuNode>;
+  deleteMenuNode(id: number): Promise<void>;
+
+  // Menu permissions operations
+  getMenuPermissionByNodeId(
+    nodeId: number,
+  ): Promise<MenuPermission | undefined>;
+  createMenuPermission(
+    permission: InsertMenuPermission,
+  ): Promise<MenuPermission>;
+  updateMenuPermission(
+    id: number,
+    permission: Partial<InsertMenuPermission>,
+  ): Promise<MenuPermission>;
+  deleteMenuPermission(id: number): Promise<void>;
+
+  // Menu actions operations
+  getMenuActionsByPermissionId(permissionId: number): Promise<MenuAction[]>;
+  createMenuAction(action: InsertMenuAction): Promise<MenuAction>;
+  deleteMenuAction(id: number): Promise<void>;
   // Analistas operations
   getAllAnalistas(): Promise<Analista[]>;
   getAnalistaById(id: number): Promise<Analista | undefined>;
   getAnalistaByEmail(email: string): Promise<Analista | undefined>;
   createAnalista(analista: InsertAnalista): Promise<Analista>;
-  updateAnalista(id: number, analista: Partial<InsertAnalista>): Promise<Analista>;
+  updateAnalista(
+    id: number,
+    analista: Partial<InsertAnalista>,
+  ): Promise<Analista>;
   deleteAnalista(id: number): Promise<void>;
-  
+
   // Clientes operations
   getAllClientes(): Promise<Cliente[]>;
   getClienteById(id: number): Promise<Cliente | undefined>;
@@ -120,7 +186,12 @@ export class MemStorage implements IStorage {
   private documentosTipo: Map<number, DocumentoTipo>;
   private tiposCandidatosDocumentos: Map<number, TipoCandidatoDocumento>;
   private candidatosDocumentos: Map<number, CandidatoDocumento>;
+
+  private menuNodes: Map<number, MenuNode>;
+  private menuPermissions: Map<number, MenuPermission>;
+  private menuActions: Map<number, MenuAction>;
   private analistas: Map<number, Analista>;
+
   currentUserId: number;
   currentCandidatoId: number;
   currentPerfilId: number;
@@ -130,6 +201,9 @@ export class MemStorage implements IStorage {
   currentDocumentoTipoId: number;
   currentTipoCandidatoDocumentoId: number;
   currentCandidatoDocumentoId: number;
+  currentMenuNodeId: number;
+  currentMenuPermissionId: number;
+  currentMenuActionId: number;
   currentAnalistaId: number;
 
   constructor() {
@@ -142,6 +216,9 @@ export class MemStorage implements IStorage {
     this.documentosTipo = new Map();
     this.tiposCandidatosDocumentos = new Map();
     this.candidatosDocumentos = new Map();
+    this.menuNodes = new Map();
+    this.menuPermissions = new Map();
+    this.menuActions = new Map();
     this.analistas = new Map();
     this.currentUserId = 1;
     this.currentCandidatoId = 1;
@@ -152,6 +229,9 @@ export class MemStorage implements IStorage {
     this.currentDocumentoTipoId = 1;
     this.currentTipoCandidatoDocumentoId = 1;
     this.currentCandidatoDocumentoId = 1;
+    this.currentMenuNodeId = 1;
+    this.currentMenuPermissionId = 1;
+    this.currentMenuActionId = 1;
     this.currentAnalistaId = 1;
 
     // Create default profiles
@@ -201,7 +281,7 @@ export class MemStorage implements IStorage {
       nombres: "Administrador",
       apellidos: "Principal",
       email: "admin@sistema.com",
-      tipoUsuario: "administrador"
+      tipoUsuario: "administrador",
     });
     this.currentUserId = 2;
 
@@ -261,7 +341,7 @@ export class MemStorage implements IStorage {
 
     this.empresas.set(2, {
       id: 2,
-      email: "empresa2@ejemplo.com", 
+      email: "empresa2@ejemplo.com",
       password: "empresa456",
       nombreEmpresa: "Innovación Digital S.A.S",
       nit: "9007654321",
@@ -440,7 +520,7 @@ export class MemStorage implements IStorage {
       clienteAsignado: "TechCorp",
       nivelPrioridad: "alto",
       estado: "activo",
-      fechaIngreso: new Date('2023-01-15'),
+      fechaIngreso: new Date("2023-01-15"),
       fechaCreacion: new Date(),
       fechaActualizacion: new Date(),
     });
@@ -455,7 +535,7 @@ export class MemStorage implements IStorage {
       clienteAsignado: "InnovateCorp",
       nivelPrioridad: "medio",
       estado: "activo",
-      fechaIngreso: new Date('2023-03-20'),
+      fechaIngreso: new Date("2023-03-20"),
       fechaCreacion: new Date(),
       fechaActualizacion: new Date(),
     });
@@ -470,7 +550,7 @@ export class MemStorage implements IStorage {
       clienteAsignado: null,
       nivelPrioridad: "bajo",
       estado: "activo",
-      fechaIngreso: new Date('2023-06-10'),
+      fechaIngreso: new Date("2023-06-10"),
       fechaCreacion: new Date(),
       fechaActualizacion: new Date(),
     });
@@ -485,7 +565,7 @@ export class MemStorage implements IStorage {
       clienteAsignado: "GlobalSolutions",
       nivelPrioridad: "alto",
       estado: "inactivo",
-      fechaIngreso: new Date('2022-11-05'),
+      fechaIngreso: new Date("2022-11-05"),
       fechaCreacion: new Date(),
       fechaActualizacion: new Date(),
     });
@@ -501,7 +581,7 @@ export class MemStorage implements IStorage {
       empresa: "TechCorp",
       regional: "Bogotá",
       sucursal: "Centro",
-      fechaRegistro: new Date('2023-02-10'),
+      fechaRegistro: new Date("2023-02-10"),
       estado: "activo",
     });
 
@@ -513,7 +593,7 @@ export class MemStorage implements IStorage {
       empresa: "InnovateCorp",
       regional: "Medellín",
       sucursal: "Norte",
-      fechaRegistro: new Date('2023-04-15'),
+      fechaRegistro: new Date("2023-04-15"),
       estado: "activo",
     });
 
@@ -532,14 +612,14 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
-    const user: User = { 
+    const user: User = {
       id,
       username: insertUser.username,
       password: insertUser.password,
       nombres: insertUser.nombres || null,
       apellidos: insertUser.apellidos || null,
       email: insertUser.email || null,
-      tipoUsuario: insertUser.tipoUsuario || null
+      tipoUsuario: insertUser.tipoUsuario || null,
     };
     this.users.set(id, user);
     return user;
@@ -585,9 +665,12 @@ export class MemStorage implements IStorage {
       fondoPension: insertCandidato.fondoPension || null,
       nivelEducativo: insertCandidato.nivelEducativo || null,
       grupoSanguineo: insertCandidato.grupoSanguineo || null,
-      contactoEmergenciaNombre: insertCandidato.contactoEmergenciaNombre || null,
-      contactoEmergenciaTelefono: insertCandidato.contactoEmergenciaTelefono || null,
-      contactoEmergenciaRelacion: insertCandidato.contactoEmergenciaRelacion || null,
+      contactoEmergenciaNombre:
+        insertCandidato.contactoEmergenciaNombre || null,
+      contactoEmergenciaTelefono:
+        insertCandidato.contactoEmergenciaTelefono || null,
+      contactoEmergenciaRelacion:
+        insertCandidato.contactoEmergenciaRelacion || null,
       deberCambiarPassword: insertCandidato.deberCambiarPassword ?? true,
       perfilId: insertCandidato.perfilId || 2, // Default candidato profile
       experienciaLaboral: insertCandidato.experienciaLaboral || null,
@@ -603,12 +686,15 @@ export class MemStorage implements IStorage {
     return candidato;
   }
 
-  async updateCandidato(id: number, updateData: Partial<InsertCandidato>): Promise<Candidato> {
+  async updateCandidato(
+    id: number,
+    updateData: Partial<InsertCandidato>,
+  ): Promise<Candidato> {
     const candidato = this.candidatos.get(id);
     if (!candidato) {
       throw new Error(`Candidato with id ${id} not found`);
     }
-    
+
     const updatedCandidato = { ...candidato, ...updateData };
     this.candidatos.set(id, updatedCandidato);
     return updatedCandidato;
@@ -643,12 +729,15 @@ export class MemStorage implements IStorage {
     return perfil;
   }
 
-  async updatePerfil(id: number, updateData: Partial<InsertPerfil>): Promise<Perfil> {
+  async updatePerfil(
+    id: number,
+    updateData: Partial<InsertPerfil>,
+  ): Promise<Perfil> {
     const perfil = this.perfiles.get(id);
     if (!perfil) {
       throw new Error(`Perfil with id ${id} not found`);
     }
-    
+
     const updatedPerfil = { ...perfil, ...updateData };
     this.perfiles.set(id, updatedPerfil);
     return updatedPerfil;
@@ -662,7 +751,9 @@ export class MemStorage implements IStorage {
   }
 
   // Operación especial para crear candidatos desde perfiles
-  async createCandidatoFromPerfil(data: CreateCandidatoFromPerfil): Promise<Candidato> {
+  async createCandidatoFromPerfil(
+    data: CreateCandidatoFromPerfil,
+  ): Promise<Candidato> {
     // Buscar el perfil de candidato
     const perfilCandidato = await this.getPerfilByNombre("candidato");
     if (!perfilCandidato) {
@@ -709,14 +800,16 @@ export class MemStorage implements IStorage {
 
   // Maestro operations - Tipos de Candidatos
   async getAllTiposCandidatos(): Promise<TipoCandidato[]> {
-    return Array.from(this.tiposCandidatos.values()).filter(tc => tc.activo);
+    return Array.from(this.tiposCandidatos.values()).filter((tc) => tc.activo);
   }
 
   async getTipoCandidatoById(id: number): Promise<TipoCandidato | undefined> {
     return this.tiposCandidatos.get(id);
   }
 
-  async createTipoCandidato(tipoCandidato: InsertTipoCandidato): Promise<TipoCandidato> {
+  async createTipoCandidato(
+    tipoCandidato: InsertTipoCandidato,
+  ): Promise<TipoCandidato> {
     const id = this.currentTipoCandidatoId++;
     const nuevo: TipoCandidato = {
       id,
@@ -729,7 +822,10 @@ export class MemStorage implements IStorage {
     return nuevo;
   }
 
-  async updateTipoCandidato(id: number, tipoCandidato: Partial<InsertTipoCandidato>): Promise<TipoCandidato> {
+  async updateTipoCandidato(
+    id: number,
+    tipoCandidato: Partial<InsertTipoCandidato>,
+  ): Promise<TipoCandidato> {
     const existing = this.tiposCandidatos.get(id);
     if (!existing) {
       throw new Error("Tipo de candidato no encontrado");
@@ -751,14 +847,16 @@ export class MemStorage implements IStorage {
 
   // Maestro operations - Documentos Tipo
   async getAllDocumentosTipo(): Promise<DocumentoTipo[]> {
-    return Array.from(this.documentosTipo.values()).filter(dt => dt.activo);
+    return Array.from(this.documentosTipo.values()).filter((dt) => dt.activo);
   }
 
   async getDocumentoTipoById(id: number): Promise<DocumentoTipo | undefined> {
     return this.documentosTipo.get(id);
   }
 
-  async createDocumentoTipo(documentoTipo: InsertDocumentoTipo): Promise<DocumentoTipo> {
+  async createDocumentoTipo(
+    documentoTipo: InsertDocumentoTipo,
+  ): Promise<DocumentoTipo> {
     const id = this.currentDocumentoTipoId++;
     const nuevo: DocumentoTipo = {
       id,
@@ -772,7 +870,10 @@ export class MemStorage implements IStorage {
     return nuevo;
   }
 
-  async updateDocumentoTipo(id: number, documentoTipo: Partial<InsertDocumentoTipo>): Promise<DocumentoTipo> {
+  async updateDocumentoTipo(
+    id: number,
+    documentoTipo: Partial<InsertDocumentoTipo>,
+  ): Promise<DocumentoTipo> {
     const existing = this.documentosTipo.get(id);
     if (!existing) {
       throw new Error("Tipo de documento no encontrado");
@@ -793,13 +894,18 @@ export class MemStorage implements IStorage {
   }
 
   // Maestro operations - Relación Tipos-Documentos
-  async getDocumentosByTipoCandidato(tipoCandidatoId: number): Promise<TipoCandidatoDocumento[]> {
+  async getDocumentosByTipoCandidato(
+    tipoCandidatoId: number,
+  ): Promise<TipoCandidatoDocumento[]> {
     return Array.from(this.tiposCandidatosDocumentos.values())
-      .filter(tcd => tcd.tipoCandidatoId === tipoCandidatoId)
+      .filter((tcd) => tcd.tipoCandidatoId === tipoCandidatoId)
       .sort((a, b) => a.orden - b.orden);
   }
 
-  async updateDocumentosByTipoCandidato(tipoCandidatoId: number, documentos: InsertTipoCandidatoDocumento[]): Promise<void> {
+  async updateDocumentosByTipoCandidato(
+    tipoCandidatoId: number,
+    documentos: InsertTipoCandidatoDocumento[],
+  ): Promise<void> {
     // Eliminar relaciones existentes para este tipo de candidato
     const idsToDelete: number[] = [];
     for (const [id, tcd] of this.tiposCandidatosDocumentos.entries()) {
@@ -807,10 +913,10 @@ export class MemStorage implements IStorage {
         idsToDelete.push(id);
       }
     }
-    idsToDelete.forEach(id => this.tiposCandidatosDocumentos.delete(id));
+    idsToDelete.forEach((id) => this.tiposCandidatosDocumentos.delete(id));
 
     // Agregar las nuevas relaciones
-    documentos.forEach(doc => {
+    documentos.forEach((doc) => {
       const id = this.currentTipoCandidatoDocumentoId++;
       const nuevo: TipoCandidatoDocumento = {
         id,
@@ -825,12 +931,17 @@ export class MemStorage implements IStorage {
   }
 
   // Candidatos Documentos
-  async getDocumentosByCandidato(candidatoId: number): Promise<CandidatoDocumento[]> {
-    return Array.from(this.candidatosDocumentos.values())
-      .filter(cd => cd.candidatoId === candidatoId);
+  async getDocumentosByCandidato(
+    candidatoId: number,
+  ): Promise<CandidatoDocumento[]> {
+    return Array.from(this.candidatosDocumentos.values()).filter(
+      (cd) => cd.candidatoId === candidatoId,
+    );
   }
 
-  async createCandidatoDocumento(candidatoDocumento: InsertCandidatoDocumento): Promise<CandidatoDocumento> {
+  async createCandidatoDocumento(
+    candidatoDocumento: InsertCandidatoDocumento,
+  ): Promise<CandidatoDocumento> {
     const id = this.currentCandidatoDocumentoId++;
     const nuevo: CandidatoDocumento = {
       id,
@@ -845,7 +956,10 @@ export class MemStorage implements IStorage {
     return nuevo;
   }
 
-  async updateCandidatoDocumento(id: number, candidatoDocumento: Partial<InsertCandidatoDocumento>): Promise<CandidatoDocumento> {
+  async updateCandidatoDocumento(
+    id: number,
+    candidatoDocumento: Partial<InsertCandidatoDocumento>,
+  ): Promise<CandidatoDocumento> {
     const existing = this.candidatosDocumentos.get(id);
     if (!existing) {
       throw new Error("Documento de candidato no encontrado");
@@ -897,7 +1011,10 @@ export class MemStorage implements IStorage {
     return empresa;
   }
 
-  async updateEmpresa(id: number, updateData: Partial<InsertEmpresa>): Promise<Empresa> {
+  async updateEmpresa(
+    id: number,
+    updateData: Partial<InsertEmpresa>,
+  ): Promise<Empresa> {
     const existing = this.empresas.get(id);
     if (!existing) {
       throw new Error(`Empresa with id ${id} not found`);
@@ -909,16 +1026,148 @@ export class MemStorage implements IStorage {
 
   // Candidatos por empresa (para portal de empresas)
   async getCandidatosByEmpresa(empresaId: number): Promise<Candidato[]> {
-    return Array.from(this.candidatos.values())
-      .filter(candidato => candidato.empresaId === empresaId);
+    return Array.from(this.candidatos.values()).filter(
+      (candidato) => candidato.empresaId === empresaId,
+    );
   }
 
-  async createCandidatoForEmpresa(candidato: InsertCandidato, empresaId: number): Promise<Candidato> {
+  async createCandidatoForEmpresa(
+    candidato: InsertCandidato,
+    empresaId: number,
+  ): Promise<Candidato> {
     const candidatoData = {
       ...candidato,
-      empresaId: empresaId
+      empresaId: empresaId,
     };
     return this.createCandidato(candidatoData);
+  }
+
+  // Menu operations
+  async getAllMenuNodes(): Promise<MenuNode[]> {
+    return Array.from(this.menuNodes.values());
+  }
+
+  async createMenuNode(insertMenuNode: InsertMenuNode): Promise<MenuNode> {
+    const menuNode: MenuNode = {
+      id: this.currentMenuNodeId++,
+      ...insertMenuNode,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    this.menuNodes.set(menuNode.id, menuNode);
+    return menuNode;
+  }
+
+  async updateMenuNode(
+    id: number,
+    updateData: Partial<InsertMenuNode>,
+  ): Promise<MenuNode> {
+    const existing = this.menuNodes.get(id);
+    if (!existing) {
+      throw new Error(`MenuNode with id ${id} not found`);
+    }
+
+    const updated: MenuNode = {
+      ...existing,
+      ...updateData,
+      updatedAt: new Date(),
+    };
+
+    this.menuNodes.set(id, updated);
+    return updated;
+  }
+
+  async deleteMenuNode(id: number): Promise<void> {
+    // Also delete any permissions and actions related to this node
+    const permission = Array.from(this.menuPermissions.values()).find(
+      (p) => p.nodeId === id,
+    );
+
+    if (permission) {
+      await this.deleteMenuPermission(permission.id);
+    }
+
+    this.menuNodes.delete(id);
+  }
+
+  // Menu permissions operations
+  async getMenuPermissionByNodeId(
+    nodeId: number,
+  ): Promise<MenuPermission | undefined> {
+    return Array.from(this.menuPermissions.values()).find(
+      (permission) => permission.nodeId === nodeId,
+    );
+  }
+
+  async createMenuPermission(
+    insertPermission: InsertMenuPermission,
+  ): Promise<MenuPermission> {
+    const permission: MenuPermission = {
+      id: this.currentMenuPermissionId++,
+      ...insertPermission,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    this.menuPermissions.set(permission.id, permission);
+    return permission;
+  }
+
+  async updateMenuPermission(
+    id: number,
+    updateData: Partial<InsertMenuPermission>,
+  ): Promise<MenuPermission> {
+    const existing = this.menuPermissions.get(id);
+    if (!existing) {
+      throw new Error(`MenuPermission with id ${id} not found`);
+    }
+
+    const updated: MenuPermission = {
+      ...existing,
+      ...updateData,
+      updatedAt: new Date(),
+    };
+
+    this.menuPermissions.set(id, updated);
+    return updated;
+  }
+
+  async deleteMenuPermission(id: number): Promise<void> {
+    // Also delete any actions related to this permission
+    const actions = Array.from(this.menuActions.values()).filter(
+      (action) => action.permissionId === id,
+    );
+
+    for (const action of actions) {
+      await this.deleteMenuAction(action.id);
+    }
+
+    this.menuPermissions.delete(id);
+  }
+
+  // Menu actions operations
+  async getMenuActionsByPermissionId(
+    permissionId: number,
+  ): Promise<MenuAction[]> {
+    return Array.from(this.menuActions.values()).filter(
+      (action) => action.permissionId === permissionId,
+    );
+  }
+
+  async createMenuAction(insertAction: InsertMenuAction): Promise<MenuAction> {
+    const action: MenuAction = {
+      id: this.currentMenuActionId++,
+      ...insertAction,
+      createdAt: new Date(),
+    };
+
+    this.menuActions.set(action.id, action);
+    return action;
+  }
+
+  async deleteMenuAction(id: number): Promise<void> {
+    this.menuActions.delete(id);
   }
 
   // Implementaciones de Analistas
@@ -931,7 +1180,9 @@ export class MemStorage implements IStorage {
   }
 
   async getAnalistaByEmail(email: string): Promise<Analista | undefined> {
-    return Array.from(this.analistas.values()).find(analista => analista.email === email);
+    return Array.from(this.analistas.values()).find(
+      (analista) => analista.email === email,
+    );
   }
 
   async createAnalista(insertAnalista: InsertAnalista): Promise<Analista> {
@@ -949,12 +1200,15 @@ export class MemStorage implements IStorage {
       fechaCreacion: new Date(),
       fechaActualizacion: new Date(),
     };
-    
+
     this.analistas.set(analista.id, analista);
     return analista;
   }
 
-  async updateAnalista(id: number, updateData: Partial<InsertAnalista>): Promise<Analista> {
+  async updateAnalista(
+    id: number,
+    updateData: Partial<InsertAnalista>,
+  ): Promise<Analista> {
     const existing = this.analistas.get(id);
     if (!existing) {
       throw new Error("Analista no encontrado");
@@ -1009,7 +1263,10 @@ export class MemStorage implements IStorage {
     return cliente;
   }
 
-  async updateCliente(id: number, updateData: Partial<InsertCliente>): Promise<Cliente> {
+  async updateCliente(
+    id: number,
+    updateData: Partial<InsertCliente>,
+  ): Promise<Cliente> {
     const cliente = this.clientes.get(id);
     if (!cliente) {
       throw new Error("Cliente no encontrado");

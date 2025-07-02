@@ -40,6 +40,9 @@ import AnalistasPage from "./pages/analistas/AnalistasPage";
 import CrearAnalistaPage from "./pages/analistas/CrearAnalistaPage";
 import EditarAnalistaPage from "./pages/analistas/EditarAnalistaPage";
 
+// Test pages
+import TestCascadingSelects from "./pages/TestCascadingSelects";
+
 // Candidate portal pages
 import LoginCandidato from "./pages/candidatos/LoginCandidato";
 import RegistroCandidato from "./pages/candidatos/RegistroCandidato";
@@ -126,6 +129,9 @@ const App = () => (
             <Route path="/analistas" element={<AnalistasPage />} />
             <Route path="/analistas/crear" element={<CrearAnalistaPage />} />
             <Route path="/analistas/:id/editar" element={<EditarAnalistaPage />} />
+            
+            {/* Test page for cascading selects */}
+            <Route path="/test-cascading" element={<TestCascadingSelects />} />
           </Route>
           
           {/* Ruta 404 */}
