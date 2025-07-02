@@ -15,12 +15,22 @@ import { z } from "zod";
 // Tabla de usuarios admin
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
+  // Información personal básica
+  identificacion: varchar("identificacion", { length: 20 }).notNull().unique(),
+  primerNombre: varchar("primer_nombre", { length: 100 }).notNull(),
+  segundoNombre: varchar("segundo_nombre", { length: 100 }),
+  primerApellido: varchar("primer_apellido", { length: 100 }).notNull(),
+  segundoApellido: varchar("segundo_apellido", { length: 100 }),
+  telefono: varchar("telefono", { length: 20 }),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  
+  // Credenciales de acceso
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
-  nombres: varchar("nombres", { length: 100 }),
-  apellidos: varchar("apellidos", { length: 100 }),
-  email: varchar("email", { length: 255 }),
-  tipoUsuario: varchar("tipo_usuario", { length: 50 }), // administrador, coordinador, administrador_general, cliente
+  
+  // Metadatos
+  fechaCreacion: timestamp("fecha_creacion").defaultNow(),
+  activo: boolean("activo").default(true),
 });
 
 // Tabla de tipos de perfiles/roles
@@ -31,6 +41,14 @@ export const perfiles = pgTable("perfiles", {
   permisos: jsonb("permisos"), // JSON con permisos específicos
   fechaCreacion: timestamp("fecha_creacion").defaultNow(),
   activo: boolean("activo").default(true),
+});
+
+// Tabla de relación usuario-perfiles (muchos a muchos)
+export const userPerfiles = pgTable("user_perfiles", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  perfilId: integer("perfil_id").notNull().references(() => perfiles.id),
+  fechaAsignacion: timestamp("fecha_asignacion").defaultNow(),
 });
 
 // Tabla de candidatos que se registran
@@ -133,13 +151,14 @@ export const clientes = pgTable("clientes", {
 });
 
 // Esquemas de inserción
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
-  nombres: true,
-  apellidos: true,
-  email: true,
-  tipoUsuario: true,
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  fechaCreacion: true,
+});
+
+export const insertUserPerfilSchema = createInsertSchema(userPerfiles).omit({
+  id: true,
+  fechaAsignacion: true,
 });
 
 export const insertPerfilSchema = createInsertSchema(perfiles).omit({
@@ -209,6 +228,8 @@ export const createEmpresaSchema = z.object({
 // Tipos TypeScript
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+export type InsertUserPerfil = z.infer<typeof insertUserPerfilSchema>;
+export type UserPerfil = typeof userPerfiles.$inferSelect;
 export type InsertPerfil = z.infer<typeof insertPerfilSchema>;
 export type Perfil = typeof perfiles.$inferSelect;
 export type InsertCandidato = z.infer<typeof insertCandidatoSchema>;

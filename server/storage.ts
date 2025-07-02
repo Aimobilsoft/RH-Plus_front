@@ -2,6 +2,7 @@ import {
   users,
   candidatos,
   perfiles,
+  userPerfiles,
   empresas,
   clientes,
   tiposCandidatos,
@@ -16,6 +17,8 @@ import {
   analistas,
   type User,
   type InsertUser,
+  type UserPerfil,
+  type InsertUserPerfil,
   type Candidato,
   type InsertCandidato,
   type Perfil,
@@ -53,7 +56,16 @@ export interface IStorage {
   // Admin user operations
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getAllUsers(): Promise<User[]>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(id: number, user: Partial<InsertUser>): Promise<User>;
+  deleteUser(id: number): Promise<void>;
+  
+  // User-Profile relationship operations
+  getUserPerfiles(userId: number): Promise<Perfil[]>;
+  createUserPerfil(userPerfil: InsertUserPerfil): Promise<UserPerfil>;
+  deleteUserPerfiles(userId: number): Promise<void>;
+  createUserWithPerfiles(userData: InsertUser, perfilIds: number[]): Promise<{ user: User; perfiles: Perfil[] }>;
 
   // Perfil operations
   getAllPerfiles(): Promise<Perfil[]>;
@@ -192,6 +204,7 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
+  private userPerfiles: Map<number, UserPerfil>;
   private candidatos: Map<number, Candidato>;
   private perfiles: Map<number, Perfil>;
   private empresas: Map<number, Empresa>;
@@ -209,6 +222,7 @@ export class MemStorage implements IStorage {
   private analistas: Map<number, Analista>;
 
   currentUserId: number;
+  currentUserPerfilId: number;
   currentCandidatoId: number;
   currentPerfilId: number;
   currentEmpresaId: number;
@@ -226,6 +240,7 @@ export class MemStorage implements IStorage {
 
   constructor() {
     this.users = new Map();
+    this.userPerfiles = new Map();
     this.candidatos = new Map();
     this.perfiles = new Map();
     this.empresas = new Map();
@@ -241,6 +256,7 @@ export class MemStorage implements IStorage {
     this.perfilAcciones = new Map();
     this.analistas = new Map();
     this.currentUserId = 1;
+    this.currentUserPerfilId = 1;
     this.currentCandidatoId = 1;
     this.currentPerfilId = 1;
     this.currentEmpresaId = 1;
@@ -298,12 +314,17 @@ export class MemStorage implements IStorage {
     // Create default admin user
     this.users.set(1, {
       id: 1,
+      identificacion: "12345678",
+      primerNombre: "Administrador",
+      segundoNombre: null,
+      primerApellido: "Principal",
+      segundoApellido: null,
+      telefono: "555-0000",
+      email: "admin@sistema.com",
       username: "admin",
       password: "admin123",
-      nombres: "Administrador",
-      apellidos: "Principal",
-      email: "admin@sistema.com",
-      tipoUsuario: "administrador",
+      fechaCreacion: new Date(),
+      activo: true,
     });
     this.currentUserId = 2;
 
@@ -632,19 +653,99 @@ export class MemStorage implements IStorage {
     );
   }
 
+  async getAllUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
     const user: User = {
       id,
+      identificacion: insertUser.identificacion,
+      primerNombre: insertUser.primerNombre,
+      segundoNombre: insertUser.segundoNombre || null,
+      primerApellido: insertUser.primerApellido,
+      segundoApellido: insertUser.segundoApellido || null,
+      telefono: insertUser.telefono || null,
+      email: insertUser.email,
       username: insertUser.username,
       password: insertUser.password,
-      nombres: insertUser.nombres || null,
-      apellidos: insertUser.apellidos || null,
-      email: insertUser.email || null,
-      tipoUsuario: insertUser.tipoUsuario || null,
+      fechaCreacion: new Date(),
+      activo: insertUser.activo !== undefined ? insertUser.activo : true,
     };
     this.users.set(id, user);
     return user;
+  }
+
+  async updateUser(id: number, updateData: Partial<InsertUser>): Promise<User> {
+    const user = this.users.get(id);
+    if (!user) {
+      throw new Error(`User with id ${id} not found`);
+    }
+
+    const updatedUser = { ...user, ...updateData };
+    this.users.set(id, updatedUser);
+    return updatedUser;
+  }
+
+  async deleteUser(id: number): Promise<void> {
+    // Primero eliminar todas las relaciones usuario-perfil
+    await this.deleteUserPerfiles(id);
+    // Luego eliminar el usuario
+    this.users.delete(id);
+  }
+
+  // User-Profile relationship operations
+  async getUserPerfiles(userId: number): Promise<Perfil[]> {
+    const userPerfiles = Array.from(this.userPerfiles.values()).filter(
+      (up) => up.userId === userId
+    );
+    const perfiles: Perfil[] = [];
+    for (const userPerfil of userPerfiles) {
+      const perfil = this.perfiles.get(userPerfil.perfilId);
+      if (perfil) {
+        perfiles.push(perfil);
+      }
+    }
+    return perfiles;
+  }
+
+  async createUserPerfil(userPerfil: InsertUserPerfil): Promise<UserPerfil> {
+    const id = this.currentUserPerfilId++;
+    const newUserPerfil: UserPerfil = {
+      id,
+      userId: userPerfil.userId,
+      perfilId: userPerfil.perfilId,
+      fechaAsignacion: new Date(),
+    };
+    this.userPerfiles.set(id, newUserPerfil);
+    return newUserPerfil;
+  }
+
+  async deleteUserPerfiles(userId: number): Promise<void> {
+    const userPerfiles = Array.from(this.userPerfiles.values()).filter(
+      (up) => up.userId === userId
+    );
+    for (const userPerfil of userPerfiles) {
+      this.userPerfiles.delete(userPerfil.id);
+    }
+  }
+
+  async createUserWithPerfiles(userData: InsertUser, perfilIds: number[]): Promise<{ user: User; perfiles: Perfil[] }> {
+    // Crear el usuario
+    const user = await this.createUser(userData);
+    
+    // Crear las relaciones usuario-perfil
+    const perfiles: Perfil[] = [];
+    for (const perfilId of perfilIds) {
+      await this.createUserPerfil({ userId: user.id, perfilId });
+      const perfil = this.perfiles.get(perfilId);
+      if (perfil) {
+        perfiles.push(perfil);
+      }
+    }
+    
+    return { user, perfiles };
   }
 
   async getCandidato(id: number): Promise<Candidato | undefined> {

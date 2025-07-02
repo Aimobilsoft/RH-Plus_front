@@ -24,6 +24,8 @@ import EspecialistasPage from "./pages/clinica/EspecialistasPage";
 import CitasProgramadasPage from "./pages/clinica/CitasProgramadasPage";
 import ExpedicionCertificadosPage from "./pages/certificados/ExpedicionCertificadosPage";
 import UsuariosPage from "./pages/seguridad/UsuariosPage";
+import CrearUsuarioPage from "./pages/seguridad/CrearUsuarioPage";
+import EditarUsuarioPage from "./pages/seguridad/EditarUsuarioPage";
 import PerfilesPage from "./pages/seguridad/PerfilesPage";
 import CrearCandidatoPage from "./pages/seguridad/CrearCandidatoPage";
 import CrearAdministradorPage from "./pages/seguridad/CrearAdministradorPage";
@@ -114,6 +116,8 @@ const App = () => (
             
             {/* Seguridad */}
             <Route path="/seguridad/usuarios" element={<UsuariosPage />} />
+            <Route path="/seguridad/usuarios/crear" element={<CrearUsuarioPage />} />
+            <Route path="/seguridad/usuarios/editar/:id" element={<EditarUsuarioPage />} />
             <Route path="/seguridad/perfiles" element={<PerfilesPage />} />
             <Route path="/seguridad/perfiles/crear-candidato" element={<CrearCandidatoPage />} />
             <Route path="/seguridad/perfiles/crear-administrador" element={<CrearAdministradorPage />} />

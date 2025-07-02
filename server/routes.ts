@@ -6,6 +6,7 @@ import {
   createCandidatoFromPerfilSchema,
   createAdminUserSchema,
   insertAnalistaSchema,
+  insertUserSchema,
 } from "@shared/schema";
 import { z } from "zod";
 
@@ -894,6 +895,137 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (error.message === "Analista no encontrado") {
         return res.status(404).json({ message: error.message });
       }
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // === RUTAS DE USUARIOS ===
+  
+  // Obtener todos los usuarios
+  app.get("/api/usuarios", async (req, res) => {
+    try {
+      const usuarios = await storage.getAllUsers();
+      // Obtener perfiles para cada usuario
+      const usuariosConPerfiles = await Promise.all(
+        usuarios.map(async (usuario) => {
+          const perfiles = await storage.getUserPerfiles(usuario.id);
+          return { ...usuario, perfiles };
+        })
+      );
+      res.json(usuariosConPerfiles);
+    } catch (error: any) {
+      console.error("Error obteniendo usuarios:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Crear nuevo usuario
+  app.post("/api/usuarios", async (req, res) => {
+    try {
+      const { perfilIds, ...userData } = req.body;
+      
+      // Validar datos del usuario
+      const validatedData = insertUserSchema.parse(userData);
+      
+      // Verificar que el email no esté en uso
+      const existingUserByEmail = await storage.getAllUsers();
+      const emailExists = existingUserByEmail.some(u => u.email === validatedData.email);
+      if (emailExists) {
+        return res.status(400).json({ message: "El email ya está en uso" });
+      }
+      
+      // Verificar que el username no esté en uso
+      const existingUserByUsername = await storage.getUserByUsername(validatedData.username);
+      if (existingUserByUsername) {
+        return res.status(400).json({ message: "El username ya está en uso" });
+      }
+      
+      // Crear usuario con perfiles
+      const { user, perfiles } = await storage.createUserWithPerfiles(validatedData, perfilIds || []);
+      
+      res.json({ 
+        message: "Usuario creado exitosamente", 
+        user: { ...user, perfiles } 
+      });
+    } catch (error: any) {
+      console.error("Error creando usuario:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Datos inválidos", errors: error.errors });
+      }
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Actualizar usuario
+  app.put("/api/usuarios/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { perfilIds, ...updateData } = req.body;
+      
+      // Verificar que el usuario existe
+      const existingUser = await storage.getUser(id);
+      if (!existingUser) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+      
+      // Si se está actualizando el email, verificar que no esté en uso
+      if (updateData.email && updateData.email !== existingUser.email) {
+        const usuarios = await storage.getAllUsers();
+        const emailExists = usuarios.some(u => u.email === updateData.email && u.id !== id);
+        if (emailExists) {
+          return res.status(400).json({ message: "El email ya está en uso" });
+        }
+      }
+      
+      // Si se está actualizando el username, verificar que no esté en uso
+      if (updateData.username && updateData.username !== existingUser.username) {
+        const existingUserByUsername = await storage.getUserByUsername(updateData.username);
+        if (existingUserByUsername && existingUserByUsername.id !== id) {
+          return res.status(400).json({ message: "El username ya está en uso" });
+        }
+      }
+      
+      // Actualizar usuario
+      const updatedUser = await storage.updateUser(id, updateData);
+      
+      // Si se proporcionaron perfilIds, actualizar las relaciones
+      if (perfilIds !== undefined) {
+        // Eliminar relaciones existentes
+        await storage.deleteUserPerfiles(id);
+        // Crear nuevas relaciones
+        for (const perfilId of perfilIds) {
+          await storage.createUserPerfil({ userId: id, perfilId });
+        }
+      }
+      
+      // Obtener perfiles actualizados
+      const perfiles = await storage.getUserPerfiles(id);
+      
+      res.json({ 
+        message: "Usuario actualizado exitosamente", 
+        user: { ...updatedUser, perfiles } 
+      });
+    } catch (error: any) {
+      console.error("Error actualizando usuario:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Eliminar usuario
+  app.delete("/api/usuarios/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      // Verificar que el usuario existe
+      const existingUser = await storage.getUser(id);
+      if (!existingUser) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+      
+      await storage.deleteUser(id);
+      res.json({ message: "Usuario eliminado exitosamente" });
+    } catch (error: any) {
+      console.error("Error eliminando usuario:", error);
       res.status(500).json({ message: "Error interno del servidor" });
     }
   });
