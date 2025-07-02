@@ -973,6 +973,114 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Perfiles API routes with permissions
+  app.get("/api/perfiles", async (req, res) => {
+    try {
+      const perfiles = await storage.getAllPerfiles();
+      res.json(perfiles);
+    } catch (error) {
+      console.error("Error obteniendo perfiles:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  app.post("/api/perfiles", async (req, res) => {
+    try {
+      const { codigo, nombre, descripcion, permisos } = req.body;
+      
+      // Create perfil
+      const perfil = await storage.createPerfil({
+        nombre,
+        descripcion,
+        permisos: null, // Use new permission system
+        activo: true,
+      });
+
+      // Save permissions and actions
+      if (permisos && permisos.length > 0) {
+        for (const permiso of permisos) {
+          const perfilMenu = await storage.createPerfilMenu({
+            perfilId: perfil.id,
+            menuNodeId: permiso.menuNodeId,
+          });
+
+          // Save actions for this menu
+          if (permiso.acciones && permiso.acciones.length > 0) {
+            for (const accionId of permiso.acciones) {
+              await storage.createPerfilAccion({
+                perfilMenuId: perfilMenu.id,
+                menuActionId: accionId,
+              });
+            }
+          }
+        }
+      }
+
+      res.json(perfil);
+    } catch (error) {
+      console.error("Error creando perfil:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  app.put("/api/perfiles/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { nombre, descripcion, permisos } = req.body;
+      
+      // Update perfil
+      const perfil = await storage.updatePerfil(id, {
+        nombre,
+        descripcion,
+      });
+
+      // Delete existing permissions and recreate them
+      await storage.deletePerfilMenusByPerfilId(id);
+
+      // Save new permissions and actions
+      if (permisos && permisos.length > 0) {
+        for (const permiso of permisos) {
+          const perfilMenu = await storage.createPerfilMenu({
+            perfilId: perfil.id,
+            menuNodeId: permiso.menuNodeId,
+          });
+
+          // Save actions for this menu
+          if (permiso.acciones && permiso.acciones.length > 0) {
+            for (const accionId of permiso.acciones) {
+              await storage.createPerfilAccion({
+                perfilMenuId: perfilMenu.id,
+                menuActionId: accionId,
+              });
+            }
+          }
+        }
+      }
+
+      res.json(perfil);
+    } catch (error) {
+      console.error("Error actualizando perfil:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  app.delete("/api/perfiles/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      // Delete associated permissions first
+      await storage.deletePerfilMenusByPerfilId(id);
+      
+      // Delete perfil
+      await storage.deletePerfil(id);
+      
+      res.json({ message: "Perfil eliminado exitosamente" });
+    } catch (error) {
+      console.error("Error eliminando perfil:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

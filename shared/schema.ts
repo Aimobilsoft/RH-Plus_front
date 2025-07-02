@@ -354,6 +354,29 @@ export const menuActions = pgTable("menu_actions", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Tablas para gestión de perfiles y permisos
+export const perfilMenus = pgTable("perfil_menus", {
+  id: serial("id").primaryKey(),
+  perfilId: integer("perfil_id")
+    .references(() => perfiles.id)
+    .notNull(),
+  menuNodeId: integer("menu_node_id")
+    .references(() => menuNodes.id)
+    .notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const perfilAcciones = pgTable("perfil_acciones", {
+  id: serial("id").primaryKey(),
+  perfilMenuId: integer("perfil_menu_id")
+    .references(() => perfilMenus.id)
+    .notNull(),
+  menuActionId: integer("menu_action_id")
+    .references(() => menuActions.id)
+    .notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertMenuNodeSchema = createInsertSchema(menuNodes).omit({
   id: true,
@@ -374,6 +397,16 @@ export const insertMenuActionSchema = createInsertSchema(menuActions).omit({
   createdAt: true,
 });
 
+export const insertPerfilMenuSchema = createInsertSchema(perfilMenus).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertPerfilAccionSchema = createInsertSchema(perfilAcciones).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type InsertMenuNode = z.infer<typeof insertMenuNodeSchema>;
 export type MenuNode = typeof menuNodes.$inferSelect;
@@ -381,6 +414,10 @@ export type InsertMenuPermission = z.infer<typeof insertMenuPermissionSchema>;
 export type MenuPermission = typeof menuPermissions.$inferSelect;
 export type InsertMenuAction = z.infer<typeof insertMenuActionSchema>;
 export type MenuAction = typeof menuActions.$inferSelect;
+export type InsertPerfilMenu = z.infer<typeof insertPerfilMenuSchema>;
+export type PerfilMenu = typeof perfilMenus.$inferSelect;
+export type InsertPerfilAccion = z.infer<typeof insertPerfilAccionSchema>;
+export type PerfilAccion = typeof perfilAcciones.$inferSelect;
 
 // Tabla de analistas
 export const analistas = pgTable("analistas", {

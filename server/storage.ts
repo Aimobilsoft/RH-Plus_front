@@ -11,6 +11,8 @@ import {
   menuNodes,
   menuPermissions,
   menuActions,
+  perfilMenus,
+  perfilAcciones,
   analistas,
   type User,
   type InsertUser,
@@ -39,6 +41,10 @@ import {
   type InsertMenuPermission,
   type MenuAction,
   type InsertMenuAction,
+  type PerfilMenu,
+  type InsertPerfilMenu,
+  type PerfilAccion,
+  type InsertPerfilAccion,
   type Analista,
   type InsertAnalista,
 } from "@shared/schema";
@@ -174,6 +180,14 @@ export interface IStorage {
   createCliente(cliente: InsertCliente): Promise<Cliente>;
   updateCliente(id: number, cliente: Partial<InsertCliente>): Promise<Cliente>;
   deleteCliente(id: number): Promise<void>;
+
+  // Perfil menus and actions operations
+  createPerfilMenu(perfilMenu: InsertPerfilMenu): Promise<PerfilMenu>;
+  deletePerfilMenusByPerfilId(perfilId: number): Promise<void>;
+  createPerfilAccion(perfilAccion: InsertPerfilAccion): Promise<PerfilAccion>;
+  deletePerfilAccionesByPerfilMenuId(perfilMenuId: number): Promise<void>;
+  getPerfilMenusByPerfilId(perfilId: number): Promise<PerfilMenu[]>;
+  getPerfilAccionesByPerfilMenuId(perfilMenuId: number): Promise<PerfilAccion[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -190,6 +204,8 @@ export class MemStorage implements IStorage {
   private menuNodes: Map<number, MenuNode>;
   private menuPermissions: Map<number, MenuPermission>;
   private menuActions: Map<number, MenuAction>;
+  private perfilMenus: Map<number, PerfilMenu>;
+  private perfilAcciones: Map<number, PerfilAccion>;
   private analistas: Map<number, Analista>;
 
   currentUserId: number;
@@ -204,6 +220,8 @@ export class MemStorage implements IStorage {
   currentMenuNodeId: number;
   currentMenuPermissionId: number;
   currentMenuActionId: number;
+  currentPerfilMenuId: number;
+  currentPerfilAccionId: number;
   currentAnalistaId: number;
 
   constructor() {
@@ -219,6 +237,8 @@ export class MemStorage implements IStorage {
     this.menuNodes = new Map();
     this.menuPermissions = new Map();
     this.menuActions = new Map();
+    this.perfilMenus = new Map();
+    this.perfilAcciones = new Map();
     this.analistas = new Map();
     this.currentUserId = 1;
     this.currentCandidatoId = 1;
@@ -232,6 +252,8 @@ export class MemStorage implements IStorage {
     this.currentMenuNodeId = 1;
     this.currentMenuPermissionId = 1;
     this.currentMenuActionId = 1;
+    this.currentPerfilMenuId = 1;
+    this.currentPerfilAccionId = 1;
     this.currentAnalistaId = 1;
 
     // Create default profiles
@@ -1283,6 +1305,63 @@ export class MemStorage implements IStorage {
 
   async deleteCliente(id: number): Promise<void> {
     this.clientes.delete(id);
+  }
+
+  // Perfil menus and actions operations
+  async createPerfilMenu(perfilMenu: InsertPerfilMenu): Promise<PerfilMenu> {
+    const newPerfilMenu: PerfilMenu = {
+      id: this.currentPerfilMenuId++,
+      ...perfilMenu,
+      createdAt: new Date(),
+    };
+
+    this.perfilMenus.set(newPerfilMenu.id, newPerfilMenu);
+    return newPerfilMenu;
+  }
+
+  async deletePerfilMenusByPerfilId(perfilId: number): Promise<void> {
+    const perfilMenusToDelete = Array.from(this.perfilMenus.values()).filter(
+      (perfilMenu) => perfilMenu.perfilId === perfilId,
+    );
+
+    for (const perfilMenu of perfilMenusToDelete) {
+      // Delete related actions first
+      await this.deletePerfilAccionesByPerfilMenuId(perfilMenu.id);
+      this.perfilMenus.delete(perfilMenu.id);
+    }
+  }
+
+  async createPerfilAccion(perfilAccion: InsertPerfilAccion): Promise<PerfilAccion> {
+    const newPerfilAccion: PerfilAccion = {
+      id: this.currentPerfilAccionId++,
+      ...perfilAccion,
+      createdAt: new Date(),
+    };
+
+    this.perfilAcciones.set(newPerfilAccion.id, newPerfilAccion);
+    return newPerfilAccion;
+  }
+
+  async deletePerfilAccionesByPerfilMenuId(perfilMenuId: number): Promise<void> {
+    const accionesToDelete = Array.from(this.perfilAcciones.values()).filter(
+      (accion) => accion.perfilMenuId === perfilMenuId,
+    );
+
+    for (const accion of accionesToDelete) {
+      this.perfilAcciones.delete(accion.id);
+    }
+  }
+
+  async getPerfilMenusByPerfilId(perfilId: number): Promise<PerfilMenu[]> {
+    return Array.from(this.perfilMenus.values()).filter(
+      (perfilMenu) => perfilMenu.perfilId === perfilId,
+    );
+  }
+
+  async getPerfilAccionesByPerfilMenuId(perfilMenuId: number): Promise<PerfilAccion[]> {
+    return Array.from(this.perfilAcciones.values()).filter(
+      (accion) => accion.perfilMenuId === perfilMenuId,
+    );
   }
 }
 
