@@ -134,7 +134,9 @@ const MenuPage = () => {
       if (variables.parentId) {
         setExpandedNodes(prev => new Set([...prev, variables.parentId!]));
       }
+      // Forzar actualización de la query de nodos
       queryClient.invalidateQueries({ queryKey: ['menu-nodes'] });
+      queryClient.refetchQueries({ queryKey: ['menu-nodes'] });
       setIsAddNodeModalOpen(false);
       addNodeForm.reset();
     }
@@ -215,6 +217,10 @@ const MenuPage = () => {
   };
 
   const treeData = buildTree(nodes);
+  
+  // Debug: log para verificar que los datos se actualizan
+  console.log('Nodes from API:', nodes);
+  console.log('Tree data built:', treeData);
 
   const toggleExpanded = (nodeId: number) => {
     const newExpanded = new Set(expandedNodes);
