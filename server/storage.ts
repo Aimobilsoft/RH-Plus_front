@@ -7,6 +7,7 @@ import {
   documentosTipo,
   tiposCandidatosDocumentos,
   candidatosDocumentos,
+  analistas,
   type User, 
   type InsertUser,
   type Candidato,
@@ -24,7 +25,9 @@ import {
   type TipoCandidatoDocumento,
   type InsertTipoCandidatoDocumento,
   type CandidatoDocumento,
-  type InsertCandidatoDocumento
+  type InsertCandidatoDocumento,
+  type Analista,
+  type InsertAnalista
 } from "@shared/schema";
 
 export interface IStorage {
@@ -85,6 +88,14 @@ export interface IStorage {
   createCandidatoDocumento(candidatoDocumento: InsertCandidatoDocumento): Promise<CandidatoDocumento>;
   updateCandidatoDocumento(id: number, candidatoDocumento: Partial<InsertCandidatoDocumento>): Promise<CandidatoDocumento>;
   deleteCandidatoDocumento(id: number): Promise<void>;
+  
+  // Analistas operations
+  getAllAnalistas(): Promise<Analista[]>;
+  getAnalistaById(id: number): Promise<Analista | undefined>;
+  getAnalistaByEmail(email: string): Promise<Analista | undefined>;
+  createAnalista(analista: InsertAnalista): Promise<Analista>;
+  updateAnalista(id: number, analista: Partial<InsertAnalista>): Promise<Analista>;
+  deleteAnalista(id: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -96,6 +107,7 @@ export class MemStorage implements IStorage {
   private documentosTipo: Map<number, DocumentoTipo>;
   private tiposCandidatosDocumentos: Map<number, TipoCandidatoDocumento>;
   private candidatosDocumentos: Map<number, CandidatoDocumento>;
+  private analistas: Map<number, Analista>;
   currentUserId: number;
   currentCandidatoId: number;
   currentPerfilId: number;
@@ -104,6 +116,7 @@ export class MemStorage implements IStorage {
   currentDocumentoTipoId: number;
   currentTipoCandidatoDocumentoId: number;
   currentCandidatoDocumentoId: number;
+  currentAnalistaId: number;
 
   constructor() {
     this.users = new Map();
@@ -114,6 +127,7 @@ export class MemStorage implements IStorage {
     this.documentosTipo = new Map();
     this.tiposCandidatosDocumentos = new Map();
     this.candidatosDocumentos = new Map();
+    this.analistas = new Map();
     this.currentUserId = 1;
     this.currentCandidatoId = 1;
     this.currentPerfilId = 1;

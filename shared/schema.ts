@@ -232,3 +232,30 @@ export type InsertTipoCandidatoDocumento = z.infer<typeof insertTipoCandidatoDoc
 export type TipoCandidatoDocumento = typeof tiposCandidatosDocumentos.$inferSelect;
 export type InsertCandidatoDocumento = z.infer<typeof insertCandidatoDocumentoSchema>;
 export type CandidatoDocumento = typeof candidatosDocumentos.$inferSelect;
+
+// Tabla de analistas
+export const analistas = pgTable("analistas", {
+  id: serial("id").primaryKey(),
+  nombre: varchar("nombre", { length: 100 }).notNull(),
+  apellido: varchar("apellido", { length: 100 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  telefono: varchar("telefono", { length: 20 }),
+  regional: varchar("regional", { length: 100 }).notNull(),
+  clienteAsignado: varchar("cliente_asignado", { length: 100 }),
+  nivelPrioridad: varchar("nivel_prioridad", { length: 20 }).notNull().default("medio"), // "alto", "medio", "bajo"
+  estado: varchar("estado", { length: 20 }).notNull().default("activo"), // "activo", "inactivo"
+  fechaIngreso: timestamp("fecha_ingreso").defaultNow(),
+  fechaCreacion: timestamp("fecha_creacion").defaultNow(),
+  fechaActualizacion: timestamp("fecha_actualizacion").defaultNow(),
+});
+
+// Esquemas de validación para analistas
+export const insertAnalistaSchema = createInsertSchema(analistas).omit({
+  id: true,
+  fechaCreacion: true,
+  fechaActualizacion: true,
+});
+
+// Tipos TypeScript para analistas
+export type InsertAnalista = z.infer<typeof insertAnalistaSchema>;
+export type Analista = typeof analistas.$inferSelect;

@@ -24,6 +24,7 @@ import {
   Settings,
   Menu,
   LogOut,
+  UserCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -55,6 +56,12 @@ const menuItems = [
     title: "Expedicion de Certificados",
     icon: <FileText className="h-5 w-5" />,
     path: "/certificados/expedicion",
+    subItems: [],
+  },
+  {
+    title: "Analistas",
+    icon: <UserCheck className="h-5 w-5" />,
+    path: "/analistas",
     subItems: [],
   },
   {
