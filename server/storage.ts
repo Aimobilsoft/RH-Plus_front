@@ -3,6 +3,7 @@ import {
   candidatos,
   perfiles,
   empresas,
+  clientes,
   tiposCandidatos,
   documentosTipo,
   tiposCandidatosDocumentos,
@@ -18,6 +19,9 @@ import {
   type Empresa,
   type InsertEmpresa,
   type CreateEmpresa,
+  type Cliente,
+  type InsertCliente,
+  type CreateCliente,
   type TipoCandidato,
   type InsertTipoCandidato,
   type DocumentoTipo,
@@ -96,6 +100,14 @@ export interface IStorage {
   createAnalista(analista: InsertAnalista): Promise<Analista>;
   updateAnalista(id: number, analista: Partial<InsertAnalista>): Promise<Analista>;
   deleteAnalista(id: number): Promise<void>;
+  
+  // Clientes operations
+  getAllClientes(): Promise<Cliente[]>;
+  getClienteById(id: number): Promise<Cliente | undefined>;
+  getClienteByEmail(email: string): Promise<Cliente | undefined>;
+  createCliente(cliente: InsertCliente): Promise<Cliente>;
+  updateCliente(id: number, cliente: Partial<InsertCliente>): Promise<Cliente>;
+  deleteCliente(id: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -103,6 +115,7 @@ export class MemStorage implements IStorage {
   private candidatos: Map<number, Candidato>;
   private perfiles: Map<number, Perfil>;
   private empresas: Map<number, Empresa>;
+  private clientes: Map<number, Cliente>;
   private tiposCandidatos: Map<number, TipoCandidato>;
   private documentosTipo: Map<number, DocumentoTipo>;
   private tiposCandidatosDocumentos: Map<number, TipoCandidatoDocumento>;
@@ -112,6 +125,7 @@ export class MemStorage implements IStorage {
   currentCandidatoId: number;
   currentPerfilId: number;
   currentEmpresaId: number;
+  currentClienteId: number;
   currentTipoCandidatoId: number;
   currentDocumentoTipoId: number;
   currentTipoCandidatoDocumentoId: number;

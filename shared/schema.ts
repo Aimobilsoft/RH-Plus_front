@@ -10,7 +10,7 @@ export const users = pgTable("users", {
   nombres: varchar("nombres", { length: 100 }),
   apellidos: varchar("apellidos", { length: 100 }),
   email: varchar("email", { length: 255 }),
-  tipoUsuario: varchar("tipo_usuario", { length: 50 }), // administrador, coordinador, administrador_general
+  tipoUsuario: varchar("tipo_usuario", { length: 50 }), // administrador, coordinador, administrador_general, cliente
 });
 
 // Tabla de tipos de perfiles/roles
@@ -96,6 +96,24 @@ export const empresas = pgTable("empresas", {
   estado: varchar("estado", { length: 20 }).default("activo"), // activo, inactivo
 });
 
+// Tabla de clientes
+export const clientes = pgTable("clientes", {
+  id: serial("id").primaryKey(),
+  // Credenciales de acceso
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  password: text("password").notNull(),
+  
+  // Información personal
+  nombreCompleto: varchar("nombre_completo", { length: 200 }).notNull(),
+  empresa: varchar("empresa", { length: 200 }).notNull(),
+  regional: varchar("regional", { length: 100 }).notNull(),
+  sucursal: varchar("sucursal", { length: 100 }).notNull(),
+  
+  // Metadatos
+  fechaRegistro: timestamp("fecha_registro").defaultNow(),
+  estado: varchar("estado", { length: 20 }).default("activo"), // activo, inactivo
+});
+
 // Esquemas de inserción
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
@@ -137,6 +155,20 @@ export const insertEmpresaSchema = createInsertSchema(empresas).omit({
   fechaRegistro: true,
 });
 
+export const insertClienteSchema = createInsertSchema(clientes).omit({
+  id: true,
+  fechaRegistro: true,
+});
+
+export const createClienteSchema = z.object({
+  nombreCompleto: z.string().min(2, "Nombre completo requerido"),
+  email: z.string().email("Email inválido"),
+  password: z.string().min(8, "Contraseña debe tener al menos 8 caracteres").optional(),
+  empresa: z.string().min(2, "Empresa requerida"),
+  regional: z.string().min(2, "Regional requerida"),
+  sucursal: z.string().min(2, "Sucursal requerida"),
+});
+
 export const createEmpresaSchema = z.object({
   email: z.string().email("Email inválido"),
   password: z.string().min(8, "Password debe tener al menos 8 caracteres"),
@@ -161,6 +193,11 @@ export type CreateAdminUser = z.infer<typeof createAdminUserSchema>;
 export type InsertEmpresa = z.infer<typeof insertEmpresaSchema>;
 export type Empresa = typeof empresas.$inferSelect;
 export type CreateEmpresa = z.infer<typeof createEmpresaSchema>;
+
+// Tipos TypeScript para clientes
+export type InsertCliente = z.infer<typeof insertClienteSchema>;
+export type Cliente = typeof clientes.$inferSelect;
+export type CreateCliente = z.infer<typeof createClienteSchema>;
 
 // Tabla maestro para tipos de candidatos
 export const tiposCandidatos = pgTable("tipos_candidatos", {
