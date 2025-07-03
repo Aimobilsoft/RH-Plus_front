@@ -16,7 +16,11 @@ import {
   LogOut,
   Save,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  Settings,
+  Key,
+  ChevronDown,
+  Building
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -27,6 +31,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ExperienciaLaboralTab } from '@/components/candidatos/ExperienciaLaboralTab';
 import { EducacionTab } from '@/components/candidatos/EducacionTab';
 
@@ -109,6 +116,11 @@ export default function PerfilCandidato() {
   const [activeTab, setActiveTab] = useState("personal");
   const [experienciaLaboral, setExperienciaLaboral] = useState<ExperienciaLaboral[]>([]);
   const [educacion, setEducacion] = useState<Educacion[]>([]);
+  const [empresasDisponibles] = useState([
+    { id: 1, nombre: "TechCorp Solutions", requiredDocs: ["hojaDeVida", "diploma", "certificaciones"] },
+    { id: 2, nombre: "Innovación Digital SA", requiredDocs: ["hojaDeVida", "fotografia", "referencias"] },
+    { id: 3, nombre: "Consultora Estratégica", requiredDocs: ["hojaDeVida", "portafolio", "certificaciones"] }
+  ]);
   const navigate = useNavigate();
 
   const form = useForm<PerfilForm>({
@@ -119,6 +131,42 @@ export default function PerfilCandidato() {
   useEffect(() => {
     loadProfile();
   }, []);
+
+  // Función para calcular el progreso del perfil
+  const calcularProgresoPerfil = () => {
+    if (!candidato) return 0;
+    
+    const camposRequeridos = [
+      'nombres', 'apellidos', 'fechaNacimiento', 'telefono', 'direccion', 
+      'ciudad', 'cargoAspirado', 'eps', 'arl', 'nivelEducativo'
+    ];
+    
+    const camposCompletos = camposRequeridos.filter(campo => {
+      const valor = candidato[campo as keyof Candidato];
+      return valor && valor.toString().trim() !== '';
+    });
+    
+    return Math.round((camposCompletos.length / camposRequeridos.length) * 100);
+  };
+
+  // Función para calcular la edad automáticamente
+  const calcularEdad = (fechaNacimiento: string) => {
+    if (!fechaNacimiento) return '';
+    
+    const hoy = new Date();
+    const nacimiento = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const mesActual = hoy.getMonth();
+    const diaActual = hoy.getDate();
+    const mesNacimiento = nacimiento.getMonth();
+    const diaNacimiento = nacimiento.getDate();
+    
+    if (mesActual < mesNacimiento || (mesActual === mesNacimiento && diaActual < diaNacimiento)) {
+      edad--;
+    }
+    
+    return edad.toString();
+  };
 
   const loadProfile = async () => {
     try {
@@ -174,6 +222,10 @@ export default function PerfilCandidato() {
     }
   };
 
+  const handleCambiarPassword = () => {
+    navigate('/candidato/cambiar-password');
+  };
+
   const handleFileUpload = async (file: File, type: 'hojaDeVida' | 'fotografia') => {
     // In a real app, you'd upload to cloud storage
     // For now, we'll just show a success message
@@ -206,23 +258,36 @@ export default function PerfilCandidato() {
             <p className="text-gray-600">Administra tu información personal y profesional</p>
           </div>
           <div className="flex items-center space-x-4">
-            <Badge variant={candidato.completado ? "default" : "secondary"} className="px-3 py-1">
-              {candidato.completado ? (
-                <>
-                  <CheckCircle className="w-4 h-4 mr-1" />
-                  Perfil Completo
-                </>
-              ) : (
-                <>
-                  <AlertCircle className="w-4 h-4 mr-1" />
-                  Perfil Incompleto
-                </>
-              )}
-            </Badge>
-            <Button variant="outline" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Cerrar Sesión
-            </Button>
+            {/* Indicador de progreso */}
+            <div className="flex items-center space-x-2">
+              <span className="text-sm font-medium text-gray-700">Progreso:</span>
+              <div className="w-24">
+                <Progress value={calcularProgresoPerfil()} className="h-2" />
+              </div>
+              <span className="text-sm font-bold text-green-600">{calcularProgresoPerfil()}%</span>
+            </div>
+            
+            {/* Menú de usuario */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center space-x-2">
+                  <User className="w-4 h-4" />
+                  <span>Mi Cuenta</span>
+                  <ChevronDown className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={handleCambiarPassword}>
+                  <Key className="w-4 h-4 mr-2" />
+                  Cambiar Contraseña
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Cerrar Sesión
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
@@ -299,9 +364,19 @@ export default function PerfilCandidato() {
                         name="fechaNacimiento"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Fecha de Nacimiento</FormLabel>
+                            <FormLabel>Fecha de Nacimiento *</FormLabel>
                             <FormControl>
-                              <Input {...field} type="date" />
+                              <Input 
+                                {...field} 
+                                type="date" 
+                                onChange={(e) => {
+                                  field.onChange(e);
+                                  const edad = calcularEdad(e.target.value);
+                                  if (edad) {
+                                    form.setValue('edad', parseInt(edad));
+                                  }
+                                }}
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -315,7 +390,7 @@ export default function PerfilCandidato() {
                           <FormItem>
                             <FormLabel>Edad</FormLabel>
                             <FormControl>
-                              <Input {...field} type="number" min="18" max="100" />
+                              <Input {...field} type="number" min="18" max="100" disabled />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -511,52 +586,116 @@ export default function PerfilCandidato() {
                   </TabsContent>
 
                   <TabsContent value="archivos" className="space-y-4">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <Card>
-                        <CardHeader>
-                          <CardTitle className="flex items-center">
-                            <Upload className="w-5 h-5 mr-2" />
-                            Hoja de Vida
-                          </CardTitle>
-                          <CardDescription>
-                            Sube tu CV en formato PDF (máx. 5MB)
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                            <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                            <p className="text-sm text-gray-600 mb-2">
-                              Arrastra tu archivo aquí o
-                            </p>
-                            <Button variant="outline" size="sm">
-                              Seleccionar archivo
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      <Card>
-                        <CardHeader>
-                          <CardTitle className="flex items-center">
-                            <User className="w-5 h-5 mr-2" />
-                            Fotografía
-                          </CardTitle>
-                          <CardDescription>
-                            Sube una foto profesional (máx. 2MB)
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                            <User className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                            <p className="text-sm text-gray-600 mb-2">
-                              Arrastra tu foto aquí o
-                            </p>
-                            <Button variant="outline" size="sm">
-                              Seleccionar imagen
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
+                    <div className="space-y-4">
+                      <div className="text-center mb-6">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">Documentos por Empresa</h3>
+                        <p className="text-gray-600">
+                          Selecciona la empresa para la cual deseas subir documentos específicos
+                        </p>
+                      </div>
+                      
+                      <Accordion type="single" collapsible className="w-full">
+                        {empresasDisponibles.map((empresa) => (
+                          <AccordionItem key={empresa.id} value={`empresa-${empresa.id}`}>
+                            <AccordionTrigger className="hover:no-underline">
+                              <div className="flex items-center space-x-3">
+                                <Building className="w-5 h-5 text-blue-600" />
+                                <span className="font-medium">{empresa.nombre}</span>
+                                <Badge variant="outline" className="ml-2">
+                                  {empresa.requiredDocs.length} documentos
+                                </Badge>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <div className="pt-4">
+                                <p className="text-sm text-gray-600 mb-4">
+                                  Documentos requeridos para esta empresa:
+                                </p>
+                                
+                                <div className="grid gap-4">
+                                  {empresa.requiredDocs.map((docType, index) => {
+                                    const docConfig = {
+                                      hojaDeVida: { 
+                                        name: 'Hoja de Vida', 
+                                        icon: <Upload className="w-5 h-5" />, 
+                                        description: 'CV en formato PDF (máx. 5MB)',
+                                        required: true
+                                      },
+                                      diploma: { 
+                                        name: 'Diploma', 
+                                        icon: <GraduationCap className="w-5 h-5" />, 
+                                        description: 'Título profesional (PDF)',
+                                        required: true
+                                      },
+                                      certificaciones: { 
+                                        name: 'Certificaciones', 
+                                        icon: <Upload className="w-5 h-5" />, 
+                                        description: 'Certificados adicionales (PDF)',
+                                        required: false
+                                      },
+                                      fotografia: { 
+                                        name: 'Fotografía', 
+                                        icon: <User className="w-5 h-5" />, 
+                                        description: 'Foto profesional (JPG/PNG, máx. 2MB)',
+                                        required: false
+                                      },
+                                      referencias: { 
+                                        name: 'Referencias', 
+                                        icon: <Mail className="w-5 h-5" />, 
+                                        description: 'Cartas de recomendación (PDF)',
+                                        required: false
+                                      },
+                                      portafolio: { 
+                                        name: 'Portafolio', 
+                                        icon: <Briefcase className="w-5 h-5" />, 
+                                        description: 'Muestra de trabajos (PDF/ZIP)',
+                                        required: false
+                                      }
+                                    };
+                                    
+                                    const config = docConfig[docType as keyof typeof docConfig];
+                                    
+                                    return (
+                                      <Card key={index} className="border border-gray-200">
+                                        <CardHeader className="pb-3">
+                                          <CardTitle className="flex items-center text-sm">
+                                            {config.icon}
+                                            <span className="ml-2">
+                                              {config.name}
+                                              {config.required && <span className="text-red-500 ml-1">*</span>}
+                                            </span>
+                                          </CardTitle>
+                                          <CardDescription className="text-xs">
+                                            {config.description}
+                                          </CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="pt-0">
+                                          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors">
+                                            <Upload className="w-6 h-6 mx-auto text-gray-400 mb-2" />
+                                            <p className="text-xs text-gray-600 mb-2">
+                                              Arrastra tu archivo aquí o
+                                            </p>
+                                            <Button 
+                                              variant="outline" 
+                                              size="sm"
+                                              onClick={() => {
+                                                // Simular subida de archivo
+                                                toast.success(`${config.name} subido para ${empresa.nombre}`);
+                                              }}
+                                            >
+                                              Seleccionar archivo
+                                            </Button>
+                                          </div>
+                                        </CardContent>
+                                      </Card>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+                        ))}
+                      </Accordion>
                     </div>
                   </TabsContent>
                 </Tabs>
