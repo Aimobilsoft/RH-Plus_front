@@ -701,6 +701,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Actualizar estado de aprobación de candidato
+  app.patch("/api/empresa/candidatos/:id/approval", async (req, res) => {
+    try {
+      if (!req.session.empresaId || req.session.userType !== "empresa") {
+        return res.status(401).json({ message: "No autorizado" });
+      }
+
+      const candidatoId = parseInt(req.params.id);
+      const { estado, notasAprobacion } = req.body;
+
+      // Verificar que el candidato pertenece a la empresa
+      const candidato = await storage.getCandidato(candidatoId);
+      if (!candidato || candidato.empresaId !== req.session.empresaId) {
+        return res.status(404).json({ message: "Candidato no encontrado" });
+      }
+
+      const updatedCandidato = await storage.updateCandidatoApproval(
+        candidatoId,
+        estado,
+        notasAprobacion
+      );
+
+      res.json({
+        message: "Estado de candidato actualizado exitosamente",
+        candidato: updatedCandidato,
+      });
+    } catch (error) {
+      console.error("Error actualizando estado de candidato:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Obtener configuración QR de la empresa
+  app.get("/api/empresa/qr/config", async (req, res) => {
+    try {
+      if (!req.session.empresaId || req.session.userType !== "empresa") {
+        return res.status(401).json({ message: "No autorizado" });
+      }
+
+      // Por ahora devolvemos configuración por defecto
+      // En el futuro esto podría venir de la base de datos
+      res.json({
+        renovacion: "30-dias",
+        mensaje: "Hola, tu código QR de certificación está listo. Este código contiene tu información verificada para acceso a las instalaciones de nuestra empresa. Por favor, manténlo siempre contigo durante tu horario laboral."
+      });
+    } catch (error) {
+      console.error("Error obteniendo configuración QR:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
+  // Guardar configuración QR de la empresa
+  app.post("/api/empresa/qr/config", async (req, res) => {
+    try {
+      if (!req.session.empresaId || req.session.userType !== "empresa") {
+        return res.status(401).json({ message: "No autorizado" });
+      }
+
+      const { renovacion, mensaje } = req.body;
+      
+      // Por ahora solo devolvemos éxito
+      // En el futuro esto se guardaría en la base de datos
+      res.json({
+        message: "Configuración QR guardada exitosamente",
+        config: { renovacion, mensaje }
+      });
+    } catch (error) {
+      console.error("Error guardando configuración QR:", error);
+      res.status(500).json({ message: "Error interno del servidor" });
+    }
+  });
+
   // Menu API routes
   app.get("/api/menu-nodes", async (req, res, next) => {
     try {

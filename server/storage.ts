@@ -103,6 +103,11 @@ export interface IStorage {
     candidato: InsertCandidato,
     empresaId: number,
   ): Promise<Candidato>;
+  updateCandidatoApproval(
+    candidatoId: number,
+    estado: string,
+    notasAprobacion?: string,
+  ): Promise<Candidato>;
 
   // Maestro operations - Tipos de Candidatos
   getAllTiposCandidatos(): Promise<TipoCandidato[]>;
@@ -361,6 +366,7 @@ export class MemStorage implements IStorage {
       fotografia: null,
       fechaRegistro: new Date(),
       estado: "pendiente",
+      notasAprobacion: null,
       completado: true,
       empresaId: null, // Candidato creado por admin, no por empresa
     });
@@ -802,6 +808,7 @@ export class MemStorage implements IStorage {
       fotografia: insertCandidato.fotografia || null,
       fechaRegistro: new Date(),
       estado: "pendiente",
+      notasAprobacion: null,
       completado: false,
       empresaId: insertCandidato.empresaId || null,
     };
@@ -1163,6 +1170,26 @@ export class MemStorage implements IStorage {
       empresaId: empresaId,
     };
     return this.createCandidato(candidatoData);
+  }
+
+  async updateCandidatoApproval(
+    candidatoId: number,
+    estado: string,
+    notasAprobacion?: string,
+  ): Promise<Candidato> {
+    const candidato = this.candidatos.get(candidatoId);
+    if (!candidato) {
+      throw new Error("Candidato no encontrado");
+    }
+
+    const updated: Candidato = {
+      ...candidato,
+      estado,
+      notasAprobacion: notasAprobacion || candidato.notasAprobacion,
+    };
+
+    this.candidatos.set(candidatoId, updated);
+    return updated;
   }
 
   // Menu operations

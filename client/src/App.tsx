@@ -58,7 +58,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 // Empresa portal pages
 import LoginEmpresa from "./pages/empresa/LoginEmpresa";
 import DashboardEmpresa from "./pages/empresa/DashboardEmpresaSimple";
-import CandidatosEmpresa from "./pages/empresa/CandidatosEmpresa";
+import CandidatosEmpresa from "./pages/empresa/CandidatosEmpresaMejorado";
 import CrearCandidatoEmpresa from "./pages/empresa/CrearCandidatoEmpresa";
 import CrearCandidatoSimple from "./pages/empresa/CrearCandidatoSimple";
 import DetalleCandidatoEmpresa from "./pages/empresa/DetalleCandidatoEmpresa";

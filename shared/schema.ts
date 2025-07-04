@@ -107,6 +107,7 @@ export const candidatos = pgTable("candidatos", {
   // Metadatos
   fechaRegistro: timestamp("fecha_registro").defaultNow(),
   estado: varchar("estado", { length: 20 }).default("pendiente"), // pendiente, aprobado, rechazado
+  notasAprobacion: text("notas_aprobacion"), // Notas sobre la aprobación/rechazo del candidato
   completado: boolean("completado").default(false),
   empresaId: integer("empresa_id").references(() => empresas.id), // Referencia a la empresa que creó el candidato
 });
