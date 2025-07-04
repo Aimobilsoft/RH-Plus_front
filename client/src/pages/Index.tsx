@@ -9,13 +9,13 @@ import { Link } from "react-router-dom";
 
 // Datos de ejemplo para el gráfico
 const mockData = [
-  { month: "Ene", pacientes: 65, ordenes: 28 },
-  { month: "Feb", pacientes: 59, ordenes: 48 },
-  { month: "Mar", pacientes: 80, ordenes: 40 },
-  { month: "Abr", pacientes: 81, ordenes: 27 },
-  { month: "May", pacientes: 56, ordenes: 33 },
-  { month: "Jun", pacientes: 55, ordenes: 30 },
-  { month: "Jul", pacientes: 40, ordenes: 20 },
+  { month: "Ene", candidatos: 65, ordenes: 28 },
+  { month: "Feb", candidatos: 59, ordenes: 48 },
+  { month: "Mar", candidatos: 80, ordenes: 40 },
+  { month: "Abr", candidatos: 81, ordenes: 27 },
+  { month: "May", candidatos: 56, ordenes: 33 },
+  { month: "Jun", candidatos: 55, ordenes: 30 },
+  { month: "Jul", candidatos: 40, ordenes: 20 },
 ];
 
 interface StatCardProps {
@@ -48,8 +48,7 @@ const Dashboard = () => {
         // Simular datos mientras la API no esté disponible
         return {
           totalEmpresas: 125,
-          totalPacientes: 1543,
-          citasHoy: 32,
+          totalCandidatos: 1543,
           ordenesHoy: 15
         };
         // Descomentar para usar la API real cuando esté disponible
@@ -101,14 +100,9 @@ const Dashboard = () => {
           description="Total de empresas registradas"
         />
         <StatCard
-          title="Pacientes"
-          value={isLoading ? "..." : `${stats?.totalPacientes || 1543}`}
-          description="Pacientes activos en el sistema"
-        />
-        <StatCard
-          title="Citas Hoy"
-          value={isLoading ? "..." : `${stats?.citasHoy || 32}`}
-          description="Programadas para hoy"
+          title="Candidatos"
+          value={isLoading ? "..." : `${stats?.totalCandidatos || 1543}`}
+          description="Candidatos activos en el sistema"
         />
         <StatCard
           title="Órdenes"
@@ -140,7 +134,7 @@ const Dashboard = () => {
                 <Legend />
                 <Line
                   type="monotone"
-                  dataKey="pacientes"
+                  dataKey="candidatos"
                   stroke="#1e40af"
                   activeDot={{ r: 8 }}
                 />

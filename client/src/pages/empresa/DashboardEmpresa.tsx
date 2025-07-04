@@ -197,61 +197,7 @@ export default function DashboardEmpresa() {
           </div>
         )}
 
-        {/* Action Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="cursor-pointer hover:shadow-md transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Plus className="w-5 h-5 text-blue-600" />
-                <span>Crear Candidato</span>
-              </CardTitle>
-              <CardDescription>
-                Registra un nuevo candidato para tu empresa
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Nuevo Candidato
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => navigate('/empresa/candidatos/crear')}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Registro Rápido
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/empresa/candidatos/crear-completo')}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Registro Completo
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </CardContent>
-          </Card>
 
-          <Card className="cursor-pointer hover:shadow-md transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <List className="w-5 h-5 text-green-600" />
-                <span>Ver Candidatos</span>
-              </CardTitle>
-              <CardDescription>
-                Consulta la lista completa de candidatos registrados
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button 
-                className="w-full bg-green-600 hover:bg-green-700"
-                onClick={() => navigate('/empresa/candidatos')}
-              >
-                <List className="w-4 h-4 mr-2" />
-                Ver Lista
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Company Info */}
         <Card className="mt-8">

@@ -57,11 +57,16 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // Empresa portal pages
 import LoginEmpresa from "./pages/empresa/LoginEmpresa";
-import DashboardEmpresa from "./pages/empresa/DashboardEmpresa";
+import DashboardEmpresa from "./pages/empresa/DashboardEmpresaSimple";
 import CandidatosEmpresa from "./pages/empresa/CandidatosEmpresa";
 import CrearCandidatoEmpresa from "./pages/empresa/CrearCandidatoEmpresa";
 import CrearCandidatoSimple from "./pages/empresa/CrearCandidatoSimple";
 import DetalleCandidatoEmpresa from "./pages/empresa/DetalleCandidatoEmpresa";
+import QrGenerarPage from "./pages/empresa/QrGenerarPage";
+import QrConfiguracionPage from "./pages/empresa/QrConfiguracionPage";
+import QrWhatsAppPage from "./pages/empresa/QrWhatsAppPage";
+import QrEmailPage from "./pages/empresa/QrEmailPage";
+import EmpresaLayout from "./components/EmpresaLayout";
 
 const queryClient = new QueryClient();
 
@@ -81,13 +86,21 @@ const App = () => (
           <Route path="/candidato/cambiar-password" element={<CambiarPassword />} />
           <Route path="/candidato/perfil" element={<PerfilCandidato />} />
           
-          {/* Empresa Portal Routes - No Layout */}
+          {/* Empresa Portal Login */}
           <Route path="/empresa/login" element={<LoginEmpresa />} />
-          <Route path="/empresa/dashboard" element={<DashboardEmpresa />} />
-          <Route path="/empresa/candidatos" element={<CandidatosEmpresa />} />
-          <Route path="/empresa/candidatos/crear" element={<CrearCandidatoSimple />} />
-          <Route path="/empresa/candidatos/crear-completo" element={<CrearCandidatoEmpresa />} />
-          <Route path="/empresa/candidatos/:id" element={<DetalleCandidatoEmpresa />} />
+          
+          {/* Empresa Portal Routes - With Layout */}
+          <Route element={<SidebarProvider><EmpresaLayout /></SidebarProvider>}>
+            <Route path="/empresa/dashboard" element={<DashboardEmpresa />} />
+            <Route path="/empresa/candidatos" element={<CandidatosEmpresa />} />
+            <Route path="/empresa/candidatos/crear" element={<CrearCandidatoSimple />} />
+            <Route path="/empresa/candidatos/crear-completo" element={<CrearCandidatoEmpresa />} />
+            <Route path="/empresa/candidatos/:id" element={<DetalleCandidatoEmpresa />} />
+            <Route path="/empresa/qr/generar" element={<QrGenerarPage />} />
+            <Route path="/empresa/qr/configuracion" element={<QrConfiguracionPage />} />
+            <Route path="/empresa/qr/whatsapp" element={<QrWhatsAppPage />} />
+            <Route path="/empresa/qr/email" element={<QrEmailPage />} />
+          </Route>
           
           {/* Admin Portal Routes - With Layout (Protected) */}
           <Route element={<ProtectedRoute><SidebarProvider><Layout /></SidebarProvider></ProtectedRoute>}>

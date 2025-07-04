@@ -90,7 +90,10 @@ const Header = () => {
         <h1 className="text-lg font-semibold">Sistema de Recursos Humanos</h1>
       </div>
       <div className="ml-auto flex items-center space-x-4">
-        {/* Header actions can be added here if needed */}
+        <div className="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+          <User className="w-4 h-4 mr-2" />
+          Administrador
+        </div>
       </div>
     </header>
   );
