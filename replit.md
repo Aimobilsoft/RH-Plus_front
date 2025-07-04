@@ -106,6 +106,15 @@ This is a full-stack medical practice management application built with modern w
 ```
 Changelog:
 
+- January 3, 2025. Enhanced candidate management with approval system and quick send features
+  * Added candidate approval/rejection system with notes functionality for hiring decisions
+  * Implemented quick send buttons for WhatsApp and Email in candidate list using stored QR configuration
+  * Moved approval buttons to dropdown menu for better UI organization after user feedback
+  * Added progress percentage display matching candidate portal calculation (based on 10 required fields)
+  * Enhanced candidate interface with visual progress bars and completion indicators
+  * Created comprehensive approval workflow with notes for tracking hiring requirements and follow-ups
+  * Added approval status tracking with color-coded badges and statistics dashboard
+  * Integrated database schema changes with notasAprobacion field for storing approval decisions
 - June 27, 2025. Menu management system and company visible fields implementation
   * Implemented comprehensive menu management interface with tree view navigation
   * Added visible fields checklist to company form (cargo, salario, celular, correo, fecha_ingreso, direccion, jornada_laboral)

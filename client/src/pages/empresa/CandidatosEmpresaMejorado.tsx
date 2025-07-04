@@ -57,6 +57,12 @@ interface Candidato {
   notasAprobacion?: string;
   fechaRegistro: string;
   completado: boolean;
+  fechaNacimiento?: string;
+  direccion?: string;
+  ciudad?: string;
+  eps?: string;
+  arl?: string;
+  nivelEducativo?: string;
 }
 
 interface QrConfig {
@@ -218,6 +224,20 @@ export default function CandidatosEmpresa() {
     }
   };
 
+  const calcularProgresoPerfil = (candidato: Candidato) => {
+    const camposRequeridos = [
+      'nombres', 'apellidos', 'fechaNacimiento', 'telefono', 'direccion', 
+      'ciudad', 'cargoAspirado', 'eps', 'arl', 'nivelEducativo'
+    ];
+    
+    const camposCompletos = camposRequeridos.filter(campo => {
+      const valor = candidato[campo as keyof Candidato];
+      return valor && valor.toString().trim() !== '';
+    });
+    
+    return Math.round((camposCompletos.length / camposRequeridos.length) * 100);
+  };
+
   const openApprovalModal = (candidato: Candidato, action: 'aprobar' | 'rechazar') => {
     setSelectedCandidato(candidato);
     setApprovalAction(action);
@@ -360,6 +380,20 @@ export default function CandidatosEmpresa() {
                       </p>
                     )}
 
+                    {/* Progreso del perfil */}
+                    <div className="mb-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-medium text-gray-700">Progreso del perfil</span>
+                        <span className="text-sm text-gray-600">{calcularProgresoPerfil(candidato)}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                          style={{ width: `${calcularProgresoPerfil(candidato)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+
                     {candidato.notasAprobacion && (
                       <div className="bg-gray-50 p-3 rounded-md mb-3">
                         <p className="text-sm font-medium text-gray-700 mb-1">Notas de aprobación:</p>
@@ -379,7 +413,7 @@ export default function CandidatosEmpresa() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleQuickSendWhatsApp(candidato)}
-                        className="flex items-center space-x-1"
+                        className="flex items-center space-x-1 text-green-600 border-green-300 hover:bg-green-50"
                       >
                         <MessageCircle className="w-4 h-4" />
                         <span>WhatsApp</span>
@@ -390,36 +424,11 @@ export default function CandidatosEmpresa() {
                       variant="outline"
                       size="sm"
                       onClick={() => handleQuickSendEmail(candidato)}
-                      className="flex items-center space-x-1"
+                      className="flex items-center space-x-1 text-blue-600 border-blue-300 hover:bg-blue-50"
                     >
                       <Mail className="w-4 h-4" />
                       <span>Email</span>
                     </Button>
-
-                    {/* Botones de aprobación */}
-                    {candidato.estado === 'pendiente' && (
-                      <>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => openApprovalModal(candidato, 'aprobar')}
-                          className="flex items-center space-x-1 text-green-600 border-green-300 hover:bg-green-50"
-                        >
-                          <Check className="w-4 h-4" />
-                          <span>Aprobar</span>
-                        </Button>
-                        
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => openApprovalModal(candidato, 'rechazar')}
-                          className="flex items-center space-x-1 text-red-600 border-red-300 hover:bg-red-50"
-                        >
-                          <X className="w-4 h-4" />
-                          <span>Rechazar</span>
-                        </Button>
-                      </>
-                    )}
 
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -432,6 +441,22 @@ export default function CandidatosEmpresa() {
                           <Eye className="w-4 h-4 mr-2" />
                           Ver detalles
                         </DropdownMenuItem>
+                        
+                        {/* Botones de aprobación en el menú desplegable */}
+                        {candidato.estado === 'pendiente' && (
+                          <>
+                            <DropdownMenuItem onClick={() => openApprovalModal(candidato, 'aprobar')}>
+                              <Check className="w-4 h-4 mr-2 text-green-600" />
+                              <span className="text-green-600">Aprobar candidato</span>
+                            </DropdownMenuItem>
+                            
+                            <DropdownMenuItem onClick={() => openApprovalModal(candidato, 'rechazar')}>
+                              <X className="w-4 h-4 mr-2 text-red-600" />
+                              <span className="text-red-600">Rechazar candidato</span>
+                            </DropdownMenuItem>
+                          </>
+                        )}
+                        
                         {candidato.estado !== 'pendiente' && (
                           <DropdownMenuItem onClick={() => openApprovalModal(candidato, candidato.estado === 'aprobado' ? 'rechazar' : 'aprobar')}>
                             <FileText className="w-4 h-4 mr-2" />
